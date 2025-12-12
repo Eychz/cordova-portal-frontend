@@ -94,13 +94,13 @@ const AnnouncementsPage: React.FC = () => {
             const postsApi = await import('../../../lib/postsApi');
             let adminPosts;
             try {
-                adminPosts = await postsApi.postsApi.getAll('announcements');
+                adminPosts = await postsApi.postsApi.getAll('announcement');
             } catch (err: any) {
                 console.warn('Failed to fetch from API, falling back to localStorage', err);
                 adminPosts = await loadDataAsync(STORAGE_KEYS.POSTS, initialPosts);
             }
             const announcementsOnly = adminPosts
-                .filter((post: Post) => post.type === 'announcements' && post.status === 'published')
+                .filter((post: Post) => post.type === 'announcement' && post.status === 'published')
                 .map((post: Post) => ({
                     id: post.id,
                     uuid: post.uuid,

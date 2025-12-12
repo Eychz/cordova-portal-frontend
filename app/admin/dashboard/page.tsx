@@ -423,13 +423,29 @@ const AdminDashboard = () => {
 
     const handleRejectVerification = async (userId: number) => {
         const previous = users;
-        setUsers(users.filter(u => u.id !== userId));
+        const user = users.find(u => u.id === userId);
+        
+        // Update user to remove verification documents and keep account
+        setUsers(users.map(u => u.id === userId ? { 
+            ...u, 
+            isVerified: false,
+            verified: false,
+            frontIdDocumentUrl: null,
+            backIdDocumentUrl: null,
+            faceVerificationUrl: null
+        } : u));
         setShowDeleteConfirm(null);
         setDetailModal({ type: null, data: null });
         try {
             if (isDbMode && userId) {
-                await apiClient.deleteUser(userId);
-                toast.success('Verification request rejected');
+                // Update user to clear verification documents instead of deleting
+                await apiClient.updateUser(userId, {
+                    isVerified: false,
+                    frontIdDocumentUrl: null,
+                    backIdDocumentUrl: null,
+                    faceVerificationUrl: null
+                });
+                toast.success(`Verification request rejected for ${user?.name}. User account preserved.`);
                 
                 // Reload users from database to get fresh data
                 const dbUsers = await statsApi.getAllUsers();

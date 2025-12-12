@@ -5,7 +5,7 @@ export interface Post {
   title: string;
   content: string;
   imageUrl?: string;
-  type: 'news' | 'announcements' | 'event';
+  type: 'news' | 'announcement' | 'event';
   priority?: 'high' | 'normal' | 'low';
   status?: 'published' | 'draft';
   location?: string;
