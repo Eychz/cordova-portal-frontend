@@ -1,0 +1,24 @@
+:root {
+    --color-black: #000000;
+    --color-white: #FFFFFF;
+    --color-red: #D1001F;
+    --color-gray-light: #F0F0F0;
+    --color-gray-dark: #A0A0A0;
+    --color-accent: #D1D1D1;
+
+    --font-family-sans: 'Arial', sans-serif;
+    --font-family-serif: 'Georgia', serif;
+
+    --font-size-base: 16px;
+    --font-size-lg: 24px;
+    --font-size-sm: 14px;
+
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
+}
