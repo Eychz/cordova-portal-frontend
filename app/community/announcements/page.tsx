@@ -94,7 +94,7 @@ const AnnouncementsPage: React.FC = () => {
             const postsApi = await import('../../../lib/postsApi');
             let adminPosts;
             try {
-                adminPosts = await postsApi.postsApi.getAll('announcement');
+                adminPosts = await postsApi.postsApi.getAll('announcements');
             } catch (err: any) {
                 console.warn('Failed to fetch from API, falling back to localStorage', err);
                 adminPosts = await loadDataAsync(STORAGE_KEYS.POSTS, initialPosts);
