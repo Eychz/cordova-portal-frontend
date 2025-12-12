@@ -3,7 +3,7 @@ export interface Post {
   title: string;
   content: string;
   imageUrl?: string;
-  type: 'news' | 'announcement' | 'event';
+  type: 'news' | 'announcements' | 'event';
   priority: 'high' | 'normal' | 'low';
   createdAt: string;
   status?: 'published' | 'draft';
@@ -82,7 +82,7 @@ export const initialPosts: Post[] = [
     title: "Emergency Preparedness Workshop",
     content: "Learn essential skills for disaster preparedness. Topics include evacuation procedures, first aid, and emergency communication.",
     imageUrl: "https://picsum.photos/seed/emergency/400/500",
-    type: "announcement",
+    type: "announcements",
     priority: "high",
     createdAt: "2025-11-29T14:00:00Z"
   },
@@ -100,7 +100,7 @@ export const initialPosts: Post[] = [
     title: "Barangay Council Meeting Schedule",
     content: "Regular barangay council meetings are held every first Monday of the month at 7 PM in the municipal hall.",
     imageUrl: "https://picsum.photos/seed/meeting/400/500",
-    type: "announcement",
+    type: "announcements",
     priority: "normal",
     createdAt: "2025-11-27T16:00:00Z"
   },

@@ -100,7 +100,7 @@ const AnnouncementsPage: React.FC = () => {
                 adminPosts = await loadDataAsync(STORAGE_KEYS.POSTS, initialPosts);
             }
             const announcementsOnly = adminPosts
-                .filter((post: Post) => post.type === 'announcement' && post.status === 'published')
+                .filter((post: Post) => post.type === 'announcements' && post.status === 'published')
                 .map((post: Post) => ({
                     id: post.id,
                     uuid: post.uuid,

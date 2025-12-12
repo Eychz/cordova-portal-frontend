@@ -1,4 +1,4 @@
-import type { Post } from '../../data/adminData';
+import type { Post } from './../data/adminData';
 
 // Select up to `n` posts per type, preferring 'high' priority and most recent posts.
 export function selectTopPostsByType(posts: Post[], perType = 2): Post[] {
