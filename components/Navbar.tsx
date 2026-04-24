@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import DarkModeToggle from './DarkModeToggle';
 import UserProfileDropdown from './UserProfileDropdown';
+import { barangays } from '@/data/barangays';
 
 interface NavbarProps {
     activePage?: string;
@@ -718,11 +719,17 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                 ? 'text-red-600 dark:text-red-400 font-bold border-l-4 border-red-600 pl-4' 
                                 : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
                         }`}>Rescue Desk</Link>
-                        <Link href="/barangay" className={`block py-2 ${
-                            isActive('/barangay') 
-                                ? 'text-red-600 dark:text-red-400 font-bold border-l-4 border-red-600 pl-4' 
-                                : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
-                        }`}>Barangay</Link>
+                        <Link 
+                            href="/barangay" 
+                            className={`block py-2 ${
+                                isActive('/barangay') 
+                                    ? 'text-red-600 dark:text-red-400 font-bold border-l-4 border-red-600 pl-4' 
+                                    : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
+                            }`}
+                            onClick={() => setIsOpen(false)}
+                        >
+                            Barangay
+                        </Link>
                         <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                             {isLoggedIn ? (
                                 <>
@@ -731,19 +738,19 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                             {userName}
                                         </div>
                                     )}
-                                    <Link href="/dashboard" className="block py-2 text-red-600 dark:text-red-400 font-semibold">My Dashboard</Link>
-                                    <Link href="/dashboard" className="block py-2 text-red-600 dark:text-red-400 font-semibold">Dashboard</Link>
+                                    <Link href="/dashboard" className="block py-2 text-red-600 dark:text-red-400 font-semibold" onClick={() => setIsOpen(false)}>My Dashboard</Link>
                                     <button onClick={() => { 
                                         localStorage.removeItem('token');
                                         localStorage.removeItem('user');
                                         setIsLoggedIn(false); 
+                                        setIsOpen(false);
                                         window.location.href = '/home'; 
                                     }} className="w-full text-left py-2 text-red-600 dark:text-red-400 font-semibold">Logout</button>
                                 </>
                             ) : (
                                 <>
-                                    <Link href="/auth/login" className="block py-2 text-red-600 dark:text-red-400 font-semibold">Login</Link>
-                                    <Link href="/auth/register" className="block py-2 text-red-600 dark:text-red-400 font-semibold">Register</Link>
+                                    <Link href="/auth/login" className="block py-2 text-red-600 dark:text-red-400 font-semibold" onClick={() => setIsOpen(false)}>Login</Link>
+                                    <Link href="/auth/register" className="block py-2 text-red-600 dark:text-red-400 font-semibold" onClick={() => setIsOpen(false)}>Register</Link>
                                 </>
                             )}
                         </div>

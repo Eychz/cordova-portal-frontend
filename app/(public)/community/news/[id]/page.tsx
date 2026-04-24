@@ -38,11 +38,11 @@ export default function NewsDetailPage() {
       try {
         setLoading(true);
         const response = await fetch(`${API_BASE_URL}/posts/${params.id}`);
-        
+
         if (!response.ok) {
           throw new Error('Post not found');
         }
-        
+
         const data = await response.json();
         setPost(data);
       } catch (err: any) {

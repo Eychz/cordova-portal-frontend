@@ -3,9 +3,9 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/a
 interface RegisterData {
   email: string;
   password: string;
-  firstName: string;
+  firstName?: string;
   middleName?: string;
-  lastName: string;
+  lastName?: string;
   barangay?: string;
   contactNumber?: string;
 }
