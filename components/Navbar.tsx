@@ -40,6 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
     const [userProfileImage, setUserProfileImage] = useState<string | null>(null);
     const [profileImageError, setProfileImageError] = useState(false);
     const [userInitials, setUserInitials] = useState<string>('');
+    const [userRole, setUserRole] = useState<string>('');
 
     // Check authentication status on mount and fetch profile data
     useEffect(() => {
@@ -60,6 +61,10 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                     ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
                     : user.email?.charAt(0).toUpperCase() || 'U';
                 setUserInitials(initials);
+                
+                if (user.role) {
+                    setUserRole(user.role);
+                }
                 
                 // Set profile image if available
                 if (user.profileImageUrl) {
@@ -463,45 +468,13 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                             Rescue Desk
                         </Link>
                         
-                        {/* Barangay Dropdown */}
-                        <div className="relative group barangay-dropdown">
-                            <button 
-                                onClick={() => {
-                                    closeAllDropdowns();
-                                    setShowBarangay(!showBarangay);
-                                }}
-                                className={`flex items-center gap-1 transition-all font-medium py-2 ${
-                                    isActive('/barangay') 
-                                        ? 'text-red-600 dark:text-red-400 font-bold border-b-2 border-red-600' 
-                                        : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
-                                }`}
-                            >
-                                Barangay
-                                <svg 
-                                    className={`w-4 h-4 transition-transform duration-200 ${
-                                        showBarangay ? 'rotate-180' : 'rotate-0'
-                                    }`} 
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            {showBarangay && (
-                                <div className="absolute left-0 bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 rounded-lg mt-1 py-2 w-56 max-h-80 overflow-y-auto z-50 animate-fadeIn scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
-                                    {barangays.map((barangay) => (
-                                        <Link 
-                                            key={barangay}
-                                            href={`/barangay/${barangay.toLowerCase().replace(/ /g, '-')}`} 
-                                            className="block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-gray-700 hover:text-red-600 transition-colors text-sm"
-                                        >
-                                            <span className="font-medium">{barangay}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                        <Link href="/barangay" className={`transition-all font-medium py-2 whitespace-nowrap ${
+                            isActive('/barangay') 
+                                ? 'text-red-600 dark:text-red-400 font-bold border-b-2 border-red-600' 
+                                : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
+                        }`}>
+                            Barangay
+                        </Link>
                     </div>
 
                     {/* Right Side - Search, Notification, Dark Mode Toggle and Profile Icon */}
@@ -590,7 +563,12 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                         
                         <DarkModeToggle />
                         
-                        {/* Profile Dropdown */}
+                        {/* Profile Dropdown or Admin Dashboard Link */}
+                        {isLoggedIn && userRole === 'admin' ? (
+                            <Link href="/admin/dashboard" className="font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors">
+                                Dashboard
+                            </Link>
+                        ) : (
                         <div className="relative profile-dropdown">
                             <button 
                                 onClick={() => {
@@ -675,6 +653,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                 </div>
                             )}
                         </div>
+                        )}
                     </div>
                         </>
                     )}
@@ -739,22 +718,11 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                 ? 'text-red-600 dark:text-red-400 font-bold border-l-4 border-red-600 pl-4' 
                                 : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
                         }`}>Rescue Desk</Link>
-                        {barangays.map((barangay) => {
-                            const barangayPath = `/barangay/${barangay.toLowerCase().replace(/ /g, '-')}`;
-                            return (
-                                <Link 
-                                    key={barangay}
-                                    href={barangayPath} 
-                                    className={`block py-2 pl-4 ${
-                                        isActive(barangayPath) 
-                                            ? 'text-red-600 dark:text-red-400 font-bold border-l-4 border-red-600' 
-                                            : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
-                                    }`}
-                                >
-                                    {barangay}
-                                </Link>
-                            );
-                        })}
+                        <Link href="/barangay" className={`block py-2 ${
+                            isActive('/barangay') 
+                                ? 'text-red-600 dark:text-red-400 font-bold border-l-4 border-red-600 pl-4' 
+                                : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
+                        }`}>Barangay</Link>
                         <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                             {isLoggedIn ? (
                                 <>

@@ -40,6 +40,19 @@ const BarangayOfficials: React.FC<BarangayOfficialsProps> = ({
 
     const colors = colorClasses[featuredColor];
 
+    if (!officials || officials.length === 0) {
+        return (
+            <section className="mb-16">
+                <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-8">{title}</h2>
+                <div className="bg-gray-100 dark:bg-gray-800 rounded-3xl p-12 text-center border-2 border-dashed border-gray-300 dark:border-gray-700">
+                    <p className="text-gray-500 dark:text-gray-400 italic text-lg">
+                        Officials information is currently being updated for this barangay.
+                    </p>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="mb-16">
             <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-8">{title}</h2>
@@ -51,8 +64,8 @@ const BarangayOfficials: React.FC<BarangayOfficialsProps> = ({
                         <div className="relative">
                             <div className={`w-48 h-48 rounded-full overflow-hidden border-8 ${colors.borderColor} shadow-2xl`}>
                                 <img 
-                                    src={officials[0].imageUrl}
-                                    alt={officials[0].name}
+                                    src={officials[0]?.imageUrl || "/municipal-logo.jpg"}
+                                    alt={officials[0]?.name || "Official"}
                                     className="w-full h-full object-cover"
                                 />
                             </div>
@@ -60,10 +73,10 @@ const BarangayOfficials: React.FC<BarangayOfficialsProps> = ({
                     </div>
                     <div className="md:col-span-2 p-8 md:p-12 flex flex-col justify-center text-white">
                         <div className={`text-sm font-bold ${colors.textAccent} mb-2`}>
-                            {officials[0].position}
+                            {officials[0]?.position}
                         </div>
                         <h3 className="text-4xl font-black mb-4">
-                            {officials[0].name}
+                            {officials[0]?.name}
                         </h3>
                         <p className="text-white/80 text-lg">
                             {captainDescription}
