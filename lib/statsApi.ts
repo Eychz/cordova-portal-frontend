@@ -1,10 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-const getAuthHeader = (): Record<string, string> => {
-  if (typeof window === 'undefined') return {};
-  const token = localStorage.getItem('token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
-};
+import { httpClient } from './apiClient';
 
 export interface AdminStats {
   totalUsers: number;
@@ -33,32 +27,10 @@ export interface User {
 
 export const statsApi = {
   getAdminStats: async (): Promise<AdminStats> => {
-    const response = await fetch(`${API_BASE_URL}/stats/admin/stats`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...getAuthHeader(),
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch admin statistics');
-    }
-    
-    return response.json();
+    return httpClient.get<AdminStats>('/stats/admin/stats');
   },
 
   getAllUsers: async (): Promise<User[]> => {
-    const response = await fetch(`${API_BASE_URL}/stats/users`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...getAuthHeader(),
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch users');
-    }
-    
-    return response.json();
+    return httpClient.get<User[]>('/stats/users');
   },
 };

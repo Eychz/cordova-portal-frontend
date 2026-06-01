@@ -3,67 +3,98 @@
 import React, { useEffect, useState } from 'react';
 import { initialPosts } from '@/data/adminData';
 import { postsApi } from '@/lib/postsApi';
-import selectTopPostsByType from '@/utils/carousel';
+import { servicesApi } from '@/lib/servicesApi';
+import { emergencyApi } from '@/lib/emergencyApi';
+import { barangays } from '@/data/barangays';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
-import { Bell, ChevronRight, X, AlertTriangle, Phone, HelpCircle } from 'lucide-react';
+import Footer from '@/components/Footer';
+import Carousel from '@/components/Carousel';
+import { HighPriorityCard } from '@/components/cards';
+import { Bell, ChevronRight, X, Phone, Building2, Landmark, Siren, ShieldAlert, ArrowRight } from 'lucide-react';
+import { slugify } from '@/utils/slugify';
 
 interface AnnouncementItem {
     id: number;
     title: string;
     body: string;
     imageUrl: string;
+    type: string;
+    date: string;
+    category: string;
 }
 
 const HomeGuestPage: React.FC = () => {
+    const router = useRouter();
     const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
     const [featuredPosts, setFeaturedPosts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadingFeatured, setLoadingFeatured] = useState(true);
-    const [isDragging, setIsDragging] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [scrollLeft, setScrollLeft] = useState(0);
-    const [hasMoved, setHasMoved] = useState(false);
     const [showBanner, setShowBanner] = useState(true);
-    const carouselRef = React.useRef<HTMLDivElement>(null);
+
+    // Sample items for the newspaper section
+    const [services, setServices] = useState<any[]>([]);
+    const [hotlines, setHotlines] = useState<any[]>([]);
+    const [barangayList, setBarangayList] = useState<any[]>([]);
 
     useEffect(() => {
-        // Fetch 6 most recent posts from backend API
-        const fetchServerPosts = async () => {
+        // Fetch 3 news, 3 announcements, and 3 events for the carousel (total 9)
+        const fetchCarouselPosts = async () => {
             try {
-                const posts = await postsApi.getAll();
-                // Sort by createdAt date (most recent first) and take first 6
-                const sortedPosts = posts.sort((a, b) => 
-                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-                ).slice(0, 6);
-                return sortedPosts;
+                const [newsPosts, annPosts, eventPosts] = await Promise.all([
+                    postsApi.getAll({ type: 'news', limit: 3 }),
+                    postsApi.getAll({ type: 'announcement', limit: 3 }),
+                    postsApi.getAll({ type: 'event', limit: 3 })
+                ]);
+
+                const combined = [
+                    ...newsPosts.slice(0, 3),
+                    ...annPosts.slice(0, 3),
+                    ...eventPosts.slice(0, 3)
+                ];
+
+                // Sort by date descending
+                combined.sort((a: any, b: any) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime());
+
+                const mapped = combined.map((p: any) => ({
+                    id: p.id,
+                    title: p.title,
+                    body: p.content.slice(0, 150) + '...',
+                    type: p.type,
+                    imageUrl: p.imageUrl || `https://picsum.photos/seed/${p.id}/1200/600`,
+                    date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                    category: p.category || p.type.toUpperCase()
+                }));
+                setAnnouncements(mapped);
             } catch (err) {
-                console.warn('Failed to fetch posts from API; using static posts', err);
-                // Sort static posts and take first 6
-                const sortedPosts = initialPosts.sort((a, b) => 
-                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-                ).slice(0, 6);
-                return sortedPosts;
+                console.warn('Failed to fetch high priority posts; using static fallback', err);
+                const fallbackNews = initialPosts.filter(p => p.type === 'news').slice(0, 3);
+                const fallbackAnn = initialPosts.filter(p => p.type === 'announcement').slice(0, 3);
+                const fallbackEvent = initialPosts.filter(p => p.type === 'event').slice(0, 3);
+                const combined = [...fallbackNews, ...fallbackAnn, ...fallbackEvent];
+
+                combined.sort((a: any, b: any) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime());
+
+                const mapped = combined.map((p: any) => ({
+                    id: p.id,
+                    title: p.title,
+                    body: p.content.slice(0, 150) + '...',
+                    type: p.type,
+                    imageUrl: p.imageUrl || `https://picsum.photos/seed/${p.id}/1200/600`,
+                    date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                    category: p.category || p.type.toUpperCase()
+                }));
+                setAnnouncements(mapped);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchServerPosts().then((selected) => {
-            // Map to AnnouncementItem shape (some fields differ between Post and announcement item)
-            const selectedMapped = selected.map(p => ({ 
-                id: p.id, 
-                title: p.title, 
-                body: p.content, 
-                imageUrl: p.imageUrl || `https://picsum.photos/seed/${p.id}/400/500` 
-            }));
-            setAnnouncements(selectedMapped);
-            setLoading(false);
-        });
-
-        // Fetch featured posts
+        // Fetch featured posts (latest 6)
         const fetchFeaturedPosts = async () => {
             try {
                 const featured = await postsApi.getFeatured(6);
-                // getFeatured API already filters for isFeatured=true
                 setFeaturedPosts(featured);
             } catch (err) {
                 console.warn('Failed to fetch featured posts', err);
@@ -73,109 +104,64 @@ const HomeGuestPage: React.FC = () => {
             }
         };
 
-        fetchFeaturedPosts();
-    }, []);
-
-    // Auto-scroll carousel
-    useEffect(() => {
-        if (loading || announcements.length === 0 || !carouselRef.current) return;
-
-        const autoScrollInterval = setInterval(() => {
-            if (!carouselRef.current || isDragging) return;
-            
-            const maxScrollLeft = carouselRef.current.scrollWidth - carouselRef.current.clientWidth;
-            const currentScroll = carouselRef.current.scrollLeft;
-            
-            if (currentScroll >= maxScrollLeft - 10) {
-                carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-            } else {
-                const cardWidth = 350;
-                carouselRef.current.scrollTo({ 
-                    left: currentScroll + cardWidth, 
-                    behavior: 'smooth' 
-                });
+        // Fetch samples for the newspaper grid
+        const fetchNewspaperSamples = async () => {
+            try {
+                const sData = await servicesApi.getAll();
+                setServices(sData.slice(0, 2));
+            } catch (e) {
+                setServices([
+                    { id: 1, name: 'Business Permit', description: 'Application and renewal guidelines for commercial operations.', category: 'Regulatory' },
+                    { id: 2, name: "Mayor's Clearance", description: 'Acquiring general security clearance from the office of the mayor.', category: 'Certifications' }
+                ]);
             }
-        }, 5000);
 
-        return () => clearInterval(autoScrollInterval);
-    }, [loading, announcements, isDragging]);
+            try {
+                const hData = await emergencyApi.getAll();
+                setHotlines(hData.slice(0, 2));
+            } catch (e) {
+                setHotlines([
+                    { id: 1, title: 'Cordova Police Station', description: 'Emergency response line for municipal safety.', contact: '(032) 496-0000' },
+                    { id: 2, title: 'Cordova Fire Station', description: 'Fire protection and emergency services dispatch.', contact: '(032) 496-1111' }
+                ]);
+            }
 
-    const handleMouseDown = (e: React.MouseEvent) => {
-        if (!carouselRef.current) return;
-        setIsDragging(true);
-        setHasMoved(false);
-        setStartX(e.pageX - carouselRef.current.offsetLeft);
-        setScrollLeft(carouselRef.current.scrollLeft);
-    };
+            setBarangayList(barangays.slice(0, 2));
+        };
 
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!isDragging || !carouselRef.current) return;
-        e.preventDefault();
-        const x = e.pageX - carouselRef.current.offsetLeft;
-        const walk = (x - startX) * 2;
-        
-        // If mouse has moved more than 5px, consider it a drag
-        if (Math.abs(walk) > 5) {
-            setHasMoved(true);
-        }
-        
-        carouselRef.current.scrollLeft = scrollLeft - walk;
-    };
-
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
-    const handleMouseLeave = () => {
-        setIsDragging(false);
-        setHasMoved(false);
-    };
-
-    const handleCardClick = (e: React.MouseEvent, item: AnnouncementItem) => {
-        // Only trigger click if the user didn't drag
-        if (!hasMoved) {
-            console.log('Card clicked:', item.title);
-            // Add your click handler here (e.g., open modal, navigate to detail page)
-        }
-    };
-
-    const scroll = (direction: 'left' | 'right') => {
-        if (!carouselRef.current) return;
-        const scrollAmount = 350;
-        const newScrollLeft = direction === 'left' 
-            ? carouselRef.current.scrollLeft - scrollAmount 
-            : carouselRef.current.scrollLeft + scrollAmount;
-        carouselRef.current.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
-    };
+        fetchCarouselPosts();
+        fetchFeaturedPosts();
+        fetchNewspaperSamples();
+    }, []);
 
     return (
         <PageTransition>
-            <div className="min-h-screen bg-gradient-to-br from-pink-50 via-red-50 to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 transition-colors">
+            <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
                 {/* Announcement Banner */}
                 {showBanner && (
-                    <div className="bg-gradient-to-r from-red-600 via-orange-500 to-red-600 text-white py-3 px-4 shadow-lg">
-                        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3 flex-1">
-                                <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg flex-shrink-0">
+                    <div className="bg-red-700 text-white py-4 px-4 border-b border-red-800">
+                        <div className="maximize-width flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-4 flex-1">
+                                <div className="bg-white/10 p-2 flex-shrink-0 rounded-lg">
                                     <Bell className="w-6 h-6" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="font-bold text-sm md:text-base">
-                                        Cordova Municipality Annual Festival 2025 - Special Event | Dec 5-15, Cordova
+                                    <p className="font-black text-sm md:text-base uppercase tracking-wider">
+                                        Welcome to the Official Portal of the Municipality of Cordova
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Link 
-                                    href="/community/events"
-                                    className="bg-white text-red-600 px-4 py-2 md:px-6 md:py-2 rounded-full font-bold hover:bg-gray-100 transition-colors text-sm md:text-base whitespace-nowrap flex items-center gap-2 shadow-lg"
+                            <div className="flex items-center gap-4">
+                                <Link
+                                    href="/community/news"
+                                    className="bg-white text-red-700 px-6 py-2 rounded-lg font-black hover:bg-gray-100 transition-colors text-xs uppercase tracking-widest whitespace-nowrap flex items-center gap-2 shadow"
                                 >
-                                    View Details
+                                    Latest News
                                     <ChevronRight className="w-4 h-4" />
                                 </Link>
-                                <button 
+                                <button
                                     onClick={() => setShowBanner(false)}
-                                    className="text-white/80 hover:text-white hover:bg-white/20 p-2 rounded-lg transition-colors flex-shrink-0"
+                                    className="text-white/60 hover:text-white p-2 transition-colors flex-shrink-0"
                                     aria-label="Close banner"
                                 >
                                     <X className="w-5 h-5" />
@@ -185,184 +171,111 @@ const HomeGuestPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* Hero Section */}
-                <section className="relative py-20 px-4 dark:bg-transparent">
-                    <div className="max-w-7xl mx-auto text-center">
-                        <h1 className="text-4xl md:text-6xl font-black text-red-900 dark:text-white mb-4">
-                            Stay Informed. Stay Connected.
+                {/* Hero Section - Flat & Wide */}
+                <section className="relative py-24 px-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <div className="maximize-width text-center">
+                        <h1 className="text-5xl md:text-8xl font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tighter">
+                            Welcome to Cordova!
                         </h1>
-                        <p className="text-lg md:text-xl text-red-800 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-                            Your one-stop portal for community updates, safety alerts, and local events.
+                        <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-12 max-w-4xl mx-auto font-medium">
+                            The official digital gateway for community updates, municipal services, and public safety.
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link 
+                        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                            <Link
                                 href="/community/announcements"
-                                className="bg-red-900 text-white px-8 py-4 rounded-full font-bold hover:bg-red-800 transition shadow-lg"
+                                className="bg-red-700 text-white px-12 py-5 rounded-lg font-black hover:bg-red-800 transition uppercase tracking-widest text-sm shadow-md"
                             >
-                                View Announcements
+                                Public Announcements
                             </Link>
-                            <Link 
+                            <Link
                                 href="/rescue-desk"
-                                className="bg-red-800 text-white px-8 py-4 rounded-full font-bold hover:bg-red-700 transition shadow-lg"
+                                className="border-4 border-red-700 text-red-700 dark:text-red-500 bg-white dark:bg-gray-900 px-12 py-5 rounded-lg font-black hover:bg-red-50 transition uppercase tracking-widest text-sm shadow-sm"
                             >
-                                Emergency Contacts
+                                Emergency Services
                             </Link>
                         </div>
                     </div>
                 </section>
 
-                {/* Announcements Carousel Section */}
-                <section className="py-12 px-4">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="flex items-center gap-6">
-                            {/* Left Navigation Button */}
-                            {!loading && announcements.length > 0 && (
-                                <button
-                                    onClick={() => scroll('left')}
-                                    className="flex-shrink-0 text-red-900 dark:text-white hover:text-red-700 dark:hover:text-red-400 transition-all duration-300 hover:scale-110 z-10"
-                                    aria-label="Previous"
-                                >
-                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
-                                    </svg>
-                                </button>
-                            )}
-
-                            {/* Carousel Container */}
-                            <div className="flex-1 overflow-hidden">
-
+                {/* Announcements Carousel Section - Wide & Flat */}
+                <section className="py-12 px-4 bg-white dark:bg-gray-900">
+                    <div className="maximize-width">
                         {loading ? (
-                            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                                {[1, 2, 3, 4, 5, 6].map((i) => (
-                                    <div key={i} className="min-w-[280px] h-[380px] bg-white dark:bg-gray-700 rounded-xl shadow-lg animate-pulse">
-                                        <div className="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-xl"></div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div 
-                                ref={carouselRef}
-                                onMouseDown={handleMouseDown}
-                                onMouseMove={handleMouseMove}
-                                onMouseUp={handleMouseUp}
-                                onMouseLeave={handleMouseLeave}
-                                className={`flex gap-6 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-red-900 scrollbar-track-red-100 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} select-none`}
-                            >
-                                {announcements.map((item) => (
-                                    <div 
+                            <div className="w-full h-[500px] bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse"></div>
+                        ) : announcements.length > 0 && (
+                            <Carousel>
+                                {announcements.map((item, index) => (
+                                    <HighPriorityCard
                                         key={item.id}
-                                        onClick={(e) => handleCardClick(e, item)}
-                                        className="min-w-[280px] md:min-w-[320px] flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group transform hover:-translate-y-2 cursor-pointer"
-                                    >
-                                        <div 
-                                            className="w-full h-[400px] bg-cover bg-center relative"
-                                            style={{ backgroundImage: `url(${item.imageUrl})` }}
-                                        >
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                                <h3 className="text-lg font-bold mb-2 line-clamp-2">
-                                                    {item.title}
-                                                </h3>
-                                                <p className="text-sm text-white/80 line-clamp-2">
-                                                    {item.body}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        id={item.id}
+                                        title={item.title}
+                                        description={item.body}
+                                        imageUrl={item.imageUrl}
+                                        date={item.date}
+                                        category={item.category}
+                                        currentSlide={0}
+                                        index={index}
+                                        onClick={() => router.push(`/community/${item.type}/${slugify(item.title)}`)}
+                                    />
                                 ))}
-                            </div>
+                            </Carousel>
                         )}
-                            </div>
-
-                            {/* Right Navigation Button */}
-                            {!loading && announcements.length > 0 && (
-                                <button
-                                    onClick={() => scroll('right')}
-                                    className="flex-shrink-0 text-red-900 dark:text-white hover:text-red-700 dark:hover:text-red-400 transition-all duration-300 hover:scale-110 z-10"
-                                    aria-label="Next"
-                                >
-                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </button>
-                            )}
-                        </div>
                     </div>
                 </section>
 
-                {/* Featured Posts Section */}
+                {/* Featured Posts Section - Flat & Wide - 2-gap spacing policy */}
                 {!loadingFeatured && featuredPosts.length > 0 && (
-                    <section className="py-12 px-4 bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-900">
-                        <div className="max-w-7xl mx-auto">
-                            <div className="text-center mb-8">
-                                <div className="inline-block bg-yellow-400 text-yellow-900 px-4 py-1 rounded-full text-sm font-bold mb-3">
-                                    ⭐ FEATURED
-                                </div>
-                                <h2 className="text-3xl md:text-4xl font-black text-red-900 dark:text-white mb-2">
-                                    Featured Events & Updates
+                    <section className="py-20 px-4 bg-white dark:bg-gray-900">
+                        <div className="maximize-width">
+                            <div className="mb-12 border-l-8 border-red-700 pl-6">
+                                <h2 className="text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                                    Latest Featured Updates
                                 </h2>
-                                <p className="text-gray-600 dark:text-gray-400">
-                                    Don't miss these important highlights from our community
+                                <p className="text-gray-600 dark:text-gray-400 font-medium">
+                                    Important news and upcoming events from the municipality.
                                 </p>
                             </div>
 
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {featuredPosts.map((post) => (
-                                    <Link 
+                                    <Link
                                         key={post.id}
-                                        href={`/community/${post.type}/${post.id}`} 
-                                        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group cursor-pointer block"
+                                        href={`/community/${post.type}/${slugify(post.title)}`}
+                                        className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-800 hover:shadow-lg transition-all group cursor-pointer block"
                                     >
                                         {post.imageUrl && (
-                                            <div className="relative h-48 overflow-hidden">
-                                                <img 
-                                                    src={post.imageUrl} 
+                                            <div className="relative h-64 overflow-hidden">
+                                                <img
+                                                    src={post.imageUrl}
                                                     alt={post.title}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                                                 />
-                                                <div className="absolute top-3 left-3">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                                                        post.type === 'event' ? 'bg-purple-500 text-white' :
-                                                        post.type === 'announcement' ? 'bg-blue-500 text-white' :
-                                                        'bg-green-500 text-white'
-                                                    }`}>
-                                                        {post.type?.toUpperCase()}
+                                                <div className="absolute top-0 left-0">
+                                                    <span className={`px-4 py-1 font-bold text-[10px] uppercase tracking-widest ${post.type === 'event' ? 'bg-blue-700 text-white' :
+                                                        post.type === 'announcement' ? 'bg-red-700 text-white' :
+                                                            'bg-gray-700 text-white'
+                                                        }`}>
+                                                        {post.type}
                                                     </span>
                                                 </div>
-                                                {post.priority === 'high' && (
-                                                    <div className="absolute top-3 right-3">
-                                                        <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-                                                            HIGH PRIORITY
-                                                        </span>
-                                                    </div>
-                                                )}
                                             </div>
                                         )}
-                                        <div className="p-6">
-                                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                                        <div className="p-10">
+                                            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 uppercase tracking-tight leading-tight group-hover:text-red-700 transition-colors">
                                                 {post.title}
                                             </h3>
-                                            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-3">
+                                            <p className="text-gray-500 dark:text-gray-400 text-sm mb-8 line-clamp-3 leading-relaxed font-medium">
                                                 {post.content}
                                             </p>
-                                            {post.location && (
-                                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    </svg>
-                                                    {post.location}
-                                                </div>
-                                            )}
-                                            {post.createdAt && (
-                                                <div className="text-xs text-gray-400 dark:text-gray-500">
-                                                    {new Date(post.createdAt).toLocaleDateString('en-US', { 
-                                                        year: 'numeric', 
-                                                        month: 'short', 
-                                                        day: 'numeric' 
-                                                    })}
-                                                </div>
-                                            )}
+                                            <div className="flex items-center justify-between pt-6 border-t border-gray-50 dark:border-gray-800">
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-700 flex items-center gap-2">
+                                                    Read More
+                                                    <ChevronRight className="w-4 h-4" />
+                                                </span>
+                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                    {new Date(post.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                                                </span>
+                                            </div>
                                         </div>
                                     </Link>
                                 ))}
@@ -371,151 +284,163 @@ const HomeGuestPage: React.FC = () => {
                     </section>
                 )}
 
-                {/* About Cordova Section */}
-                <section className="py-16 px-4">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl md:text-4xl font-black text-red-900 dark:text-white mb-4">
-                                About Cordova
+                {/* Restructured Newspaper Frontpage Section */}
+                <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800/50 border-t border-b border-gray-200 dark:border-gray-800">
+                    <div className="maximize-width">
+                        {/* Newspaper Banner */}
+                        <div className="text-center mb-16 border-b-4 border-double border-red-700 pb-10">
+                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-red-700 mb-4">Official Municipal Gazette</h2>
+                            <h1 className="text-4xl md:text-5xl font-extrabold uppercase tracking-tighter text-gray-900 dark:text-white">
+                                Cordova Public Digest
+                            </h1>
+                            <p className="text-xs text-gray-500 mt-2 font-mono">
+                                Vol. LVIII • Cordova Public Information Office • Published {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                            </p>
+                        </div>
+
+                        {/* 3-Column Newspaper Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 divide-y lg:divide-y-0 lg:divide-x divide-gray-300 dark:divide-gray-700">
+
+                            {/* Column 1: Services */}
+                            <div className="flex flex-col space-y-6 pb-8 lg:pb-0 lg:pr-8">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-red-700 text-white p-2 rounded-lg">
+                                        <Building2 size={24} />
+                                    </div>
+                                    <h3 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
+                                        E-Services Portal
+                                    </h3>
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed font-medium">
+                                    Guidelines and procedures for citizens, business owners, and regulatory clearances. Fast, transparent information dissemination.
+                                </p>
+
+                                <div className="space-y-4 pt-4">
+                                    {services.map((s) => (
+                                        <div
+                                            key={s.id}
+                                            onClick={() => router.push(`/services/${slugify(s.name || s.title || '')}`)}
+                                            className="p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-red-500 transition-colors cursor-pointer group"
+                                        >
+                                            <span className="text-[10px] font-black text-red-700 uppercase tracking-widest">{s.category || 'Regulatory'}</span>
+                                            <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-red-700 transition-colors uppercase text-sm mt-1">{s.name || s.title}</h4>
+                                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{s.description}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <Link
+                                    href="/services"
+                                    className="inline-flex items-center gap-2 text-xs font-black text-red-700 uppercase tracking-widest mt-auto pt-4 hover:underline"
+                                >
+                                    Browse All Services <ArrowRight size={14} />
+                                </Link>
+                            </div>
+
+                            {/* Column 2: Rescue Desk */}
+                            <div className="flex flex-col space-y-6 pt-8 lg:pt-0 lg:px-8">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-red-700 text-white p-2 rounded-lg">
+                                        <Siren size={24} />
+                                    </div>
+                                    <h3 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
+                                        Rescue Desk
+                                    </h3>
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed font-medium">
+                                    Emergency hotlines and rapid-assistance directories. Direct public alerts for typhoons, medical assistance, and civic security.
+                                </p>
+
+                                <div className="space-y-4 pt-4">
+                                    {hotlines.map((h) => (
+                                        <div
+                                            key={h.id}
+                                            onClick={() => router.push('/rescue-desk')}
+                                            className="p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-red-500 transition-colors cursor-pointer group"
+                                        >
+                                            <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-red-700 transition-colors uppercase text-sm">{h.title}</h4>
+                                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{h.description}</p>
+                                            <div className="mt-2 text-xs font-black text-red-700 uppercase tracking-widest font-mono">
+                                                Hotline: {h.contact}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <Link
+                                    href="/rescue-desk"
+                                    className="inline-flex items-center gap-2 text-xs font-black text-red-700 uppercase tracking-widest mt-auto pt-4 hover:underline"
+                                >
+                                    Rescue Desk Portal <ArrowRight size={14} />
+                                </Link>
+                            </div>
+
+                            {/* Column 3: Barangay Portal */}
+                            <div className="flex flex-col space-y-6 pt-8 lg:pt-0 lg:pl-8">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-red-700 text-white p-2 rounded-lg">
+                                        <Landmark size={24} />
+                                    </div>
+                                    <h3 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
+                                        Barangay Portal
+                                    </h3>
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed font-medium">
+                                    Explore the 13 administrative units of Cordova. View local profiles, geographical summaries, and specific community updates.
+                                </p>
+
+                                <div className="space-y-4 pt-4">
+                                    {barangayList.map((b) => (
+                                        <div
+                                            key={b.id}
+                                            onClick={() => router.push(`/barangay/${b.id}`)}
+                                            className="p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-red-500 transition-colors cursor-pointer group"
+                                        >
+                                            <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-red-700 transition-colors uppercase text-sm">Barangay {b.name}</h4>
+                                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{b.info.description}</p>
+                                            <span className="inline-block text-[9px] bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded mt-2 font-mono">
+                                                ZIP: {b.info.zipCode}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <Link
+                                    href="/barangay"
+                                    className="inline-flex items-center gap-2 text-xs font-black text-red-700 uppercase tracking-widest mt-auto pt-4 hover:underline"
+                                >
+                                    Browse All Barangays <ArrowRight size={14} />
+                                </Link>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                {/* Discover Cordova - Premium About CTA Banner (Item 6: High Visibility About Page) */}
+                <section className="py-16 px-4 bg-gradient-to-r from-red-950 via-red-900 to-red-950 text-white border-y border-red-900">
+                    <div className="maximize-width flex flex-col md:flex-row items-center justify-between gap-8">
+                        <div className="space-y-3 max-w-3xl">
+                            <span className="inline-block bg-red-700 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] rounded">
+                                Institutional Profile
+                            </span>
+                            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
+                                Discover Our Municipal Profile & History
                             </h2>
-                            <p className="text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-                                A progressive coastal municipality on Mactan Island, Cebu, dedicated to sustainable development and quality life for all residents.
+                            <p className="text-red-200 text-lg leading-relaxed font-medium">
+                                Meet the Sangguniang Bayan officials, check executive department heads, review the vision and mission, and read the historical timeline of the Municipality of Cordova.
                             </p>
                         </div>
-
-                        {/* Vision & Mission - Minimalist Cards */}
-                        <div className="grid md:grid-cols-2 gap-6 mb-12">
-                            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-red-100 dark:border-gray-700">
-                                <h3 className="text-2xl font-bold text-red-900 dark:text-white mb-3">Vision</h3>
-                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                    A progressive, resilient, and sustainable coastal municipality where every resident enjoys quality life through good governance, economic prosperity, and environmental stewardship.
-                                </p>
-                            </div>
-                            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-red-100 dark:border-gray-700">
-                                <h3 className="text-2xl font-bold text-red-900 dark:text-white mb-3">Mission</h3>
-                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                    To deliver efficient and effective public services, promote inclusive development, protect the environment, and empower communities through transparent governance and active citizen participation.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Key Facts - Compact Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                            <div className="text-center p-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl">
-                                <div className="text-3xl font-black text-red-900 dark:text-red-400 mb-2">32.5</div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">Square Kilometers</div>
-                            </div>
-                            <div className="text-center p-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl">
-                                <div className="text-3xl font-black text-red-900 dark:text-red-400 mb-2">13</div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">Barangays</div>
-                            </div>
-                            <div className="text-center p-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl">
-                                <div className="text-3xl font-black text-red-900 dark:text-red-400 mb-2">67K+</div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">Population</div>
-                            </div>
-                            <div className="text-center p-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl">
-                                <div className="text-3xl font-black text-red-900 dark:text-red-400 mb-2">1864</div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">Established</div>
-                            </div>
-                        </div>
-
-                        {/* Quick About Points */}
-                        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
-                            <div className="grid md:grid-cols-3 gap-6 text-center md:text-left">
-                                <div>
-                                    <h4 className="font-bold text-red-900 dark:text-red-400 mb-2">Economy</h4>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Fishing, agriculture, manufacturing, and growing tourism sector
-                                    </p>
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-red-900 dark:text-red-400 mb-2">Tourism</h4>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Gilutongan Marine Sanctuary, island hopping, and eco-tourism
-                                    </p>
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-red-900 dark:text-red-400 mb-2">Culture</h4>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        The Dinagat Festival in Cordova, Cebu is a vibrant cultural and religious celebration held every August 14, honoring the town’s fishing heritage, maritime ecosystem, and devotion to its patron saint, San Roque.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Learn More Link */}
-                        <div className="text-center mt-8">
-                            <Link 
-                                href="/about"
-                                className="inline-flex items-center gap-2 text-red-900 dark:text-red-400 font-bold hover:text-red-700 dark:hover:text-red-300 transition-colors"
-                            >
-                                Learn More About Cordova
-                                <ChevronRight className="w-5 h-5" />
-                            </Link>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Bottom Action Sections */}
-                <section className="py-16 px-4 bg-white/50 dark:bg-gray-800/50">
-                    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Service Request */}
-                        <Link 
-                            href="/services"
-                            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 group text-center"
+                        <Link
+                            href="/about"
+                            className="bg-white text-red-950 px-10 py-5 font-black hover:bg-gray-100 transition-colors uppercase tracking-widest text-sm rounded-lg whitespace-nowrap shadow-lg flex items-center gap-2 group"
                         >
-                            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                                {/* Clipboard icon for services */}
-                                <svg className="w-8 h-8 text-blue-900 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <rect x="9" y="2" width="6" height="4" rx="1" strokeWidth={2} />
-                                    <rect x="4" y="6" width="16" height="16" rx="2" strokeWidth={2} />
-                                    <path strokeWidth={2} d="M9 2v2a3 3 0 006 0V2" />
-                                </svg>
-                            </div>
-                            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
-                                Service Request
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300">
-                                Request municipal services or report community concerns
-                            </p>
-                        </Link>
-
-                        {/* Emergency Hotlines */}
-                        <Link 
-                            href="/rescue-desk"
-                            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 group text-center"
-                        >
-                            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                                <Phone className="w-8 h-8 text-red-900 dark:text-red-400" />
-                            </div>
-                            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
-                                Emergency Hotlines
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300">
-                                Access 24/7 emergency contact numbers
-                            </p>
-                        </Link>
-
-                        {/* Visit Barangay */}
-                        <Link 
-                            href="/barangay"
-                            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 group text-center"
-                        >
-                            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                                {/* Use a "Users" icon to represent community/barangay */}
-                                <svg className="w-8 h-8 text-green-900 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m9-7a4 4 0 11-8 0 4 4 0 018 0zm6 8a4 4 0 00-3-3.87M3 16a4 4 0 013-3.87" />
-                                </svg>
-                            </div>
-                            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
-                                Visit Barangay
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300">
-                                Explore information and updates from each barangay
-                            </p>
+                            Visit About Page
+                            <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                         </Link>
                     </div>
                 </section>
+
             </div>
         </PageTransition>
     );

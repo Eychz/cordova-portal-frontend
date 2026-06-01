@@ -40,21 +40,8 @@ export const barangays: BarangayInfoType[] = [
             ],
             zipCode: "6017"
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Juan Dela Cruz", imageUrl: "/municipal-logo.jpg" },
-            { position: "Kagawad", name: "Maria Santos", imageUrl: "/municipal-logo.jpg" },
-            { position: "Kagawad", name: "Pedro Reyes", imageUrl: "/municipal-logo.jpg" },
-            { position: "Kagawad", name: "Ana Garcia", imageUrl: "/municipal-logo.jpg" },
-            { position: "Kagawad", name: "Jose Rodriguez", imageUrl: "/municipal-logo.jpg" },
-            { position: "Kagawad", name: "Carmen Lopez", imageUrl: "/municipal-logo.jpg" },
-            { position: "Kagawad", name: "Ricardo Martinez", imageUrl: "/municipal-logo.jpg" },
-            { position: "SK Chairperson", name: "Miguel Torres", imageUrl: "/municipal-logo.jpg" }
-        ],
-        skOfficials: [
-            { position: "SK Chairperson", name: "Miguel Torres", imageUrl: "/municipal-logo.jpg" },
-            { position: "SK Kagawad", name: "Sofia Ramos", imageUrl: "/municipal-logo.jpg" },
-            { position: "SK Kagawad", name: "Luis Hernandez", imageUrl: "/municipal-logo.jpg" }
-        ]
+        barangayOfficials: [],
+        skOfficials: []
     },
     {
         id: 'bangbang',
@@ -73,9 +60,7 @@ export const barangays: BarangayInfoType[] = [
             ],
             zipCode: "6017"
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Antonio Luna", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     },
     {
@@ -92,9 +77,7 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [],
             zipCode: "6017"
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Jose Rizal", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     },
     {
@@ -111,13 +94,8 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [{ title: 'Beach Resorts', description: 'Popular weekend destinations for locals and tourists.' }],
             zipCode: '6017'
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Andres Bonifacio", imageUrl: "/municipal-logo.jpg" },
-            { position: "Kagawad", name: "Melchora Aquino", imageUrl: "/municipal-logo.jpg" }
-        ],
-        skOfficials: [
-            { position: "SK Chairperson", name: "Gregorio del Pilar", imageUrl: "/municipal-logo.jpg" }
-        ]
+        barangayOfficials: [],
+        skOfficials: []
     },
     {
         id: 'cogon',
@@ -133,9 +111,7 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [{ title: 'Local Farms', description: 'Providing fresh vegetables and fruits to the municipality.' }],
             zipCode: '6017'
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Francisco Balagtas", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     },
     {
@@ -152,9 +128,7 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [{ title: 'Community Park', description: 'A space for families to gather and relax.' }],
             zipCode: '6017'
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Marcelo H. del Pilar", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     },
     {
@@ -171,9 +145,7 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [{ title: 'Mangrove Boardwalk', description: 'A scenic walk through the protected mangrove forests.' }],
             zipCode: '6017'
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Emilio Aguinaldo", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     },
     {
@@ -190,9 +162,7 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [{ title: 'Local Commerce', description: 'A hub for small businesses and local entrepreneurs.' }],
             zipCode: '6017'
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Gabriela Silang", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     },
     {
@@ -209,9 +179,7 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [{ title: 'Marine Sanctuary', description: 'A protected area with diverse coral reefs and fish species.' }],
             zipCode: '6017'
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Lapu-Lapu", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     },
     {
@@ -228,9 +196,7 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [{ title: 'Viewpoints', description: 'Scenic spots overlooking the coastline and town center.' }],
             zipCode: '6017'
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Juan Luna", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     },
     {
@@ -247,9 +213,7 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [{ title: 'Multi-purpose Hall', description: 'A center for community gatherings and activities.' }],
             zipCode: '6017'
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Apolinario Mabini", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     },
     {
@@ -266,9 +230,7 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [{ title: 'Municipal Plaza', description: 'The central gathering place for town celebrations.' }],
             zipCode: '6017'
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Mariano Ponce", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     },
     {
@@ -285,9 +247,7 @@ export const barangays: BarangayInfoType[] = [
             keyFeatures: [{ title: 'Community Garden', description: 'A collaborative space for urban gardening.' }],
             zipCode: '6017'
         },
-        barangayOfficials: [
-            { position: "Barangay Captain", name: "Graciano Lopez Jaena", imageUrl: "/municipal-logo.jpg" }
-        ],
+        barangayOfficials: [],
         skOfficials: []
     }
 ];

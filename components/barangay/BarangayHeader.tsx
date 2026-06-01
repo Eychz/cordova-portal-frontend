@@ -10,17 +10,26 @@ interface BarangayHeaderProps {
 
 const BarangayHeader: React.FC<BarangayHeaderProps> = ({ name, tagline, backgroundImage = '/municipality-bg.jpg' }) => {
     return (
-        <div className="relative bg-gradient-to-r from-red-900 to-red-800 text-white py-16 overflow-hidden">
+        <header className="bg-gray-900 text-white pt-32 pb-20 border-b-8 border-red-700 relative overflow-hidden">
             {/* Background Image Overlay */}
             <div 
-                className="absolute inset-0 bg-cover bg-center opacity-20"
+                className="absolute inset-0 bg-cover bg-center opacity-10"
                 style={{ backgroundImage: `url('${backgroundImage}')` }}
             />
-            <div className="max-w-7xl mx-auto px-4 relative z-10">
-                <h1 className="text-6xl md:text-7xl font-black mb-4">BARANGAY {name.toUpperCase()}</h1>
-                <p className="text-xl text-white/80">{tagline}</p>
+            <div className="maximize-width px-4 relative z-10">
+                <div className="space-y-4">
+                    <div className="inline-flex items-center gap-2 bg-red-700 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
+                        Village Authority Profile
+                    </div>
+                    <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+                        Barangay {name}
+                    </h1>
+                    <p className="text-xl text-gray-400 font-medium max-w-2xl">
+                        {tagline}
+                    </p>
+                </div>
             </div>
-        </div>
+        </header>
     );
 };
 

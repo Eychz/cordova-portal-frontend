@@ -11,6 +11,7 @@ interface NormalPriorityEventCardProps {
     date: string;
     location: string;
     status: 'featured' | 'upcoming' | 'done';
+    authorName?: string;
     onClick: () => void;
 }
 
@@ -22,6 +23,7 @@ const NormalPriorityEventCard: React.FC<NormalPriorityEventCardProps> = ({
     date,
     location,
     status,
+    authorName,
     onClick
 }) => {
     const statusConfig: Record<string, { text: string; color: string }> = {
@@ -37,7 +39,7 @@ const NormalPriorityEventCard: React.FC<NormalPriorityEventCardProps> = ({
             onClick={onClick}
             className="group cursor-pointer min-w-0"
         >
-            <div className="relative bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl rounded-2xl overflow-hidden border border-white/20 dark:border-gray-700/30 shadow-xl hover:shadow-2xl hover:border-white/40 dark:hover:border-gray-600/50 transition-all duration-300">
+            <div className="relative bg-white dark:bg-gray-800 rounded-none overflow-hidden border border-gray-200 dark:border-gray-700 premium-flag-card">
                 {/* Gradient overlay for glass effect */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none"></div>
                 
@@ -64,9 +66,14 @@ const NormalPriorityEventCard: React.FC<NormalPriorityEventCardProps> = ({
                         {description}
                     </p>
                     <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
-                        <div className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            <span className="text-xs">{date}</span>
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                <span className="text-[10px]">{date}</span>
+                            </div>
+                            {authorName && (
+                                <span className="text-[9px] font-bold uppercase tracking-tighter opacity-70">By {authorName}</span>
+                            )}
                         </div>
                         <button 
                             className="text-red-600 dark:text-red-400 font-semibold flex items-center gap-1"

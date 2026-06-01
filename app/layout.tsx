@@ -2,7 +2,7 @@ import React from 'react';
 import './globals.css';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { Toaster } from 'react-hot-toast';
-// Floating messages button removed per admin request
+import ScrollToTop from '../components/ScrollToTop';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -29,6 +29,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </head>
             <body className="bg-white dark:bg-gray-900 transition-colors duration-300">
                 <ThemeProvider>
+                    <ScrollToTop />
                     {children}
                     <Toaster 
                         position="top-right"

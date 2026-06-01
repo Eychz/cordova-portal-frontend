@@ -1,19 +1,21 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { MapPin, Calendar, Clock, CalendarPlus, X } from 'lucide-react';
-import { loadData, loadDataAsync, initialPosts, STORAGE_KEYS, Post } from '@/data/adminData';
 import Carousel from '@/components/Carousel';
 import { HighPriorityCard, NormalPriorityEventCard, LowPriorityEventCard } from '@/components/cards';
+import { postsApi } from '@/lib/postsApi';
+import { Post } from '@/data/adminData';
+import { slugify } from '@/utils/slugify';
+import { Search, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 
-interface Event {
+interface EventItem {
     id: number;
     uuid?: string;
+    title: string; // Map name to title for standard cards
     name: string;
     description: string;
     content: string;
@@ -21,593 +23,408 @@ interface Event {
     date: string;
     time: string;
     imageUrl: string;
-    priority: 'high' | 'moderate' | 'low';
+    category: string;
     status: 'featured' | 'upcoming' | 'done';
+    type: string;
+    authorName?: string;
+    priority: string;
+    createdAt: string;
 }
 
 const EventsPage: React.FC = () => {
-
-
-    const [events, setEvents] = useState<Event[]>([]);
-    const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
-    const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
-    const [lowPriorityEvents, setLowPriorityEvents] = useState<Event[]>([]);
-    const [currentSlide, setCurrentSlide] = useState(0);
+    const router = useRouter();
+    const [events, setEvents] = useState<EventItem[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-    const [addingToCalendar, setAddingToCalendar] = useState<number | null>(null);
-    const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-    const [selectedDate, setSelectedDate] = useState<string>('All');
-    const [selectedStatus, setSelectedStatus] = useState<string>('All');
-    const [currentNormalPage, setCurrentNormalPage] = useState(1);
-    const [currentLowPage, setCurrentLowPage] = useState(1);
+    const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('All');
+    const [searchQuery, setSearchQuery] = useState('');
 
-    // Reset pagination when events data changes to prevent "no results" state
-    useEffect(() => {
-        setCurrentNormalPage(1);
-        setCurrentLowPage(1);
-    }, [events, lowPriorityEvents]);
+    // Pagination states
+    const [currentSearchPage, setCurrentSearchPage] = useState(1);
+    const [currentRow1Page, setCurrentRow1Page] = useState(1);
+    const [currentRow2Page, setCurrentRow2Page] = useState(1);
+    const [currentLowPriorityPage, setCurrentLowPriorityPage] = useState(1);
 
-    const HIGH_PRIORITY_LIMIT = 5;
-    const NORMAL_PRIORITY_LIMIT = 12;
-    const LOW_PRIORITY_LIMIT = 9;
+    const GRID_LIMIT = 4;
+    const SEARCH_LIMIT = 12;
+    const LOW_PRIORITY_LIMIT = 6;
 
     useEffect(() => {
-        // Load events from admin dashboard
         const loadEvents = async () => {
-            const postsApi = await import('@/lib/postsApi');
-            let adminPosts;
             try {
-                adminPosts = await postsApi.postsApi.getAll('event');
-            } catch (err: any) {
-                console.warn('Failed to fetch from API, falling back to localStorage', err);
-                adminPosts = await loadDataAsync(STORAGE_KEYS.POSTS, initialPosts);
-            }
-            const eventsOnly = adminPosts
-                .filter((post: Post) => post.type === 'event' && post.status === 'published')
-                .map((post: Post) => ({
-                    id: post.id,
+                setLoading(true);
+                const adminPosts = await postsApi.getAll({ type: 'event' });
+
+                // Sort by createdAt descending (most recent first)
+                const sortedPosts = adminPosts.sort((a: Post, b: Post) =>
+                    new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+                );
+
+                const mappedEvents: EventItem[] = sortedPosts.map((post: Post) => ({
+                    id: post.id!,
                     uuid: post.uuid,
+                    title: post.title,
                     name: post.title,
-                    description: post.content.slice(0, 100),
+                    description: post.content.slice(0, 150) + '...',
                     content: post.content,
-                    location: post.location || 'Cordova Sports Complex',
+                    location: post.location || 'Cordova Municipal Hall',
                     date: post.eventDate ? new Date(post.eventDate).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
-                    }) : new Date(post.createdAt).toLocaleDateString('en-US', {
+                    }) : new Date(post.createdAt!).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                     }),
-                    time: post.eventTime || '10:00 AM',
-                    imageUrl: post.imageUrl || `https://picsum.photos/seed/${post.id + 200}/800/600`,
-                    priority: (post.priority === 'high' ? 'high' : post.priority === 'low' ? 'low' : 'moderate') as 'high' | 'moderate' | 'low',
-                    status: (post.eventStatus || 'upcoming') as 'featured' | 'upcoming' | 'done'
+                    time: post.eventTime || 'TBA',
+                    imageUrl: post.imageUrl || `https://picsum.photos/seed/${post.id! + 200}/800/600`,
+                    category: post.category || 'General Event',
+                    status: (post.eventStatus || 'upcoming') as 'featured' | 'upcoming' | 'done',
+                    type: post.type,
+                    authorName: post.authorName,
+                    priority: post.priority || 'low_priority',
+                    createdAt: post.createdAt!
                 }));
 
-            // Separate by priority
-            const highPriority = eventsOnly.filter((event: any) => {
-                const originalPost = adminPosts.find((p: Post) => p.id === event.id);
-                return originalPost?.priority === 'high';
-            }).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-            const normalPriority = eventsOnly.filter((event: any) => {
-                const originalPost = adminPosts.find((p: Post) => p.id === event.id);
-                return originalPost?.priority === 'normal' || !originalPost?.priority;
-            }).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-            const lowPriority = eventsOnly.filter((event: any) => {
-                const originalPost = adminPosts.find((p: Post) => p.id === event.id);
-                return originalPost?.priority === 'low';
-            }).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-            // High priority only in carousel (max 3)
-            // Dedupe by id to avoid duplicate keys when rendering
-            const dedupedHighPriority = Array.from(new Map(highPriority.map((item: any) => [item.id, item])).values());
-            if (dedupedHighPriority.length < highPriority.length) {
-                console.warn('Duplicate event IDs found in featured events; duplicates were removed.');
+                setEvents(mappedEvents);
+            } catch (err) {
+                console.error('Failed to load events:', err);
+            } finally {
+                setLoading(false);
             }
-            setFeaturedEvents(dedupedHighPriority.slice(0, 3));
-
-            // Normal priority in main section
-            setEvents(normalPriority);
-
-            // Low priority in bottom section
-            setLowPriorityEvents(lowPriority);
-
-            // Combined for filtering
-            setFilteredEvents([...normalPriority, ...lowPriority]);
-
-            setLoading(false);
         };
 
         loadEvents();
-
-        // Set up listener for localStorage changes (real-time updates)
-        const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === STORAGE_KEYS.POSTS) {
-                loadEvents();
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
-        // Also listen for custom event for same-tab updates
-        const handleCustomUpdate = () => loadEvents();
-        window.addEventListener('adminDataUpdated', handleCustomUpdate);
-
-        // Auto-slide carousel every 5 seconds
-        const carouselInterval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % 3);
-        }, 5000);
-
-        // Countdown timer - Calculate to Christmas
-        const updateCountdown = () => {
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            let christmas = new Date(currentYear, 11, 25); // December 25
-
-            // If Christmas has passed this year, set to next year
-            if (now > christmas) {
-                christmas = new Date(currentYear + 1, 11, 25);
-            }
-
-            const diff = christmas.getTime() - now.getTime();
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            setCountdown({ days, hours, minutes, seconds });
-        };
-
-        updateCountdown(); // Initial call
-        const countdownInterval = setInterval(updateCountdown, 1000);
-
-        return () => {
-            clearInterval(countdownInterval);
-            clearInterval(carouselInterval);
-            window.removeEventListener('storage', handleStorageChange);
-            window.removeEventListener('adminDataUpdated', handleCustomUpdate);
-        };
     }, []);
 
-    // Filter events based on date and status
-    useEffect(() => {
-        let filtered = [...events];
+    // Filter Logic
+    const isSearching = searchQuery.trim() !== '' || selectedStatusFilter !== 'All';
 
-        // Filter by status
-        if (selectedStatus !== 'All') {
-            filtered = filtered.filter(event => event.status === selectedStatus.toLowerCase());
-        }
+    const searchResults = useMemo(() => {
+        return events.filter(a => {
+            const matchesSearch = a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                a.description.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesStatus = selectedStatusFilter === 'All' || a.status === selectedStatusFilter.toLowerCase();
+            return matchesSearch && matchesStatus;
+        });
+    }, [events, searchQuery, selectedStatusFilter]);
 
-        // Filter by date
-        if (selectedDate !== 'All') {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+    // Data distribution for complex layout
+    const topCarouselPosts = events.slice(0, 10);
+    const row1CarouselPosts = events.filter(a => a.priority === 'row1_carousel').slice(0, 5);
+    const row1GridPosts = events.filter(a => a.priority === 'row1_grid');
+    const row2CarouselPosts = events.filter(a => a.priority === 'row2_carousel').slice(0, 5);
+    const row2GridPosts = events.filter(a => a.priority === 'row2_grid');
+    const lowPriorityPosts = events.filter(a => a.priority === 'low_priority');
 
-            filtered = filtered.filter(event => {
-                const eventDate = new Date(event.date);
-                eventDate.setHours(0, 0, 0, 0);
+    // Pagination calculations
+    const paginatedSearch = searchResults.slice((currentSearchPage - 1) * SEARCH_LIMIT, currentSearchPage * SEARCH_LIMIT);
+    const paginatedRow1Grid = row1GridPosts.slice((currentRow1Page - 1) * GRID_LIMIT, currentRow1Page * GRID_LIMIT);
+    const paginatedRow2Grid = row2GridPosts.slice((currentRow2Page - 1) * GRID_LIMIT, currentRow2Page * GRID_LIMIT);
+    const paginatedLowPriority = lowPriorityPosts.slice((currentLowPriorityPage - 1) * LOW_PRIORITY_LIMIT, currentLowPriorityPage * LOW_PRIORITY_LIMIT);
 
-                const daysDiff = Math.floor((eventDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const handleEventClick = (a: EventItem) => {
+        router.push(`/community/${a.type}/${slugify(a.title)}`);
+    };
 
-                if (selectedDate === 'Next 7 Days') {
-                    return daysDiff >= 0 && daysDiff <= 6;
-                } else if (selectedDate === 'Next 2 Weeks') {
-                    return daysDiff >= 0 && daysDiff <= 13;
-                } else if (selectedDate === 'Next Month') {
-                    return daysDiff >= 0 && daysDiff <= 29;
-                } else if (selectedDate === 'Next 3 Months') {
-                    return daysDiff >= 0 && daysDiff <= 89;
-                } else if (selectedDate === 'This Month') {
-                    return eventDate.getMonth() === today.getMonth() && eventDate.getFullYear() === today.getFullYear();
-                }
-                return true;
-            });
-        }
-
-        setFilteredEvents(filtered);
-    }, [selectedDate, selectedStatus, events]);
+    const PaginationControls = ({ currentPage, totalItems, limit, onPageChange }: { currentPage: number, totalItems: number, limit: number, onPageChange: (p: number) => void }) => {
+        const totalPages = Math.ceil(totalItems / limit);
+        if (totalPages <= 1) return null;
+        return (
+            <div className="flex items-center gap-4 mt-6">
+                <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <div className="flex gap-1">
+                    <button
+                        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                        className="p-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30"
+                    >
+                        <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                        disabled={currentPage === totalPages}
+                        className="p-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30"
+                    >
+                        <ChevronRight className="w-5 h-5" />
+                    </button>
+                </div>
+            </div>
+        );
+    };
 
     return (
-        <>
-            <Navbar activePage="events" />
-            <PageTransition>
-                <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col overflow-x-hidden">
-                    {/* Page Header with Countdown */}
-                    <div className="relative bg-gradient-to-r from-red-900 to-red-800 text-white py-16 overflow-hidden">
-                        {/* Background Image Overlay */}
-                        <div
-                            className="absolute inset-0 bg-cover opacity-20"
-                            style={{ backgroundImage: "url('/municipality-bg.jpg')", backgroundPosition: 'center top 30%' }}
-                        />
-                        <div className="max-w-7xl mx-auto px-4 relative z-10">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h1 className="text-6xl md:text-7xl font-black mb-4">EVENTS</h1>
-                                </div>
-                                {/* Countdown Timer with Christmas Background */}
-                                <div className="hidden md:block relative overflow-hidden rounded-2xl">
-                                    {/* Christmas Background Image */}
-                                    <div
-                                        className="absolute inset-0 bg-cover bg-center brightness-75"
-                                        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1543589077-47d81606c1bf?w=800&q=80')" }}
-                                    />
-                                    {/* Glass Effect Overlay with Blue Tint */}
-                                    <div className="absolute inset-0 backdrop-blur-lg bg-blue-900/40" />
+        <PageTransition>
+            <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
+                <Navbar activePage="Community" />
 
-                                    {/* Animated Christmas Effects - Santa Icons */}
-                                    <div className="absolute inset-0 pointer-events-none">
-                                        {/* Floating Santa 1 */}
-                                        <div className="absolute top-2 left-4 text-4xl animate-bounce" style={{ animationDuration: '3s' }}>🎅</div>
-                                        {/* Floating Santa 2 */}
-                                        <div className="absolute bottom-2 right-4 text-3xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>🎅</div>
-                                        {/* Snowflakes */}
-                                        <div className="absolute top-4 right-8 text-2xl animate-pulse" style={{ animationDuration: '2s' }}>❄️</div>
-                                        <div className="absolute bottom-4 left-8 text-xl animate-pulse" style={{ animationDuration: '3s', animationDelay: '0.5s' }}>❄️</div>
-                                        {/* Gift Box */}
-                                        <div className="absolute top-1/2 left-2 text-2xl animate-pulse" style={{ animationDuration: '2.5s' }}>🎁</div>
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className="relative px-8 py-4 text-center">
-                                        <div className="text-5xl font-black mb-2 drop-shadow-2xl">
-                                            {countdown.days}d {countdown.hours}h:{countdown.minutes}m
-                                        </div>
-                                        <div className="text-sm font-bold drop-shadow-md">CHRISTMAS DAY</div>
-                                    </div>
+                {/* Formal Government Header */}
+                <header className="bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-700">
+                    <div className="maximize-width px-4">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                            <div className="space-y-4">
+                                <div className="inline-flex items-center gap-2 bg-white text-red-800 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
+                                    Official Gazette
                                 </div>
+                                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+                                    Municipal Events
+                                </h1>
+                                <p className="text-xl text-white-400 font-medium max-w-2xl">
+                                    Official schedule of activities, community gatherings, and public ceremonies in the Municipality of Cordova.
+                                </p>
+                            </div>
+
+                            {/* Filter Bar */}
+                            <div className="bg-white/5 p-2 flex items-center gap-2 border border-white/10">
+                                <select
+                                    value={selectedStatusFilter}
+                                    onChange={(e) => { setSelectedStatusFilter(e.target.value); setCurrentSearchPage(1); }}
+                                    className="bg-white/5 border border-white/10 px-4 py-2 text-sm text-white focus:outline-none focus:border-red-700 cursor-pointer"
+                                >
+                                    <option value="All" className="text-gray-900">All Status</option>
+                                    <option value="Upcoming" className="text-gray-900">Upcoming</option>
+                                    <option value="Done" className="text-gray-900">Done</option>
+                                </select>
                             </div>
                         </div>
                     </div>
+                </header>
 
-                    <div className="max-w-[1400px] mx-auto w-full px-4 py-12 flex-1 min-w-0 md:min-w-[900px] lg:min-w-[1200px]">
-                        {/* Filters */}
-                        <div className="flex items-center gap-3 mb-6">
-                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Filter by:</span>
-                            <select
-                                value={selectedDate}
-                                onChange={(e) => setSelectedDate(e.target.value)}
-                                className="px-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                            >
-                                <option value="All">All Dates</option>
-                                <option value="Next 7 Days">Next 7 Days</option>
-                                <option value="Next 2 Weeks">Next 2 Weeks</option>
-                                <option value="This Month">This Month</option>
-                                <option value="Next Month">Next Month</option>
-                                <option value="Next 3 Months">Next 3 Months</option>
-                            </select>
-                            <select
-                                value={selectedStatus}
-                                onChange={(e) => setSelectedStatus(e.target.value)}
-                                className="px-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                            >
-                                <option value="All">All Status</option>
-                                <option value="Featured">Featured</option>
-                                <option value="Upcoming">Upcoming</option>
-                                <option value="Done">Done</option>
-                            </select>
+                <main className="flex-grow maximize-width px-4 py-16">
+                    {loading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                                <div key={i} className="h-96 bg-gray-100 dark:bg-gray-800 animate-pulse border border-gray-200 dark:border-gray-700"></div>
+                            ))}
                         </div>
-
-                        {loading ? (
-                            <div className="animate-pulse space-y-8">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    {[1, 2, 3, 4, 5].map(i => (
-                                        <div key={i} className="h-96 bg-gray-300 dark:bg-gray-700 rounded-xl"></div>
-                                    ))}
-                                </div>
+                    ) : isSearching ? (
+                        /* SEARCH MODE LAYOUT */
+                        <section className="mb-20">
+                            <div className="flex items-center gap-4 mb-10 border-b-2 border-gray-100 dark:border-gray-800 pb-6">
+                                <div className="w-2 h-10 bg-gray-900 dark:bg-gray-100"></div>
+                                <h2 className="text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
+                                    Search Results
+                                </h2>
                             </div>
-                        ) : (
-                            <>
-                                {/* Featured Events Carousel */}
-                                {featuredEvents.length > 0 && (
-                                    <Carousel>
-                                        {featuredEvents.map((event, index) => (
-                                            <HighPriorityCard
-                                                key={`${event.uuid ?? event.id}-${index}`}
+
+                            {paginatedSearch.length > 0 ? (
+                                <>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {paginatedSearch.map((event) => (
+                                            <NormalPriorityEventCard
+                                                key={event.id}
                                                 id={event.id}
-                                                title={event.name}
-                                                description={event.content}
-                                                imageUrl={event.imageUrl}
+                                                name={event.name}
+                                                description={event.description}
+                                                location={event.location}
                                                 date={event.date}
-                                                category="Featured Event"
-                                                currentSlide={currentSlide}
+                                                imageUrl={event.imageUrl}
+                                                status={event.status}
+                                                onClick={() => handleEventClick(event)}
+                                                authorName={event.authorName}
+                                            />
+                                        ))}
+                                    </div>
+                                    <PaginationControls
+                                        currentPage={currentSearchPage}
+                                        totalItems={searchResults.length}
+                                        limit={SEARCH_LIMIT}
+                                        onPageChange={setCurrentSearchPage}
+                                    />
+                                </>
+                            ) : (
+                                <div className="py-32 text-center bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700">
+                                    <Info className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                                    <p className="text-gray-500 font-black uppercase tracking-widest">No results found for your search.</p>
+                                </div>
+                            )}
+                        </section>
+                    ) : (
+                        /* COMPLEX LAYOUT (DEFAULT) */
+                        <>
+                            {/* TOP CAROUSEL: 10 Recent Posts */}
+                            {topCarouselPosts.length > 0 && (
+                                <section className="mb-20">
+                                    <Carousel hideControls={true} interval={5000}>
+                                        {topCarouselPosts.map((a, index) => (
+                                            <HighPriorityCard
+                                                key={a.id}
+                                                id={a.id}
+                                                title={a.title}
+                                                description={a.description}
+                                                imageUrl={a.imageUrl}
+                                                date={a.date}
+                                                category={a.category}
+                                                authorName={a.authorName}
                                                 index={index}
-                                                onClick={() => setSelectedEvent(event)}
+                                                onClick={() => handleEventClick(a)}
                                             />
                                         ))}
                                     </Carousel>
-                                )}
+                                </section>
+                            )}
 
-                                {/* Status badge configuration */}
-                                {(() => {
-                                    const statusConfig: Record<string, { text: string; color: string }> = {
-                                        featured: { text: 'Featured', color: 'text-orange-400' },
-                                        upcoming: { text: 'Upcoming', color: 'text-green-400' },
-                                        done: { text: 'Done', color: 'text-gray-400' }
-                                    };
-
-                                    return (
-                                        <>
-                                            {/* Normal Priority Events Grid */}
-                                            {events.length > 0 && (
-                                                <div className="mb-12">
-                                                    <div className="flex items-center justify-between mb-6">
-                                                        <div className="bg-gray-800 dark:bg-gray-900 text-white px-6 py-2 font-black text-lg"
-                                                            style={{ clipPath: 'polygon(0 0, 100% 0, 95% 100%, 0% 100%)' }}>
-                                                            UPCOMING EVENTS
-                                                        </div>
-                                                        {events.length > NORMAL_PRIORITY_LIMIT && (
-                                                            <div className="flex items-center gap-1 text-sm">
-                                                                <button
-                                                                    onClick={() => { setCurrentNormalPage(prev => Math.max(1, prev - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                                                    disabled={currentNormalPage === 1}
-                                                                    className="px-2 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                                                    title="Previous"
-                                                                >
-                                                                    ‹
-                                                                </button>
-                                                                <span className="px-2 text-xs text-gray-500 dark:text-gray-400">
-                                                                    {currentNormalPage}/{Math.ceil(events.length / NORMAL_PRIORITY_LIMIT)}
-                                                                </span>
-                                                                <button
-                                                                    onClick={() => { setCurrentNormalPage(prev => Math.min(Math.ceil(events.length / NORMAL_PRIORITY_LIMIT), prev + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                                                    disabled={currentNormalPage >= Math.ceil(events.length / NORMAL_PRIORITY_LIMIT)}
-                                                                    className="px-2 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                                                    title="Next"
-                                                                >
-                                                                    ›
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 min-w-0">
-                                                        {events
-                                                            .slice((currentNormalPage - 1) * NORMAL_PRIORITY_LIMIT, currentNormalPage * NORMAL_PRIORITY_LIMIT)
-                                                            .map((event, index) => (
-                                                                <NormalPriorityEventCard
-                                                                    key={`${event.uuid ?? event.id}-${index}`}
-                                                                    id={event.id}
-                                                                    name={event.name}
-                                                                    description={event.description}
-                                                                    imageUrl={event.imageUrl}
-                                                                    date={event.date}
-                                                                    location={event.location}
-                                                                    status={event.status}
-                                                                    onClick={() => setSelectedEvent(event)}
-                                                                />
-                                                            ))}
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Low Priority Events Section - Special Compact Card Design */}
-                                            {lowPriorityEvents.length > 0 && (
-                                                <div className="mt-12">
-                                                    <div className="flex items-center justify-between mb-6">
-                                                        <div className="bg-gray-700 text-white px-6 py-2 font-black text-lg"
-                                                            style={{ clipPath: 'polygon(0 0, 100% 0, 95% 100%, 0% 100%)' }}>
-                                                            MORE EVENTS
-                                                        </div>
-                                                        {lowPriorityEvents.length > LOW_PRIORITY_LIMIT && (
-                                                            <div className="flex items-center gap-1 text-sm">
-                                                                <button
-                                                                    onClick={() => { setCurrentLowPage(prev => Math.max(1, prev - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                                                    disabled={currentLowPage === 1}
-                                                                    className="px-2 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                                                    title="Previous"
-                                                                >
-                                                                    ‹
-                                                                </button>
-                                                                <span className="px-2 text-xs text-gray-500 dark:text-gray-400">
-                                                                    {currentLowPage}/{Math.ceil(lowPriorityEvents.length / LOW_PRIORITY_LIMIT)}
-                                                                </span>
-                                                                <button
-                                                                    onClick={() => { setCurrentLowPage(prev => Math.min(Math.ceil(lowPriorityEvents.length / LOW_PRIORITY_LIMIT), prev + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                                                    disabled={currentLowPage >= Math.ceil(lowPriorityEvents.length / LOW_PRIORITY_LIMIT)}
-                                                                    className="px-2 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                                                    title="Next"
-                                                                >
-                                                                    ›
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
-                                                        {lowPriorityEvents
-                                                            .slice((currentLowPage - 1) * LOW_PRIORITY_LIMIT, currentLowPage * LOW_PRIORITY_LIMIT)
-                                                            .map((event, index) => (
-                                                                <LowPriorityEventCard
-                                                                    key={`${event.uuid ?? event.id}-${index}`}
-                                                                    id={event.id}
-                                                                    name={event.name}
-                                                                    description={event.description}
-                                                                    imageUrl={event.imageUrl}
-                                                                    date={event.date}
-                                                                    time={event.time}
-                                                                    location={event.location}
-                                                                    status={event.status}
-                                                                    onClick={() => setSelectedEvent(event)}
-                                                                />
-                                                            ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </>
-                                    );
-                                })()}
-                            </>
-                        )}
-                    </div>
-
-                    {/* Event Details Modal */}
-                    {selectedEvent && (
-                        <div
-                            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                            onClick={() => setSelectedEvent(null)}
-                        >
-                            <div
-                                className="relative bg-white dark:bg-gray-900 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                {/* Close Button */}
-                                <button
-                                    onClick={() => setSelectedEvent(null)}
-                                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors z-10 bg-white dark:bg-gray-800 rounded-full p-2"
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
-
-                                {/* Event Image */}
-                                <div className="relative h-64 md:h-80 w-full">
-                                    <img
-                                        src={selectedEvent.imageUrl}
-                                        alt={selectedEvent.name}
-                                        className="w-full h-full object-cover"
-                                        style={{ objectPosition: 'top 5%' }}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                    <div className="absolute bottom-6 left-6 right-6">
-                                        <h2 className="text-3xl md:text-4xl font-black text-white mb-2">{selectedEvent.name}</h2>
-                                        <div className="flex items-center gap-2 text-white/90">
-                                            <MapPin className="w-5 h-5" />
-                                            <span className="text-lg font-medium">{selectedEvent.location}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Event Details */}
-                                <div className="p-6 md:p-8 space-y-6">
-                                    {/* Date and Time */}
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        <div className="flex items-start gap-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl">
-                                            <Calendar className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                                            <div>
-                                                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Date</div>
-                                                <div className="text-lg font-bold text-gray-900 dark:text-white">{selectedEvent.date}</div>
+                            {/* ROW 1: Grid (Left) + Carousel (Right) */}
+                            {(paginatedRow1Grid.length > 0 || row1CarouselPosts.length > 0) && (
+                                <section className="mb-20">
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                        {/* Left Side: 4 Square Grid */}
+                                        <div className="lg:col-span-8 flex flex-col">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
+                                                {paginatedRow1Grid.map((event) => (
+                                                    <NormalPriorityEventCard
+                                                        key={event.id}
+                                                        id={event.id}
+                                                        name={event.name}
+                                                        description={event.description}
+                                                        location={event.location}
+                                                        date={event.date}
+                                                        imageUrl={event.imageUrl}
+                                                        status={event.status}
+                                                        onClick={() => handleEventClick(event)}
+                                                        authorName={event.authorName}
+                                                    />
+                                                ))}
                                             </div>
+                                            <PaginationControls
+                                                currentPage={currentRow1Page}
+                                                totalItems={row1GridPosts.length}
+                                                limit={GRID_LIMIT}
+                                                onPageChange={setCurrentRow1Page}
+                                            />
                                         </div>
-                                        <div className="flex items-start gap-3 bg-gray-100 dark:bg-gray-800 p-4 rounded-xl">
-                                            <Clock className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                                            <div>
-                                                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Time</div>
-                                                <div className="text-lg font-bold text-gray-900 dark:text-white">{selectedEvent.time}</div>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    {/* Description */}
-                                    <div>
-                                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">About This Event</h3>
-                                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{selectedEvent.description}</p>
-                                    </div>
-
-                                    {/* Status Badge */}
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Status:</span>
-                                        <span className={`px-3 py-1 rounded-full text-sm font-bold ${selectedEvent.status === 'featured' ? 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400' :
-                                                selectedEvent.status === 'upcoming' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' :
-                                                    'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
-                                            }`}>
-                                            {selectedEvent.status ? selectedEvent.status.charAt(0).toUpperCase() + selectedEvent.status.slice(1) : 'N/A'}
-                                        </span>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-3 pt-4">
-                                        {selectedEvent.status === 'done' ? (
-                                            <div className="relative group w-full">
-                                                <button
-                                                    disabled
-                                                    title="Event is already done! Stay tune for upcoming events in our community."
-                                                    className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all bg-gray-400 text-white opacity-60 cursor-not-allowed"
+                                        {/* Right Side: Tall Carousel (8:3 ratio) */}
+                                        <div className="lg:col-span-4 hidden lg:block">
+                                            {row1CarouselPosts.length > 0 && (
+                                                <Carousel
+                                                    hideControls={true}
+                                                    interval={6000}
+                                                    containerClassName="w-full h-full"
+                                                    className="relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full h-[800px]"
                                                 >
-                                                    <CalendarPlus className="w-5 h-5" />
-                                                    Event Already Done
-                                                </button>
-                                                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block bg-black text-white text-sm px-3 py-2 rounded whitespace-nowrap z-50">
-                                                    Event is already done! Stay tune for upcoming events in our community.
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                onClick={async () => {
-                                                    // Check if user is logged in
-                                                    const token = localStorage.getItem('token');
-                                                    if (!token) {
-                                                        toast.error('Please log in to add events to your calendar');
-                                                        return;
-                                                    }
-
-                                                    // Check if user is verified
-                                                    const userStr = localStorage.getItem('user');
-                                                    if (userStr) {
-                                                        const user = JSON.parse(userStr);
-                                                        if (!user.isVerified) {
-                                                            toast.error('You need to verify first to access this feature. Please complete verification in your dashboard.');
-                                                            return;
-                                                        }
-                                                    }
-
-                                                    try {
-                                                        const { addEventToCalendar } = await import('@/lib/apiClient');
-                                                        await addEventToCalendar({
-                                                            eventId: selectedEvent.id,
-                                                            eventTitle: selectedEvent.name,
-                                                            eventDate: selectedEvent.date,
-                                                            eventTime: selectedEvent.time,
-                                                            location: selectedEvent.location
-                                                        });
-                                                        setAddingToCalendar(selectedEvent.id);
-                                                        setTimeout(() => setAddingToCalendar(null), 3000);
-                                                        toast.success('Event added to your calendar!');
-                                                    } catch (err: any) {
-                                                        console.error('Failed to add event to calendar:', err);
-                                                        const errorMsg = err.message || 'Failed to add event to calendar';
-
-                                                        // Check if it's a duplicate event error
-                                                        if (errorMsg.toLowerCase().includes('already saved') ||
-                                                            errorMsg.toLowerCase().includes('already exists') ||
-                                                            errorMsg.toLowerCase().includes('duplicate')) {
-                                                            toast.error('This event is already in your calendar');
-                                                            // Show it as added since it's already there
-                                                            setAddingToCalendar(selectedEvent.id);
-                                                            setTimeout(() => setAddingToCalendar(null), 3000);
-                                                        } else if (errorMsg.toLowerCase().includes('endpoint not available') ||
-                                                            errorMsg.toLowerCase().includes('not available')) {
-                                                            // API endpoint doesn't exist yet
-                                                            toast.error('Calendar feature is currently unavailable. Please try again later.');
-                                                        } else if (errorMsg.toLowerCase().includes('authentication') ||
-                                                            errorMsg.toLowerCase().includes('log in')) {
-                                                            toast.error('Please log in to add events to your calendar');
-                                                        } else {
-                                                            toast.error('Failed to add event. Please try again.');
-                                                        }
-                                                    }
-                                                }}
-                                                className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${addingToCalendar === selectedEvent.id
-                                                        ? 'bg-green-600 text-white'
-                                                        : 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700'
-                                                    }`}
-                                                disabled={addingToCalendar === selectedEvent.id}
-                                            >
-                                                <CalendarPlus className="w-5 h-5" />
-                                                {addingToCalendar === selectedEvent.id ? 'Added to Calendar!' : 'Add to Calendar'}
-                                            </button>
-                                        )}
+                                                    {row1CarouselPosts.map((a, index) => (
+                                                        <div key={a.id} className="h-full cursor-pointer group" onClick={() => handleEventClick(a)}>
+                                                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
+                                                            <img src={a.imageUrl} alt={a.title} className="w-full h-full object-cover" />
+                                                            <div className="absolute bottom-0 left-0 p-8 z-20 w-full bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                                                                <span className="inline-block px-3 py-1 bg-red-700 text-white text-[10px] font-black uppercase tracking-widest mb-4">
+                                                                    {a.status}
+                                                                </span>
+                                                                <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2 line-clamp-3">
+                                                                    {a.title}
+                                                                </h3>
+                                                                <p className="text-gray-300 text-sm line-clamp-2">{a.description}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </Carousel>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
+                                </section>
+                            )}
+
+                            {/* ROW 2: Carousel (Left) + Grid (Right) */}
+                            {(paginatedRow2Grid.length > 0 || row2CarouselPosts.length > 0) && (
+                                <section className="mb-20">
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                        {/* Left Side: Tall Carousel */}
+                                        <div className="lg:col-span-4 hidden lg:block">
+                                            {row2CarouselPosts.length > 0 && (
+                                                <Carousel
+                                                    hideControls={true}
+                                                    interval={6000}
+                                                    containerClassName="w-full h-full"
+                                                    className="relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full h-[800px]"
+                                                >
+                                                    {row2CarouselPosts.map((a, index) => (
+                                                        <div key={a.id} className="h-full cursor-pointer group" onClick={() => handleEventClick(a)}>
+                                                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
+                                                            <img src={a.imageUrl} alt={a.title} className="w-full h-full object-cover" />
+                                                            <div className="absolute bottom-0 left-0 p-8 z-20 w-full bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                                                                <span className="inline-block px-3 py-1 bg-red-700 text-white text-[10px] font-black uppercase tracking-widest mb-4">
+                                                                    {a.status}
+                                                                </span>
+                                                                <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2 line-clamp-3">
+                                                                    {a.title}
+                                                                </h3>
+                                                                <p className="text-gray-300 text-sm line-clamp-2">{a.description}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </Carousel>
+                                            )}
+                                        </div>
+
+                                        {/* Right Side: 4 Square Grid */}
+                                        <div className="lg:col-span-8 flex flex-col">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
+                                                {paginatedRow2Grid.map((event) => (
+                                                    <NormalPriorityEventCard
+                                                        key={event.id}
+                                                        id={event.id}
+                                                        name={event.name}
+                                                        description={event.description}
+                                                        location={event.location}
+                                                        date={event.date}
+                                                        imageUrl={event.imageUrl}
+                                                        status={event.status}
+                                                        onClick={() => handleEventClick(event)}
+                                                        authorName={event.authorName}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <PaginationControls
+                                                currentPage={currentRow2Page}
+                                                totalItems={row2GridPosts.length}
+                                                limit={GRID_LIMIT}
+                                                onPageChange={setCurrentRow2Page}
+                                            />
+                                        </div>
+                                    </div>
+                                </section>
+                            )}
+
+                            {/* LOW PRIORITY */}
+                            {paginatedLowPriority.length > 0 && (
+                                <section className="mb-20 pt-10 border-t border-gray-200 dark:border-gray-800">
+                                    <h2 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-white mb-8">
+                                        More Events
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {paginatedLowPriority.map((event) => (
+                                            <LowPriorityEventCard
+                                                key={event.id}
+                                                id={event.id}
+                                                name={event.name}
+                                                description={event.description}
+                                                location={event.location}
+                                                date={event.date}
+                                                time={event.time}
+                                                imageUrl={event.imageUrl}
+                                                status={event.status}
+                                                onClick={() => handleEventClick(event)}
+                                                authorName={event.authorName}
+                                            />
+                                        ))}
+                                    </div>
+                                    <PaginationControls
+                                        currentPage={currentLowPriorityPage}
+                                        totalItems={lowPriorityPosts.length}
+                                        limit={LOW_PRIORITY_LIMIT}
+                                        onPageChange={setCurrentLowPriorityPage}
+                                    />
+                                </section>
+                            )}
+                        </>
                     )}
-                </div>
+                </main>
                 <Footer />
-            </PageTransition>
-        </>
+            </div>
+        </PageTransition>
     );
 };
 

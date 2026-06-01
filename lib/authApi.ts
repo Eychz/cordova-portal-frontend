@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { httpClient } from './apiClient';
 
 interface RegisterData {
   email: string;
@@ -31,66 +31,35 @@ export const authApi = {
     console.log('authApi.register called with:', {
       ...data,
       password: '***',
-      barangay: data.barangay, // Explicitly log barangay
+      barangay: data.barangay,
     });
-    
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Registration failed');
-    return result;
+    return httpClient.post<any>('/auth/register', data);
   },
 
   verifyEmail: async (data: VerifyEmailData) => {
-    const response = await fetch(`${API_BASE_URL}/auth/verify-email`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Verification failed');
-    return result;
+    return httpClient.post<any>('/auth/verify-email', data);
   },
 
   login: async (data: LoginData) => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-    if (!response.ok) {
-      const error: any = new Error(result.error || 'Login failed');
-      error.statusCode = response.status;
-      error.requiresVerification = result.requiresVerification;
-      error.userId = result.userId;
-      throw error;
+    try {
+      return await httpClient.post<any>('/auth/login', data);
+    } catch (err: any) {
+      if (err.name === 'HttpError') {
+        const error: any = new Error(err.message);
+        error.statusCode = err.status;
+        error.requiresVerification = err.data?.requiresVerification;
+        error.userId = err.data?.userId;
+        throw error;
+      }
+      throw err;
     }
-    return result;
   },
 
   forgotPassword: async (email: string) => {
-    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Request failed');
-    return result;
+    return httpClient.post<any>('/auth/forgot-password', { email });
   },
 
   resetPassword: async (data: ResetPasswordData) => {
-    const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Password reset failed');
-    return result;
+    return httpClient.post<any>('/auth/reset-password', data);
   },
 };

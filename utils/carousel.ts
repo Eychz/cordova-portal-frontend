@@ -2,7 +2,7 @@ import type { Post } from './../data/adminData';
 
 // Select up to `n` posts per type, preferring 'high' priority and most recent posts.
 export function selectTopPostsByType(posts: Post[], perType = 2): Post[] {
-    const sortByDateDesc = (arr: Post[]) => arr.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    const sortByDateDesc = (arr: Post[]) => arr.sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime());
     const types: Post['type'][] = ['news', 'announcement', 'event'];
     const selected: Post[] = [];
 

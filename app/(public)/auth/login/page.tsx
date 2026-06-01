@@ -52,12 +52,12 @@ const LoginPage: React.FC = () => {
 
         try {
             const result = await authApi.login(data);
-            
+
             localStorage.setItem('token', result.token);
             localStorage.setItem('user', JSON.stringify(result.user));
 
             setSuccess('Login successful! Redirecting...');
-            
+
             setTimeout(() => {
                 if (result.user.role === 'admin') {
                     router.push('/admin/dashboard');
@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
             }, 800);
         } catch (err: any) {
             const errorMsg = err.message || 'Login failed';
-            
+
             if (err.requiresVerification || errorMsg === 'Email not verified') {
                 setError('Please verify your email before logging in.');
                 setShowVerification(true);
@@ -158,8 +158,8 @@ const LoginPage: React.FC = () => {
                     <h2 className="text-center text-4xl font-black mb-2 text-red-900 dark:text-white drop-shadow-sm">
                         LOGIN
                     </h2>
-                    <p className="text-center text-gray-600 dark:text-gray-400 italic text-sm mb-8">
-                        Enter your credentials
+                    <p className="text-center text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-10">
+                        Official Portal Access
                     </p>
 
                     <form onSubmit={handleSubmit(onLoginSubmit)} className="space-y-5">
@@ -168,9 +168,9 @@ const LoginPage: React.FC = () => {
                                 {...register('email')}
                                 type="email"
                                 placeholder="Contact Email"
-                                className={`w-full border-2 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white transition-all ${
-                                    errors.email ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
-                                }`}
+                                disabled={loading}
+                                className={`w-full border rounded-none px-4 py-4 focus:outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-all premium-flag-container disabled:opacity-50 disabled:cursor-not-allowed ${errors.email ? 'border-red-600' : 'border-gray-200 dark:border-gray-700'
+                                    }`}
                             />
                             {errors.email && (
                                 <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
@@ -178,16 +178,16 @@ const LoginPage: React.FC = () => {
                                 </p>
                             )}
                         </div>
-                        
+
                         <div className="space-y-1">
                             <div className="relative">
                                 <input
                                     {...register('password')}
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Password"
-                                    className={`w-full border-2 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white transition-all ${
-                                        errors.password ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
-                                    }`}
+                                    disabled={loading}
+                                    className={`w-full border rounded-none px-4 py-4 pr-12 focus:outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-all premium-flag-container disabled:opacity-50 disabled:cursor-not-allowed ${errors.password ? 'border-red-600' : 'border-gray-200 dark:border-gray-700'
+                                        }`}
                                 />
                                 <button
                                     type="button"
@@ -219,9 +219,14 @@ const LoginPage: React.FC = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-red-600 to-red-800 text-white py-3 rounded-full text-lg font-bold hover:shadow-lg transition-all duration-300 mt-4 disabled:opacity-50 hover:-translate-y-1"
+                            className="w-full bg-red-700 text-white py-4 rounded-none text-sm font-black uppercase tracking-widest hover:bg-red-800 transition-all duration-300 mt-6 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] flex items-center justify-center gap-2"
                         >
-                            {loading ? 'Logging in...' : 'Login'}
+                            {loading ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-none animate-spin"></div>
+                                    <span>Authorizing...</span>
+                                </>
+                            ) : 'Login'}
                         </button>
                     </form>
                 </>
@@ -239,19 +244,20 @@ const LoginPage: React.FC = () => {
                             type="text"
                             placeholder="Verification Code"
                             required
-                            className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 text-center text-2xl tracking-widest font-bold focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white transition-all"
+                            disabled={loading}
+                            className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-none px-4 py-3 text-center text-2xl tracking-widest font-bold focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             value={verificationCode}
                             onChange={(e) => setVerificationCode(e.target.value)}
                         />
 
                         {error && (
-                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm">
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-none text-sm">
                                 {error}
                             </div>
                         )}
 
                         {success && (
-                            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg text-sm">
+                            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-none text-sm">
                                 {success}
                             </div>
                         )}
@@ -259,16 +265,21 @@ const LoginPage: React.FC = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-red-600 to-red-800 text-white py-3 rounded-full text-lg font-bold hover:shadow-lg transition-all duration-300 mt-8 disabled:opacity-50 hover:-translate-y-1"
+                            className="w-full bg-gradient-to-r from-red-600 to-red-800 text-white py-3 rounded-none text-lg font-bold hover:shadow-none transition-all duration-300 mt-8 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-1 flex items-center justify-center gap-2"
                         >
-                            {loading ? 'Verifying...' : 'Verify Email'}
+                            {loading ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-none animate-spin"></div>
+                                    <span>Verifying...</span>
+                                </>
+                            ) : 'Verify Email'}
                         </button>
 
                         <button
                             type="button"
                             onClick={handleResendVerificationCode}
                             disabled={loading || resendCountdown > 0}
-                            className="w-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all border border-gray-200 dark:border-gray-700 disabled:opacity-50"
+                            className="w-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-none text-sm font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all border border-gray-200 dark:border-gray-700 disabled:opacity-50"
                         >
                             {loading ? 'Sending...' : resendCountdown > 0 ? `Resend in ${resendCountdown}s` : 'Resend Verification Code'}
                         </button>

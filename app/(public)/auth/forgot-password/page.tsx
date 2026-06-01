@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { authApi } from '@/lib/authApi';
@@ -64,8 +64,8 @@ const ForgotPasswordPage: React.FC = () => {
             return;
         }
 
-        if (newPassword.length < 6) {
-            setError('Password must be at least 6 characters');
+        if (newPassword.length < 8) {
+            setError('Password must be at least 8 characters');
             return;
         }
 
@@ -88,12 +88,12 @@ const ForgotPasswordPage: React.FC = () => {
     };
 
     return (
-        <>
-            <h2 className="text-center text-4xl font-black mb-2 text-red-900 dark:text-white drop-shadow-sm">
-                FORGOT PASSWORD
+        <div className="max-w-md w-full mx-auto">
+            <h2 className="text-center text-4xl font-black mb-2 text-red-900 dark:text-white drop-shadow-sm uppercase tracking-tighter">
+                RECOVERY
             </h2>
-            <p className="text-center text-gray-600 dark:text-gray-400 italic text-sm mb-8">
-                {step === 1 ? 'Enter your email to receive a verification code' : 'Enter code and new password'}
+            <p className="text-center text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-10">
+                {step === 1 ? 'Credential Reset Request' : 'Enter Authorization Code'}
             </p>
 
             {step === 1 ? (
@@ -102,114 +102,133 @@ const ForgotPasswordPage: React.FC = () => {
                         <input
                             {...register('email')}
                             type="email"
-                            placeholder="Email Address"
-                            className={`w-full border-2 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white transition-all ${
-                                errors.email ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
+                            placeholder="Registered Email Address"
+                            disabled={loading}
+                            className={`w-full border rounded-none px-4 py-4 focus:outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-all premium-flag-container disabled:opacity-50 disabled:cursor-not-allowed ${
+                                errors.email ? 'border-red-600' : 'border-gray-200 dark:border-gray-700'
                             }`}
                         />
                         {errors.email && (
-                            <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                            <p className="text-red-500 text-xs mt-1 flex items-center gap-1 font-bold uppercase tracking-tight">
                                 <AlertCircle size={12} /> {errors.email.message}
                             </p>
                         )}
                     </div>
 
                     {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm">
-                            {error}
-                        </div>
-                    )}
-
-                    {success && (
-                        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg text-sm">
-                            {success}
+                        <div className="bg-red-50 border-l-4 border-red-600 p-4 flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+                            <p className="text-xs font-bold text-red-700 uppercase tracking-tight">{error}</p>
                         </div>
                     )}
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-gradient-to-r from-red-600 to-red-800 text-white py-3 rounded-full text-lg font-bold hover:shadow-lg transition-all duration-300 mt-8 disabled:opacity-50 hover:-translate-y-1"
+                        className="w-full bg-red-700 text-white py-4 rounded-none text-sm font-black uppercase tracking-widest hover:bg-red-800 transition-all duration-300 mt-6 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] flex items-center justify-center gap-2"
                     >
-                        {loading ? 'Sending...' : 'Send Verification Code'}
+                        {loading ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-none animate-spin"></div>
+                                <span>Requesting Code...</span>
+                            </>
+                        ) : 'Send Reset Code'}
                     </button>
                 </form>
             ) : (
                 <form onSubmit={handleResetPassword} className="space-y-5">
-                    <input
-                        type="text"
-                        placeholder="6-Digit Code"
-                        required
-                        maxLength={6}
-                        className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 text-center text-2xl tracking-widest font-bold focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white transition-all"
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                    />
-
-                    <div className="relative">
+                    <div className="space-y-2">
                         <input
-                            type={showNewPassword ? "text" : "password"}
-                            placeholder="New Password"
+                            type="text"
+                            placeholder="6-Digit Code"
                             required
-                            className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white transition-all"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
+                            maxLength={6}
+                            disabled={loading}
+                            className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-none px-4 py-4 text-center text-2xl tracking-[0.3em] font-black focus:outline-none focus:ring-2 focus:ring-red-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed premium-flag-container"
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
                         />
-                        <button
-                            type="button"
-                            onClick={() => setShowNewPassword(!showNewPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
-                        >
-                            {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
                     </div>
 
-                    <div className="relative">
-                        <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            placeholder="Confirm Password"
-                            required
-                            className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-red-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white transition-all"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
-                        >
-                            {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
+                    <div className="space-y-1">
+                        <div className="relative">
+                            <input
+                                type={showNewPassword ? "text" : "password"}
+                                placeholder="New Secure Password"
+                                required
+                                disabled={loading}
+                                className="w-full border border-gray-200 dark:border-gray-700 rounded-none px-4 py-4 pr-12 focus:outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-all premium-flag-container disabled:opacity-50 disabled:cursor-not-allowed"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-1">
+                        <div className="relative">
+                            <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                placeholder="Confirm New Password"
+                                required
+                                disabled={loading}
+                                className="w-full border border-gray-200 dark:border-gray-700 rounded-none px-4 py-4 pr-12 focus:outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-all premium-flag-container disabled:opacity-50 disabled:cursor-not-allowed"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
                     </div>
 
                     {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm">
-                            {error}
+                        <div className="bg-red-50 border-l-4 border-red-600 p-4 flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+                            <p className="text-xs font-bold text-red-700 uppercase tracking-tight">{error}</p>
                         </div>
                     )}
 
                     {success && (
-                        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg text-sm">
-                            {success}
+                        <div className="bg-green-50 border-l-4 border-green-600 p-4 flex items-start gap-3">
+                            <CheckCircle className="w-5 h-5 text-green-600 shrink-0" />
+                            <p className="text-xs font-bold text-green-700 uppercase tracking-tight">{success}</p>
                         </div>
                     )}
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-gradient-to-r from-red-600 to-red-800 text-white py-3 rounded-full text-lg font-bold hover:shadow-lg transition-all duration-300 mt-8 disabled:opacity-50 hover:-translate-y-1"
+                        className="w-full bg-red-700 text-white py-4 rounded-none text-sm font-black uppercase tracking-widest hover:bg-red-800 transition-all duration-300 mt-6 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] flex items-center justify-center gap-2"
                     >
-                        {loading ? 'Resetting...' : 'Reset Password'}
+                        {loading ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-none animate-spin"></div>
+                                <span>Updating...</span>
+                            </>
+                        ) : 'Reset Password'}
                     </button>
                 </form>
             )}
 
-            <p className="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
-                <a href="/auth/login" className="hover:underline font-semibold hover:text-red-600 dark:hover:text-red-400 transition-colors">
-                    Back to Login
-                </a>
-            </p>
-        </>
+            <button
+                onClick={() => step === 2 ? setStep(1) : router.push('/auth/login')}
+                className="text-center mt-8 w-full flex items-center justify-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest hover:text-red-700 transition-all"
+            >
+                <ArrowLeft size={12} />
+                {step === 2 ? 'Back to Email' : 'Back to Login'}
+            </button>
+        </div>
     );
 };
 

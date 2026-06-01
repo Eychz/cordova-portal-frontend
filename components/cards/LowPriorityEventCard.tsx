@@ -12,6 +12,7 @@ interface LowPriorityEventCardProps {
     time: string;
     location: string;
     status: 'featured' | 'upcoming' | 'done';
+    authorName?: string;
     onClick: () => void;
 }
 
@@ -24,6 +25,7 @@ const LowPriorityEventCard: React.FC<LowPriorityEventCardProps> = ({
     time,
     location,
     status,
+    authorName,
     onClick
 }) => {
     const statusConfig: Record<string, { text: string; color: string }> = {
@@ -37,7 +39,7 @@ const LowPriorityEventCard: React.FC<LowPriorityEventCardProps> = ({
     return (
         <div 
             onClick={onClick}
-            className="flex gap-4 relative bg-white/30 dark:bg-gray-900/30 backdrop-blur-xl rounded-xl p-4 border border-white/10 dark:border-gray-700/20 hover:shadow-lg hover:border-white/30 dark:hover:border-gray-600/40 transition-all duration-300 group cursor-pointer min-w-0"
+            className="flex gap-4 relative bg-white dark:bg-gray-800 rounded-none p-4 border border-gray-100 dark:border-gray-700 premium-flag-card group cursor-pointer min-w-0"
         >
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-transparent pointer-events-none rounded-xl"></div>
             
@@ -69,6 +71,9 @@ const LowPriorityEventCard: React.FC<LowPriorityEventCardProps> = ({
                     </div>
                     <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" /> {date} • <Clock className="w-3 h-3" /> {time}
+                        {authorName && (
+                            <span className="ml-2 opacity-60">• By {authorName}</span>
+                        )}
                     </div>
                 </div>
             </div>

@@ -70,3 +70,108 @@ a {
   background-color: #4b5563;
   border-radius: 3px;
 }
+
+/* Government Flat Design Utilities */
+.gov-flat-card {
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.dark .gov-flat-card {
+  border-color: #374151;
+  background-color: #1f2937;
+}
+
+.gov-flat-card:hover {
+  border-color: #D1001F;
+}
+
+.sharp-corners {
+  border-radius: 0 !important;
+}
+
+/* Page transitions */
+.fade-enter {
+  opacity: 0;
+}
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
+
+/* Layout width maximization */
+.maximize-width {
+  max-width: 80% !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 1536px) {
+  .maximize-width {
+    max-width: 80% !important;
+  }
+}
+
+.premium-flag-card {
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  position: relative;
+  border-left-width: 0px !important;
+}
+
+.premium-flag-card:hover {
+  transform: translateY(-8px);
+  border: 1px solid #D1001F !important;
+  border-left-width: 8px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.premium-flag-container {
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  position: relative;
+  border-left-width: 0px !important;
+}
+
+.premium-flag-container:hover {
+  border: 1px solid #D1001F !important;
+  border-left-width: 6px !important;
+  background-color: rgba(209, 0, 31, 0.02);
+}
+
+.dark .premium-flag-container:hover {
+  background-color: rgba(209, 0, 31, 0.05);
+}
+
+/* Universal border radius of 3% (12px) on all box-type containers, inputs, buttons, and cards */
+.rounded-none,
+.rounded-sm,
+.rounded-md,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+button:not(.rounded-full),
+input:not(.rounded-full),
+select,
+textarea,
+.gov-flat-card,
+.premium-flag-card,
+.premium-flag-container,
+.bg-white:not(header):not(nav):not(body),
+.bg-gray-50:not(body),
+.border:not(header):not(nav) {
+  border-radius: 12px !important;
+}
+
+/* Retain roundness for circles */
+.rounded-full {
+  border-radius: 9999px !important;
+}

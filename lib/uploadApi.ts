@@ -1,11 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return {
-    'Authorization': `Bearer ${token}`,
-  };
-};
+import { httpClient } from './apiClient';
 
 export const uploadApi = {
   /**
@@ -13,22 +6,10 @@ export const uploadApi = {
    * @param file - The image file to upload
    * @returns Promise with the uploaded image URL and updated user data
    */
-  uploadProfileImage: async (file: File) => {
+  uploadProfileImage: async (file: File): Promise<any> => {
     const formData = new FormData();
     formData.append('image', file);
-
-    const response = await fetch(`${API_BASE_URL}/upload/profile-image`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: formData,
-    });
-
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to upload profile image');
-    }
-
-    return result;
+    return httpClient.post<any>('/upload/profile-image', formData);
   },
 
   /**
@@ -36,46 +17,20 @@ export const uploadApi = {
    * @param files - Array of image files to upload
    * @returns Promise with the uploaded image URLs
    */
-  uploadPostImages: async (files: File[]) => {
+  uploadPostImages: async (files: File[]): Promise<any> => {
     const formData = new FormData();
     files.forEach((file) => {
       formData.append('images', file);
     });
-
-    const response = await fetch(`${API_BASE_URL}/upload/post-images`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: formData,
-    });
-
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to upload post images');
-    }
-
-    return result;
+    return httpClient.post<any>('/upload/post-images', formData);
   },
 
   /**
-   * Delete an image from storage
+   * Delete an image/document from storage (Secured on backend)
    * @param imageUrl - The URL of the image to delete
    */
-  deleteImage: async (imageUrl: string) => {
-    const response = await fetch(`${API_BASE_URL}/upload/image`, {
-      method: 'DELETE',
-      headers: {
-        ...getAuthHeaders(),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ imageUrl }),
-    });
-
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to delete image');
-    }
-
-    return result;
+  deleteImage: async (imageUrl: string): Promise<any> => {
+    return httpClient.delete<any>('/upload/file', { imageUrl });
   },
 };
 

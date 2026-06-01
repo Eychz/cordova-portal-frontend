@@ -1,12 +1,13 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { httpClient } from './apiClient';
 
 export interface Post {
   id?: number;
+  uuid?: string;
   title: string;
   content: string;
   imageUrl?: string;
   type: 'news' | 'announcement' | 'event';
-  priority?: 'high' | 'normal' | 'low';
+  priority?: string;
   status?: 'published' | 'draft';
   location?: string;
   eventDate?: string;
@@ -16,103 +17,53 @@ export interface Post {
   isFeatured?: boolean;
   eventStatus?: string; // 'upcoming' or 'done'
   category?: string;
+  authorName?: string;
 }
 
-const getAuthHeader = (): HeadersInit => {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('No authentication token');
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-  } as HeadersInit;
-};
-
 export const postsApi = {
-  // Get all posts
-  getAll: async (type?: string) => {
-    const url = type 
-      ? `${API_BASE_URL}/posts?type=${type}`
-      : `${API_BASE_URL}/posts`;
+  // Get all posts with optional pagination and filtering
+  getAll: async (params?: { type?: string; priority?: string; page?: number; limit?: number }): Promise<Post[]> => {
+    const result = await httpClient.get<any>('/posts', params as any);
     
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!response.ok) throw new Error('Failed to fetch posts');
-    const result = await response.json();
-    return Array.isArray(result) ? result : [];
+    // Support both raw array responses and paginated responses
+    if (Array.isArray(result)) return result;
+    if (result && result.posts) return result.posts;
+    return [];
   },
 
-  // Get single post
-  getById: async (id: number) => {
-    const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Failed to fetch post');
-    return result.post;
+  // Get single post by ID
+  getById: async (id: number): Promise<Post> => {
+    return httpClient.get<Post>(`/posts/${id}`);
   },
 
-  // Create post (admin only)
-  create: async (post: Post) => {
-    const response = await fetch(`${API_BASE_URL}/posts`, {
-      method: 'POST',
-      headers: getAuthHeader(),
-      body: JSON.stringify(post),
-    });
-    if (!response.ok) {
-      const text = await response.text();
-      console.error('Create post error:', text);
-      throw new Error('Failed to create post. Server error.');
-    }
-    const result = await response.json();
-    return result;
+  // Get single post by Slug (Direct backend call)
+  getBySlug: async (slug: string, type?: string): Promise<Post> => {
+    return httpClient.get<Post>(`/posts/slug/${slug}`);
   },
 
-  // Update post (admin only)
-  update: async (id: number, post: Partial<Post>) => {
-    const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
-      method: 'PUT',
-      headers: getAuthHeader(),
-      body: JSON.stringify(post),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Failed to update post');
-    return result.post;
+  // Create post (admin/official)
+  create: async (post: Post): Promise<Post> => {
+    return httpClient.post<Post>('/posts', post);
   },
 
-  // Delete post (admin only)
-  delete: async (id: number) => {
-    const response = await fetch(`${API_BASE_URL}/posts/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeader(),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Failed to delete post');
-    return result;
+  // Update post (admin/official)
+  update: async (id: number, post: Partial<Post>): Promise<Post> => {
+    return httpClient.patch<Post>(`/posts/${id}`, post);
+  },
+
+  // Delete post (admin/official)
+  delete: async (id: number): Promise<any> => {
+    return httpClient.delete(`/posts/${id}`);
   },
 
   // Get featured posts (public)
-  getFeatured: async (limit = 6) => {
-    const response = await fetch(`${API_BASE_URL}/posts/featured?limit=${limit}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!response.ok) throw new Error('Failed to fetch featured posts');
-    const result = await response.json();
+  getFeatured: async (limit = 6): Promise<Post[]> => {
+    const result = await httpClient.get<Post[]>('/posts/featured', { limit });
     return Array.isArray(result) ? result : [];
   },
 
   // Toggle featured status (admin only)
-  toggleFeatured: async (id: number, isFeatured: boolean) => {
-    const response = await fetch(`${API_BASE_URL}/posts/${id}/featured`, {
-      method: 'PUT',
-      headers: getAuthHeader(),
-      body: JSON.stringify({ isFeatured }),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Failed to update featured status');
-    return result.post;
+  toggleFeatured: async (id: number, isFeatured: boolean): Promise<Post> => {
+    return httpClient.put<Post>(`/posts/${id}/featured`, { isFeatured });
   },
 };

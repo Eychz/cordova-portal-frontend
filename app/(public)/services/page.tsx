@@ -1,15 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Building2, Construction, FileText, CheckCircle, Baby, Heart, Bird, Diamond, Home, Map, Hospital, DollarSign, Hammer, Fence, Pickaxe, Sprout } from 'lucide-react';
-interface Service {
+import { Building2, Construction, FileText, CheckCircle, Baby, Heart, Bird, Diamond, Home, Map, Hospital, DollarSign, Hammer, Fence, Pickaxe, Sprout, Search, ArrowRight, Info } from 'lucide-react';
+import { slugify } from '@/utils/slugify';
+
+export interface Service {
   id: number;
   title: string;
   description: string;
-  icon: React.ComponentType<{ className?: string; fill?: string; stroke?: string; strokeWidth?: string }>;
+  icon: React.ComponentType<{ className?: string }>;
   category: string;
   requirements?: string[];
   processingTime?: string;
@@ -17,322 +20,158 @@ interface Service {
   iconColor?: string;
 }
 
+import { servicesApi, Service as ApiService } from '@/lib/servicesApi';
+import { getIconByName } from '@/utils/iconMapper';
+
+const getCategoryColor = (category: string) => {
+  const cat = category?.toLowerCase() || '';
+  if (cat.includes('business') || cat.includes('permit')) return { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-100', hover: 'hover:border-blue-500' };
+  if (cat.includes('health') || cat.includes('medical')) return { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-100', hover: 'hover:border-red-500' };
+  if (cat.includes('social') || cat.includes('welfare')) return { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100', hover: 'hover:border-emerald-500' };
+  if (cat.includes('civil') || cat.includes('registry')) return { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-100', hover: 'hover:border-purple-500' };
+  if (cat.includes('general')) return { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-100', hover: 'hover:border-gray-500' };
+  return { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-100', hover: 'hover:border-slate-500' };
+};
+
 const ServicesPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const router = useRouter();
+  const [services, setServices] = useState<ApiService[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const servicesData: Service[] = [
-    {
-      id: 1,
-      title: 'Business Permit',
-      description: 'Apply for a new business permit or renew existing permits to operate businesses within Cordova.',
-      icon: Building2,
-      category: 'Business',
-      requirements: ['DTI/SEC Registration', 'Barangay Clearance', 'Proof of Business Location', 'Valid ID'],
-      processingTime: '5-7 business days',
-      fee: 'Varies based on business type',
-      iconColor: 'text-blue-600 dark:text-blue-400'
-    },
-    {
-      id: 2,
-      title: 'Building Permit',
-      description: 'Secure permits for new construction, renovation, or repair of buildings and structures.',
-      icon: Construction,
-      category: 'Construction',
-      requirements: ['Approved Building Plans', 'Lot Title/Tax Declaration', 'Barangay Clearance', 'Engineering Documents'],
-      processingTime: '10-15 business days',
-      fee: 'Based on project cost',
-      iconColor: 'text-orange-600 dark:text-orange-400'
-    },
-    {
-      id: 3,
-      title: 'Community Tax Certificate (Cedula)',
-      description: 'Obtain your Community Tax Certificate for various transactions and legal purposes.',
-      icon: FileText,
-      category: 'Certificates',
-      requirements: ['Valid ID', 'Proof of Income/Employment'],
-      processingTime: 'Same day',
-      fee: '₱50-₱100',
-      iconColor: 'text-purple-600 dark:text-purple-400'
-    },
-    {
-      id: 4,
-      title: 'Barangay Clearance',
-      description: 'Get barangay clearance for employment, business, or other legal requirements.',
-      icon: CheckCircle,
-      category: 'Certificates',
-      requirements: ['Valid ID', 'Proof of Residency', '2x2 Photo'],
-      processingTime: '1-2 business days',
-      fee: '₱50-₱100',
-      iconColor: 'text-green-600 dark:text-green-400'
-    },
-    {
-      id: 5,
-      title: 'Birth Certificate',
-      description: 'Request certified copies of birth certificates registered in Cordova.',
-      icon: Baby,
-      category: 'Civil Registry',
-      requirements: ['Valid ID', 'Authorization Letter (if representative)'],
-      processingTime: '3-5 business days',
-      fee: '₱140 per copy',
-      iconColor: 'text-pink-600 dark:text-pink-400'
-    },
-    {
-      id: 6,
-      title: 'Marriage Certificate',
-      description: 'Obtain certified copies of marriage certificates registered in the municipality.',
-      icon: Heart,
-      category: 'Civil Registry',
-      requirements: ['Valid ID', 'Authorization Letter (if representative)'],
-      processingTime: '3-5 business days',
-      fee: '₱140 per copy',
-      iconColor: 'text-rose-600 dark:text-rose-400'
-    },
-    {
-      id: 7,
-      title: 'Death Certificate',
-      description: 'Request certified copies of death certificates for legal and insurance purposes.',
-      icon: Bird,
-      category: 'Civil Registry',
-      requirements: ['Valid ID', 'Authorization Letter (if representative)'],
-      processingTime: '3-5 business days',
-      fee: '₱140 per copy',
-      iconColor: 'text-slate-600 dark:text-slate-400'
-    },
-    {
-      id: 8,
-      title: 'Marriage License',
-      description: 'Apply for a marriage license to legally marry in Cordova or elsewhere.',
-      icon: Diamond,
-      category: 'Civil Registry',
-      requirements: ['Birth Certificates', 'CENOMAR', 'Valid IDs', 'Marriage Counseling Certificate'],
-      processingTime: '10-day waiting period',
-      fee: '₱210',
-      iconColor: 'text-fuchsia-600 dark:text-fuchsia-400'
-    },
-    {
-      id: 9,
-      title: 'Occupancy Permit',
-      description: 'Get certification that your building is fit and safe for occupancy.',
-      icon: Home,
-      category: 'Construction',
-      requirements: ['Building Permit', 'As-Built Plans', 'Electrical/Plumbing Inspection'],
-      processingTime: '5-7 business days',
-      fee: 'Based on building type',
-      iconColor: 'text-amber-600 dark:text-amber-400'
-    },
-    {
-      id: 10,
-      title: 'Zoning Clearance',
-      description: 'Verify that your property use complies with zoning regulations.',
-      icon: Map,
-      category: 'Construction',
-      requirements: ['Lot Title/Tax Declaration', 'Location Plan', 'Valid ID'],
-      processingTime: '3-5 business days',
-      fee: '₱200-₱500',
-      iconColor: 'text-cyan-600 dark:text-cyan-400'
-    },
-    {
-      id: 11,
-      title: 'Health Certificate',
-      description: 'Obtain health certificates required for employment and business operations.',
-      icon: Hospital,
-      category: 'Health',
-      requirements: ['Valid ID', 'Medical Examination Results', '2x2 Photo'],
-      processingTime: 'Same day (after medical exam)',
-      fee: '₱100-₱200',
-      iconColor: 'text-red-600 dark:text-red-400'
-    },
-    {
-      id: 12,
-      title: 'Tax Clearance',
-      description: 'Get certification of no pending real property tax obligations.',
-      icon: DollarSign,
-      category: 'Tax',
-      requirements: ['Property Tax Declaration', 'Valid ID', 'Latest Tax Payment Receipt'],
-      processingTime: '1-2 business days',
-      fee: '₱100',
-      iconColor: 'text-emerald-600 dark:text-emerald-400'
-    },
-    {
-      id: 13,
-      title: 'Demolition Permit',
-      description: 'Secure permit for legal demolition of structures.',
-      icon: Hammer,
-      category: 'Construction',
-      requirements: ['Proof of Ownership', 'Engineering Plans', 'Barangay Clearance'],
-      processingTime: '5-7 business days',
-      fee: 'Based on structure size',
-      iconColor: 'text-yellow-600 dark:text-yellow-400'
-    },
-    {
-      id: 14,
-      title: 'Fencing Permit',
-      description: 'Apply for permit to construct fences around your property.',
-      icon: Fence,
-      category: 'Construction',
-      requirements: ['Lot Title', 'Fencing Plans', 'Barangay Clearance'],
-      processingTime: '3-5 business days',
-      fee: '₱300-₱800',
-      iconColor: 'text-stone-600 dark:text-stone-400'
-    },
-    {
-      id: 15,
-      title: 'Excavation Permit',
-      description: 'Get authorization for excavation activities on your property.',
-      icon: Pickaxe,
-      category: 'Construction',
-      requirements: ['Lot Title', 'Engineering Plans', 'Safety Plan'],
-      processingTime: '5-7 business days',
-      fee: 'Based on excavation scope',
-      iconColor: 'text-brown-600 dark:text-amber-700'
-    },
-    {
-      id: 16,
-      title: 'Environmental Compliance Certificate',
-      description: 'Obtain ECC for projects with potential environmental impact.',
-      icon: Sprout,
-      category: 'Business',
-      requirements: ['Project Description', 'EIA Report', 'Business Registration'],
-      processingTime: '15-30 business days',
-      fee: 'Varies based on project',
-      iconColor: 'text-lime-600 dark:text-lime-400'
-    }
-  ];
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const data = await servicesApi.getAll();
+        setServices(data);
+      } catch (err) {
+        console.error('Failed to fetch services:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
 
-  const categories = ['all', 'Business', 'Construction', 'Certificates', 'Civil Registry', 'Health', 'Tax'];
+  const categories = ['All', ...Array.from(new Set(services.map(s => s.category)))];
 
-  const filteredServices = selectedCategory === 'all' 
-    ? servicesData 
-    : servicesData.filter(service => service.category === selectedCategory);
+  const filteredServices = services.filter(service => {
+    const matchesCategory = selectedCategory === 'All' || service.category === selectedCategory;
+    const searchLower = searchQuery.toLowerCase();
+    const nameLower = (service.name || service.title || '').toLowerCase();
+    const descLower = (service.description || '').toLowerCase();
+
+    const matchesSearch = nameLower.includes(searchLower) || descLower.includes(searchLower);
+    return matchesCategory && matchesSearch;
+  });
+
+  const handleServiceClick = (service: ApiService) => {
+    const titleForSlug = service.name || service.title || 'service';
+    router.push(`/services/${slugify(titleForSlug)}`);
+  };
 
   return (
     <PageTransition>
-      <Navbar activePage="services" />
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-red-50 to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 py-20 px-4 transition-colors">
-        <div className="max-w-7xl mx-auto">
-          {/* Header Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-black text-red-900 dark:text-white mb-4">
-              Municipal Services
-            </h1>
-            <p className="text-lg text-red-800 dark:text-gray-300 max-w-3xl mx-auto">
-              Access a wide range of government services offered by the Municipality of Cordova. 
-              Select a service below to view requirements and processing information.
-            </p>
-          </div>
+      <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
+        <Navbar activePage="Services" />
 
-          {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
+        {/* Formal Header */}
+        <header className="bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-700">
+          <div className="maximize-width px-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 bg-white text-red-800 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
+                  Constituent Services
+                </div>
+                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+                  E-Services Portal
+                </h1>
+                <p className="text-xl text-white font-medium max-w-2xl">
+                  Fast, transparent, and efficient access to all municipal services and regulatory requirements in Cordova.
+                </p>
+              </div>
+              {/* Removed local search bar */}
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-grow maximize-width px-4 py-16">
+          {/* Category Filter - Flat Bar */}
+          <div className="flex flex-wrap gap-2 bg-gray-200 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 mb-12">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-2 rounded-full font-semibold transition-all ${
-                  selectedCategory === category
-                    ? 'bg-red-900 text-white shadow-lg transform scale-105'
-                    : 'bg-white dark:bg-gray-800 text-red-900 dark:text-gray-300 hover:bg-red-100 dark:hover:bg-gray-700'
-                }`}
+                className={`px-8 py-4 font-bold text-xs uppercase tracking-widest transition-all ${selectedCategory === category
+                  ? 'bg-red-700 text-white'
+                  : 'bg-white dark:bg-gray-900 text-gray-500 hover:text-red-700 hover:bg-gray-50'
+                  }`}
               >
-                {category === 'all' ? 'All Services' : category}
+                {category}
               </button>
             ))}
           </div>
 
-          {/* Services Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-            {filteredServices.map((service) => (
-              <div
-                key={service.id}
-                onClick={() => setSelectedService(service)}
-                className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-red-500 dark:hover:border-red-400"
-              >
-                <div className={`${service.iconColor || 'text-red-600 dark:text-red-400'} mb-4`}>
-                  <service.icon className="w-12 h-12" fill="currentColor" stroke="white" strokeWidth="1.5" />
-                </div>
-                <h3 className="text-xl font-bold text-red-900 dark:text-white mb-2">
-                  {service.title}
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
-                  {service.description}
-                </p>
-                <span className="inline-block px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-900 dark:text-red-300 text-xs font-semibold rounded-full">
-                  {service.category}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Service Details Modal */}
-        {selectedService && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedService(null)}>
-            <div className="bg-white dark:bg-gray-800 rounded-3xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-4">
-                  <div className={selectedService.iconColor || 'text-red-600 dark:text-red-400'}>
-                    <selectedService.icon className="w-16 h-16" fill="currentColor" stroke="white" strokeWidth="1.5" />
-                  </div>
-                  <div>
-                    <h2 className="text-3xl font-black text-red-900 dark:text-white mb-2">
-                      {selectedService.title}
-                    </h2>
-                    <span className="inline-block px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-900 dark:text-red-300 text-sm font-semibold rounded-full">
-                      {selectedService.category}
-                    </span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setSelectedService(null)}
-                  className="text-gray-500 hover:text-red-900 dark:text-gray-400 dark:hover:text-red-400 text-3xl"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-bold text-red-900 dark:text-white mb-2">Description</h3>
-                  <p className="text-gray-700 dark:text-gray-300">{selectedService.description}</p>
-                </div>
-
-                {selectedService.requirements && (
-                  <div>
-                    <h3 className="text-lg font-bold text-red-900 dark:text-white mb-2">Requirements</h3>
-                    <ul className="space-y-2">
-                      {selectedService.requirements.map((req, index) => (
-                        <li key={index} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                          <span className="text-red-900 dark:text-red-400 mt-1">✓</span>
-                          {req}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  {selectedService.processingTime && (
-                    <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4">
-                      <h4 className="text-sm font-bold text-red-900 dark:text-red-300 mb-1">Processing Time</h4>
-                      <p className="text-gray-700 dark:text-gray-300">{selectedService.processingTime}</p>
-                    </div>
-                  )}
-                  {selectedService.fee && (
-                    <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4">
-                      <h4 className="text-sm font-bold text-red-900 dark:text-red-300 mb-1">Fee</h4>
-                      <p className="text-gray-700 dark:text-gray-300">{selectedService.fee}</p>
-                    </div>
-                  )}
-                </div>
-
-                </div>
-              </div>
+          {/* Services Grid - Sharp Cards - 2-gap spacing policy */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                <div key={i} className="h-64 bg-gray-100 dark:bg-gray-800 animate-pulse border border-gray-100 dark:border-gray-800"></div>
+              ))}
             </div>
-        )}
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredServices.map((service) => {
+                const Icon = getIconByName(service.icon);
+                const colors = getCategoryColor(service.category);
+                return (
+                  <div
+                    key={service.id}
+                    onClick={() => handleServiceClick(service)}
+                    className={`bg-white dark:bg-gray-900 p-8 rounded-none border-b-4 ${colors.border} ${colors.hover} hover:shadow-2xl hover:-translate-y-0.5 group transition-all duration-300 cursor-pointer flex flex-col h-full`}
+                  >
+                    <div className={`${colors.bg} ${colors.text} w-16 h-16 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="w-8 h-8" />
+                    </div>
 
+                    <div className="flex-grow">
+                      <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 uppercase tracking-tighter leading-tight group-hover:text-red-700 transition-colors">
+                        {service.name || service.title}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed line-clamp-3 font-medium">
+                        {service.description}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-auto pt-6 border-t border-gray-50 dark:border-gray-800/50">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Category</span>
+                        <span className={`text-xs font-bold uppercase tracking-wide ${colors.text}`}>
+                          {service.category || 'General'}
+                        </span>
+                      </div>
+                      <div className={`w-10 h-10 rounded-full ${colors.bg} flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0`}>
+                        <ArrowRight className={`w-5 h-5 ${colors.text}`} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {filteredServices.length === 0 && (
+            <div className="py-32 text-center bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700">
+              <Info className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 font-black uppercase tracking-widest">No services found in this category</p>
+            </div>
+          )}
+        </main>
+
+        <Footer />
       </div>
-      <Footer />
-
     </PageTransition>
   );
 };

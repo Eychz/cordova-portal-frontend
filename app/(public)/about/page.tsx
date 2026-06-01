@@ -1,338 +1,257 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Target, Rocket, Mail, Phone } from 'lucide-react';
-
-interface Official {
-    name: string;
-    position: string;
-    department?: string;
-    imageUrl: string;
-    email?: string;
-    phone?: string;
-    description?: string;
-}
+import { Target, Rocket, Mail, Phone, MapPin, Users, History, Info, User } from 'lucide-react';
+import { officialsApi, Official } from '@/lib/officialsApi';
 
 const AboutPage = () => {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<'about' | 'officials' | 'history'>('about');
+    const [municipalOfficials, setMunicipalOfficials] = useState<Official[]>([]);
+    const [departmentHeads, setDepartmentHeads] = useState<Official[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const municipalOfficials: Official[] = [
-        {
-            name: 'Hon. Cesar Y. Suan',
-            position: 'Municipal Mayor',
-            imageUrl: '/municipal-logo.jpg',
-            email: 'mayor@cordova.gov.ph',
-            phone: '(032) 236-8702',
-            description: 'Leading Cordova towards progress and sustainable development'
-        },
-        {
-            name: 'Hon. Boyet Tago III',
-            position: 'Vice Mayor',
-            imageUrl: '/municipal-logo.jpg',
-            email: 'vicemayor@cordova.gov.ph',
-            phone: '(032) 236-8702',
-            description: 'Supporting initiatives for community welfare and growth'
-        },
-        {
-            name: 'Hon. Jerome Lepiten',
-            position: 'Councilor',
-            imageUrl: '/municipal-logo.jpg',
-            email: 'councilor3@cordova.gov.ph',
-            phone: '(032) 236-8702',
-            description: ''
-        },
-        {
-            name: 'Hon. Patric Lagon',
-            position: 'Councilor',
-            imageUrl: '/municipal-logo.jpg',
-            email: 'councilor3@cordova.gov.ph',
-            phone: '(032) 236-8702',
-            description: ''
-        },
-        {
-            name: 'Hon. Nats Sitoy',
-            position: 'Councilor',
-            imageUrl: '/municipal-logo.jpg',
-            email: 'councilor3@cordova.gov.ph',
-            phone: '(032) 236-8702',
-            description: ''
-        },
-        {
-            name: 'Hon. Remar Baguio',
-            position: 'Councilor',
-            imageUrl: '/municipal-logo.jpg',
-            email: 'councilor3@cordova.gov.ph',
-            phone: '(032) 236-8702',
-            description: ''
-        },
-        {
-            name: 'Hon. Jet Wahing',
-            position: 'Councilor',
-            imageUrl: '/municipal-logo.jpg',
-            email: 'councilor3@cordova.gov.ph',
-            phone: '(032) 236-8702',
-            description: ''
-        },
-        {
-            name: 'Hon. Leira Mae Casquejo',
-            position: 'Councilor',
-            imageUrl: '/municipal-logo.jpg',
-            email: 'councilor3@cordova.gov.ph',
-            phone: '(032) 236-8702',
-            description: ''
-        },
-        {
-            name: 'Hon. Chito Bentazal',
-            position: 'Councilor',
-            imageUrl: '/municipal-logo.jpg',
-            email: 'councilor3@cordova.gov.ph',
-            phone: '(032) 236-8702',
-            description: ''
-        },
-        {
-            name: 'Hon. Lemuel Pogoy',
-            position: 'Councilor',
-            imageUrl: '/municipal-logo.jpg',
-            email: 'councilor3@cordova.gov.ph',
-            phone: '(032) 236-8702',
-            description: ''
-        }
-    ];
-
-    const departmentHeads: Official[] = [
-        {
-            name: 'Atty. Roberto Garcia',
-            position: 'Municipal Administrator',
-            department: 'Office of the Municipal Administrator',
-            imageUrl: '/municipal-logo.jpg'
-        },
-        {
-            name: 'Engr. Juan Santos',
-            position: 'Municipal Engineer',
-            department: 'Engineering Office',
-            imageUrl: '/municipal-logo.jpg'
-        },
-        {
-            name: 'Dr. Maria Cruz',
-            position: 'Municipal Health Officer',
-            department: 'Rural Health Unit',
-            imageUrl: '/municipal-logo.jpg'
-        },
-        {
-            name: 'Ms. Teresa Ramos',
-            position: 'Municipal Treasurer',
-            department: 'Treasury Office',
-            imageUrl: '/municipal-logo.jpg'
-        },
-        {
-            name: 'Mr. Antonio Flores',
-            position: 'Municipal Accountant',
-            department: 'Accounting Office',
-            imageUrl: '/municipal-logo.jpg'
-        },
-        {
-            name: 'Ms. Carmen Lopez',
-            position: 'Municipal Assessor',
-            department: 'Assessor\'s Office',
-            imageUrl: '/municipal-logo.jpg'
-        }
-    ];
+    useEffect(() => {
+        const fetchAll = async () => {
+            try {
+                const [municipal, departments] = await Promise.all([
+                    officialsApi.getAll('MUNICIPAL'),
+                    officialsApi.getAll('DEPARTMENT')
+                ]);
+                setMunicipalOfficials(municipal);
+                setDepartmentHeads(departments);
+            } catch (err) {
+                console.error('Failed to fetch officials', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchAll();
+    }, []);
 
     return (
         <PageTransition>
-            <Navbar />
-            <div className="min-h-screen bg-gradient-to-br from-pink-50 via-red-50 to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 py-20 px-4 transition-colors">
-                <div className="max-w-7xl mx-auto">
-                    {/* Header */}
-                    <div className="text-center mb-12">
-                        <h1 className="text-4xl md:text-5xl font-black text-red-900 dark:text-white mb-4">
-                            About Cordova
-                        </h1>
-                        <p className="text-lg text-red-800 dark:text-gray-300 max-w-3xl mx-auto">
-                            Learn more about the Municipality of Cordova, its history, vision, and the dedicated officials serving the community.
-                        </p>
-                    </div>
+            <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
+                <Navbar activePage="About" />
 
-                    {/* Tabs */}
-                    <div className="flex justify-center gap-4 mb-12 flex-wrap">
-                        <button
-                            onClick={() => setActiveTab('about')}
-                            className={`px-8 py-3 rounded-full font-bold transition-all ${
-                                activeTab === 'about'
-                                    ? 'bg-red-900 text-white shadow-lg transform scale-105'
-                                    : 'bg-white dark:bg-gray-800 text-red-900 dark:text-gray-300 hover:bg-red-100 dark:hover:bg-gray-700'
-                            }`}
-                        >
-                            About Municipality
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('officials')}
-                            className={`px-8 py-3 rounded-full font-bold transition-all ${
-                                activeTab === 'officials'
-                                    ? 'bg-red-900 text-white shadow-lg transform scale-105'
-                                    : 'bg-white dark:bg-gray-800 text-red-900 dark:text-gray-300 hover:bg-red-100 dark:hover:bg-gray-700'
-                            }`}
-                        >
-                            Municipal Officials
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('history')}
-                            className={`px-8 py-3 rounded-full font-bold transition-all ${
-                                activeTab === 'history'
-                                    ? 'bg-red-900 text-white shadow-lg transform scale-105'
-                                    : 'bg-white dark:bg-gray-800 text-red-900 dark:text-gray-300 hover:bg-red-100 dark:hover:bg-gray-700'
-                            }`}
-                        >
-                            History & Culture
-                        </button>
+                <header className="bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-950">
+                    <div className="maximize-width px-4">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                            <div className="space-y-4">
+                                <div className="inline-flex items-center gap-2 bg-white text-red-800 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
+                                    Institutional Profile
+                                </div>
+                                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+                                    About Cordova
+                                </h1>
+                                <p className="text-xl text-red-100 font-medium max-w-2xl">
+                                    Official profile of the Municipality of Cordova, including our mandates, history, and the leadership serving our people.
+                                </p>
+                            </div>
+                        </div>
                     </div>
+                </header>
 
-                    {/* About Tab */}
+                <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <div className="maximize-width px-4">
+                        <div className="flex overflow-x-auto no-scrollbar">
+                            <button
+                                onClick={() => setActiveTab('about')}
+                                className={`px-8 py-5 text-sm font-black uppercase tracking-widest whitespace-nowrap border-b-4 transition-all ${activeTab === 'about'
+                                    ? 'border-red-700 text-red-700 bg-white dark:bg-gray-900'
+                                    : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Info className="w-4 h-4" />
+                                    General Information
+                                </div>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('officials')}
+                                className={`px-8 py-5 text-sm font-black uppercase tracking-widest whitespace-nowrap border-b-4 transition-all ${activeTab === 'officials'
+                                    ? 'border-red-700 text-red-700 bg-white dark:bg-gray-900'
+                                    : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Users className="w-4 h-4" />
+                                    Municipal Leadership
+                                </div>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('history')}
+                                className={`px-8 py-5 text-sm font-black uppercase tracking-widest whitespace-nowrap border-b-4 transition-all ${activeTab === 'history'
+                                    ? 'border-red-700 text-red-700 bg-white dark:bg-gray-900'
+                                    : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <History className="w-4 h-4" />
+                                    History & Culture
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <main className="flex-grow maximize-width px-4 py-16">
                     {activeTab === 'about' && (
-                        <div className="space-y-8">
-                            {/* Vision & Mission */}
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
-                                    <div className="mb-4">
-                                        <Target className="w-12 h-12 text-red-600 dark:text-red-400" />
+                        <div className="space-y-2">
+                            <div className="grid md:grid-cols-2 gap-2 bg-gray-200 dark:bg-gray-800 p-0">
+                                <div className="bg-white dark:bg-gray-900 p-12 border border-gray-100 dark:border-gray-800">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="w-2 h-10 bg-red-700"></div>
+                                        <h2 className="text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-white">Vision</h2>
                                     </div>
-                                    <h2 className="text-3xl font-black text-red-900 dark:text-white mb-4">Vision</h2>
-                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                                        A progressive, resilient, and sustainable coastal municipality where every resident enjoys quality life through good governance, economic prosperity, and environmental stewardship.
+                                    <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-medium italic">
+                                        "A progressive, resilient, and sustainable coastal municipality where every resident enjoys quality life through good governance, economic prosperity, and environmental stewardship."
                                     </p>
                                 </div>
-                                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
-                                    <div className="mb-4">
-                                        <Rocket className="w-12 h-12 text-red-600 dark:text-red-400" />
+                                <div className="bg-white dark:bg-gray-900 p-12 border border-gray-100 dark:border-gray-800">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="w-2 h-10 bg-red-700"></div>
+                                        <h2 className="text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-white">Mission</h2>
                                     </div>
-                                    <h2 className="text-3xl font-black text-red-900 dark:text-white mb-4">Mission</h2>
-                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-medium">
                                         To deliver efficient and effective public services, promote inclusive development, protect the environment, and empower communities through transparent governance and active citizen participation.
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Key Features */}
-                            <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
-                                <h2 className="text-3xl font-black text-red-900 dark:text-white mb-6">About Cordova</h2>
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-red-900 dark:text-red-400 mb-3">Geography</h3>
-                                        <p className="text-gray-700 dark:text-gray-300 mb-4">
-                                            Located on the southeastern tip of Mactan Island in the province of Cebu, Philippines. The municipality covers approximately 32.5 square kilometers and is composed of 13 barangays, including the island barangay of Gilutongan.
-                                        </p>
+                            <div className="grid md:grid-cols-2 gap-2 bg-gray-200 dark:bg-gray-800 mt-2">
+                                <div className="bg-white dark:bg-gray-900 p-10 border border-gray-100 dark:border-gray-800">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <MapPin className="w-6 h-6 text-red-700" />
+                                        <h3 className="text-xl font-black uppercase tracking-widest text-gray-900 dark:text-white">Geography</h3>
                                     </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-red-900 dark:text-red-400 mb-3">Population</h3>
-                                        <p className="text-gray-700 dark:text-gray-300 mb-4">
-                                            Home to approximately 67,000 residents (2020 Census). The municipality has experienced steady growth due to its proximity to Cebu City and the development of the Mactan-Cebu International Airport area.
-                                        </p>
+                                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                                        Located on the southeastern tip of Mactan Island in the province of Cebu, Philippines. The municipality covers approximately 32.5 square kilometers and is composed of 13 barangays, including the island barangay of Gilutongan.
+                                    </p>
+                                </div>
+                                <div className="bg-white dark:bg-gray-900 p-10 border border-gray-100 dark:border-gray-800">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <Users className="w-6 h-6 text-red-700" />
+                                        <h3 className="text-xl font-black uppercase tracking-widest text-gray-900 dark:text-white">Population</h3>
                                     </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-red-900 dark:text-red-400 mb-3">Economy</h3>
-                                        <p className="text-gray-700 dark:text-gray-300 mb-4">
-                                            Primary industries include fishing, agriculture, manufacturing, and tourism. The municipality is known for its marine resources, particularly the rich fishing grounds around Gilutongan Island. Growing commercial and industrial sectors contribute to local economy.
-                                        </p>
+                                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                                        Home to approximately 67,000 residents (2020 Census). The municipality has experienced steady growth due to its proximity to Cebu City and the development of the Mactan-Cebu International Airport area.
+                                    </p>
+                                </div>
+                                <div className="bg-white dark:bg-gray-900 p-10 border border-gray-100 dark:border-gray-800">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <Target className="w-6 h-6 text-red-700" />
+                                        <h3 className="text-xl font-black uppercase tracking-widest text-gray-900 dark:text-white">Economy</h3>
                                     </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-red-900 dark:text-red-400 mb-3">Tourism</h3>
-                                        <p className="text-gray-700 dark:text-gray-300 mb-4">
-                                            Notable attractions include the Gilutongan Marine Sanctuary, Nalusuan Island, mangrove forests, and cultural heritage sites. The municipality offers island hopping, diving, and eco-tourism activities.
-                                        </p>
+                                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                                        Primary industries include fishing, agriculture, manufacturing, and tourism. Known for rich marine resources and growing commercial sectors that contribute to the local economy.
+                                    </p>
+                                </div>
+                                <div className="bg-white dark:bg-gray-900 p-10 border border-gray-100 dark:border-gray-800">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <Rocket className="w-6 h-6 text-red-700" />
+                                        <h3 className="text-xl font-black uppercase tracking-widest text-gray-900 dark:text-white">Tourism</h3>
                                     </div>
+                                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                                        Notable attractions include the Gilutongan Marine Sanctuary, Nalusuan Island, and mangrove forests, offering diving and eco-tourism activities.
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Officials Tab */}
                     {activeTab === 'officials' && (
-                        <div className="space-y-12">
+                        <div className="space-y-16">
                             {/* Municipal Officials */}
                             <div>
-                                <h2 className="text-3xl font-black text-red-900 dark:text-white mb-8 text-center">
-                                    Municipal Officials
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {municipalOfficials.map((official, index) => (
-                                        <div
-                                            key={index}
-                                            className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300"
-                                        >
-                                            <div className="relative h-64 bg-gradient-to-br from-red-900 to-red-700">
-                                                <img
-                                                    src={official.imageUrl}
-                                                    alt={official.name}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            </div>
-                                            <div className="p-6">
-                                                <h3 className="text-xl font-bold text-red-900 dark:text-white mb-2">
-                                                    {official.name}
-                                                </h3>
-                                                <p className="text-red-700 dark:text-red-400 font-semibold mb-3">
-                                                    {official.position}
-                                                </p>
-                                                {official.description && (
-                                                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                                                        {official.description}
-                                                    </p>
-                                                )}
-                                                {(official.email || official.phone) && (
-                                                    <div className="space-y-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                                        {official.email && (
-                                                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                                                <Mail className="w-4 h-4" />
-                                                                <span>{official.email}</span>
-                                                            </div>
-                                                        )}
-                                                        {official.phone && (
-                                                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                                                <Phone className="w-4 h-4" />
-                                                                <span>{official.phone}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
+                                <div className="flex items-center gap-4 mb-10 border-b-2 border-gray-100 dark:border-gray-800 pb-6">
+                                    <div className="w-2 h-10 bg-red-700"></div>
+                                    <h2 className="text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
+                                        Sangguniang Bayan
+                                    </h2>
                                 </div>
+                                {loading ? (
+                                    <div className="h-64 flex items-center justify-center">
+                                        <div className="w-8 h-8 border-4 border-red-700 border-t-transparent animate-spin rounded-full"></div>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 bg-gray-150 dark:bg-gray-800">
+                                        {municipalOfficials.map((official) => (
+                                            <div
+                                                key={official.id}
+                                                onClick={() => router.push(`/about/leaders/${official.slug}`)}
+                                                className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 group cursor-pointer overflow-hidden relative shadow-sm rounded-xl"
+                                            >
+                                                <div className="relative aspect-square bg-gray-50 dark:bg-gray-800 overflow-hidden">
+                                                    {official.imageUrl ? (
+                                                        <img
+                                                            src={official.imageUrl}
+                                                            alt={official.name}
+                                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center">
+                                                            <User className="w-10 h-10 text-gray-200" />
+                                                        </div>
+                                                    )}
+                                                    <div className="absolute top-0 right-0 bg-red-700 text-white px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest rounded-bl">
+                                                        Official
+                                                    </div>
+                                                </div>
+                                                <div className="p-4">
+                                                    <h3 className="text-sm font-black text-gray-900 dark:text-white mb-1 uppercase tracking-tight leading-none group-hover:text-red-700 transition-colors">
+                                                        {official.name}
+                                                    </h3>
+                                                    <p className="text-red-700 dark:text-red-400 font-bold text-[9px] uppercase tracking-widest">
+                                                        {official.position}
+                                                    </p>
+                                                </div>
+                                                <div className="absolute inset-0 bg-red-700/0 group-hover:bg-red-700/5 transition-colors pointer-events-none rounded-xl"></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Department Heads */}
                             <div>
-                                <h2 className="text-3xl font-black text-red-900 dark:text-white mb-8 text-center">
-                                    Department Heads
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {departmentHeads.map((official, index) => (
+                                <div className="flex items-center gap-4 mb-10 border-b-2 border-gray-100 dark:border-gray-800 pb-6">
+                                    <div className="w-2 h-10 bg-gray-900 dark:bg-gray-100"></div>
+                                    <h2 className="text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
+                                        Executive Departments
+                                    </h2>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800">
+                                    {departmentHeads.map((official) => (
                                         <div
-                                            key={index}
-                                            className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300"
+                                            key={official.id}
+                                            onClick={() => router.push(`/about/leaders/${official.slug}`)}
+                                            className="bg-white dark:bg-gray-900 p-8 border border-gray-100 dark:border-gray-800 flex items-center gap-6 cursor-pointer group hover:bg-gray-50 dark:hover:bg-black transition-colors"
                                         >
-                                            <div className="relative h-48 bg-gradient-to-br from-gray-700 to-gray-600">
-                                                <img
-                                                    src={official.imageUrl}
-                                                    alt={official.name}
-                                                    className="w-full h-full object-cover"
-                                                />
+                                            <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 flex-shrink-0 overflow-hidden">
+                                                {official.imageUrl ? (
+                                                    <img
+                                                        src={official.imageUrl || "./public/municipal-logo.jpg"}
+                                                        alt={official.name}
+                                                        className="w-full h-full object-cover transition-transform group-hover:scale-110 "
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center">
+                                                        <User className="w-8 h-8 text-gray-200" />
+                                                    </div>
+                                                )}
                                             </div>
-                                            <div className="p-6">
-                                                <h3 className="text-lg font-bold text-red-900 dark:text-white mb-1">
+                                            <div>
+                                                <h3 className="text-md font-black text-gray-900 dark:text-white mb-1 uppercase tracking-tight leading-none group-hover:text-red-700 transition-colors">
                                                     {official.name}
                                                 </h3>
-                                                <p className="text-red-700 dark:text-red-400 font-semibold text-sm mb-2">
+                                                <p className="text-red-700 dark:text-red-400 font-bold text-[10px] uppercase tracking-widest">
                                                     {official.position}
                                                 </p>
-                                                {official.department && (
-                                                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                                                        {official.department}
-                                                    </p>
-                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -341,66 +260,86 @@ const AboutPage = () => {
                         </div>
                     )}
 
-                    {/* History Tab */}
                     {activeTab === 'history' && (
-                        <div className="space-y-8">
-                            <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
-                                <h2 className="text-3xl font-black text-red-900 dark:text-white mb-6">
-                                    History of Cordova
-                                </h2>
-                                <div className="space-y-6 text-gray-700 dark:text-gray-300">
-                                    <p className="leading-relaxed">
-                                        <strong className="text-red-900 dark:text-red-400">1864:</strong> Cordova was officially established as a municipality, separated from Opon (now Lapu-Lapu City). The name "Cordova" is believed to have originated from the Spanish city of Córdoba, reflecting the colonial influence of the period.
-                                    </p>
-                                    <p className="leading-relaxed">
-                                        <strong className="text-red-900 dark:text-red-400">Pre-Colonial Era:</strong> Before Spanish colonization, the area was inhabited by seafaring communities who relied on fishing and trading. Archaeological evidence suggests early settlements dating back several centuries.
-                                    </p>
-                                    <p className="leading-relaxed">
-                                        <strong className="text-red-900 dark:text-red-400">Spanish Period:</strong> Under Spanish rule, Cordova developed as a fishing village and agricultural community. The Spanish introduced Catholicism, which remains the predominant religion today, and established the foundations of local governance.
-                                    </p>
-                                    <p className="leading-relaxed">
-                                        <strong className="text-red-900 dark:text-red-400">American Period & Beyond:</strong> During American colonization and through Philippine independence, Cordova maintained its identity as a coastal municipality. The post-war period saw gradual modernization while preserving traditional fishing culture.
-                                    </p>
-                                    <p className="leading-relaxed">
-                                        <strong className="text-red-900 dark:text-red-400">Modern Development:</strong> In recent decades, Cordova has experienced significant growth due to its strategic location near the Mactan-Cebu International Airport and the expansion of Metro Cebu. Despite urbanization, the municipality has worked to preserve its natural resources and cultural heritage.
-                                    </p>
+                        <div className="space-y-2 bg-gray-200 dark:bg-gray-800">
+                            <div className="bg-white dark:bg-gray-900 p-12 border border-gray-100 dark:border-gray-800">
+                                <div className="flex items-center gap-4 mb-10">
+                                    <div className="w-2 h-10 bg-red-700"></div>
+                                    <h2 className="text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
+                                        Historical Timeline
+                                    </h2>
+                                </div>
+                                <div className="space-y-12">
+                                    <div className="relative pl-12 border-l-4 border-gray-100 dark:border-gray-800">
+                                        <div className="absolute -left-[10px] top-0 w-4 h-4 bg-red-700"></div>
+                                        <h3 className="text-2xl font-black text-red-700 mb-4 uppercase tracking-widest">1864</h3>
+                                        <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
+                                            Cordova was officially established as a municipality, separated from Opon (now Lapu-Lapu City). The name "Cordova" is believed to have originated from the Spanish city of Córdoba.
+                                        </p>
+                                    </div>
+                                    <div className="relative pl-12 border-l-4 border-gray-100 dark:border-gray-800">
+                                        <div className="absolute -left-[10px] top-0 w-4 h-4 bg-gray-900 dark:bg-white"></div>
+                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 uppercase tracking-widest">Pre-Colonial</h3>
+                                        <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
+                                            Before Spanish colonization, the area was inhabited by seafaring communities who relied on fishing and trading.
+                                        </p>
+                                    </div>
+                                    <div className="relative pl-12 border-l-4 border-gray-100 dark:border-gray-800">
+                                        <div className="absolute -left-[10px] top-0 w-4 h-4 bg-gray-900 dark:bg-white"></div>
+                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 uppercase tracking-widest">Spanish & American Eras</h3>
+                                        <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
+                                            Developed as a fishing village and agricultural community. The post-war period saw gradual modernization while preserving traditional fishing culture.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Cultural Heritage */}
-                            <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
-                                <h2 className="text-3xl font-black text-red-900 dark:text-white mb-6">
-                                    Cultural Heritage
-                                </h2>
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-red-900 dark:text-red-400 mb-3">
-                                            Festivals & Celebrations
+                            <div className="bg-white dark:bg-gray-900 p-12 border border-gray-100 dark:border-gray-800">
+                                <div className="flex items-center gap-4 mb-10">
+                                    <div className="w-2 h-10 bg-gray-900 dark:bg-white"></div>
+                                    <h2 className="text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
+                                        Cultural Identity
+                                    </h2>
+                                </div>
+                                <div className="grid md:grid-cols-2 gap-12">
+                                    <div className="space-y-6">
+                                        <h3 className="text-xl font-black uppercase tracking-widest text-red-700">
+                                            Festivals
                                         </h3>
-                                        <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                                            <li>• <strong>Dinagat Festival</strong> - Annual celebration of fishing heritage</li>
-                                            <li>• <strong>Town Fiesta</strong> - Honoring the patron saint</li>
-                                            <li>• <strong>Christmas Festivities</strong> - Community celebrations and parades</li>
-                                        </ul>
+                                        <div className="space-y-4">
+                                            <div className="border-l-4 border-red-700 pl-4">
+                                                <p className="font-black text-gray-900 dark:text-white uppercase tracking-tight">Dinagat Festival</p>
+                                                <p className="text-sm text-gray-500">Annual celebration of our rich fishing heritage and marine resources.</p>
+                                            </div>
+                                            <div className="border-l-4 border-gray-200 pl-4">
+                                                <p className="font-black text-gray-900 dark:text-white uppercase tracking-tight">Town Fiesta</p>
+                                                <p className="text-sm text-gray-500">A time-honored tradition celebrating our patron saint and community unity.</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-red-900 dark:text-red-400 mb-3">
-                                            Traditional Practices
+                                    <div className="space-y-6">
+                                        <h3 className="text-xl font-black uppercase tracking-widest text-red-700">
+                                            Heritage
                                         </h3>
-                                        <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                                            <li>• Traditional fishing methods passed down through generations</li>
-                                            <li>• Local handicrafts and weaving</li>
-                                            <li>• Folk songs and dances</li>
-                                            <li>• Community bayanihan spirit</li>
-                                        </ul>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="bg-gray-50 dark:bg-gray-800 p-4 border border-gray-100 dark:border-gray-700">
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Technique</p>
+                                                <p className="font-bold text-gray-900 dark:text-white text-xs uppercase tracking-tight">Traditional Fishing</p>
+                                            </div>
+                                            <div className="bg-gray-50 dark:bg-gray-800 p-4 border border-gray-100 dark:border-gray-700">
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Artistry</p>
+                                                <p className="font-bold text-gray-900 dark:text-white text-xs uppercase tracking-tight">Local Weaving</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     )}
-                </div>
+                </main>
+
+                <Footer />
             </div>
-            <Footer />
         </PageTransition>
     );
 };

@@ -1,226 +1,147 @@
 // API Base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-// API client functions
+export class HttpError extends Error {
+    constructor(message: string, public status: number, public data?: any) {
+        super(message);
+        this.name = 'HttpError';
+    }
+}
+
+interface RequestOptions extends RequestInit {
+    params?: Record<string, string | number>;
+}
+
+class HttpClient {
+    private getHeaders(customHeaders?: HeadersInit): Record<string, string> {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        return { ...headers, ...customHeaders as any };
+    }
+
+    async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+        let url = `${API_BASE_URL}${endpoint}`;
+        
+        if (options.params) {
+            const queryParams = new URLSearchParams();
+            Object.entries(options.params).forEach(([key, val]) => {
+                queryParams.append(key, String(val));
+            });
+            url += `?${queryParams.toString()}`;
+        }
+
+        const response = await fetch(url, {
+            ...options,
+            headers: options.body instanceof FormData 
+                ? { 'Authorization': this.getHeaders()['Authorization'] as string, ...options.headers }
+                : this.getHeaders(options.headers),
+        });
+
+        if (!response.ok) {
+            let errorMsg = `HTTP Error: ${response.status}`;
+            let errData: any = null;
+            try {
+                errData = await response.json();
+                errorMsg = errData.error || errData.message || errorMsg;
+            } catch {}
+            throw new HttpError(errorMsg, response.status, errData);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json();
+        }
+        return { success: true } as unknown as T;
+    }
+
+    get<T>(endpoint: string, params?: Record<string, string | number>, options?: RequestInit) {
+        return this.request<T>(endpoint, { method: 'GET', params, ...options });
+    }
+
+    post<T>(endpoint: string, body: any, options?: RequestInit) {
+        return this.request<T>(endpoint, { 
+            method: 'POST', 
+            body: body instanceof FormData ? body : JSON.stringify(body),
+            ...options 
+        });
+    }
+
+    put<T>(endpoint: string, body: any, options?: RequestInit) {
+        return this.request<T>(endpoint, { method: 'PUT', body: JSON.stringify(body), ...options });
+    }
+
+    patch<T>(endpoint: string, body: any, options?: RequestInit) {
+        return this.request<T>(endpoint, { method: 'PATCH', body: JSON.stringify(body), ...options });
+    }
+
+    delete<T>(endpoint: string, body?: any, options?: RequestInit) {
+        return this.request<T>(endpoint, { 
+            method: 'DELETE', 
+            body: body ? JSON.stringify(body) : undefined, 
+            ...options 
+        });
+    }
+}
+
+export const httpClient = new HttpClient();
+
+// Refactored high-level functions utilizing the new httpClient
+export const verifySession = async () => {
+  return httpClient.get<any>('/auth/me');
+};
+
 export const getPosts = async () => {
-  // Implement API call
-  return [];
+  return httpClient.get<any[]>('/posts');
 };
 
 export const createPost = async (post: any) => {
-  // Implement
-  console.log('createPost', post);
+  return httpClient.post<any>('/posts', post);
 };
 
 export const updatePost = async (id: number, post: any) => {
-  // Implement
-  console.log('updatePost', id, post);
+  return httpClient.patch<any>(`/posts/${id}`, post);
 };
 
 export const deletePost = async (id: number) => {
-  // Implement
-  console.log('deletePost', id);
+  return httpClient.delete<any>(`/posts/${id}`);
 };
 
 export const updateUser = async (id: number, user: any) => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(user)
-  });
-  
-  if (!response.ok) {
-    throw new Error('This feature is currently unavailable');
-  }
-  
-  return response.json();
+  return httpClient.put<any>(`/users/${id}`, user);
 };
 
 export const deleteUser = async (id: number) => {
-  const token = localStorage.getItem('token');
-  
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
-  
-  console.log(`[Delete User] Calling: ${API_BASE_URL}/users/${id}`);
-  
-  const response = await fetch(`${API_BASE_URL}/users/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  
-  console.log(`[Delete User] Response status: ${response.status}`);
-  
-  if (!response.ok) {
-    const contentType = response.headers.get('content-type');
-    let errorMessage = `Failed to delete user (Status: ${response.status})`;
-    
-    if (contentType && contentType.includes('application/json')) {
-      const error = await response.json().catch(() => ({ error: errorMessage }));
-      errorMessage = error.error || error.message || errorMessage;
-    } else {
-      const text = await response.text();
-      console.error('[Delete User] Non-JSON response:', text);
-    }
-    
-    throw new Error(errorMessage);
-  }
-  
-  // Some DELETE endpoints return empty response
-  const contentType = response.headers.get('content-type');
-  if (contentType && contentType.includes('application/json')) {
-    return response.json();
-  }
-  
-  return { success: true };
+  return httpClient.delete<any>(`/users/${id}`);
 };
 
 export const getServiceRequests = async () => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/service-requests`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch service requests');
-  }
-  
-  return response.json();
+  return httpClient.get<any[]>('/service-requests');
 };
 
 export const updateServiceRequest = async (id: number, data: { status?: string; adminNote?: string }) => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/service-requests/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(data)
-  });
-  
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Failed to update service request' }));
-    throw new Error(error.error || 'Failed to update service request');
-  }
-  
-  return response.json();
+  return httpClient.put<any>(`/service-requests/${id}`, data);
 };
 
 export const deleteServiceRequest = async (id: number) => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/service-requests/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  
-  if (!response.ok) {
-    throw new Error('Failed to delete service request');
-  }
-  
-  return response.json();
+  return httpClient.delete<any>(`/service-requests/${id}`);
 };
 
 export const verifyUser = async (id: number, data: { isVerified: boolean; barangay?: string }) => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/users/${id}/verify`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(data)
-  });
-  
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Failed to verify user' }));
-    throw new Error(error.error || 'Failed to verify user');
-  }
-  
-  return response.json();
+  return httpClient.put<any>(`/users/${id}/verify`, data);
 };
 
 export const getAdminActivities = async (limit: number = 50) => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_BASE_URL}/admin-activities?limit=${limit}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch admin activities');
-  }
-  
-  return response.json();
+  return httpClient.get<any[]>('/admin-activities', { limit });
 };
 
-export const addEventToCalendar = async (eventData: { eventId: number | string; eventTitle: string; eventDate: string | Date; eventTime?: string; location?: string; notifyBefore?: number }) => {
-  const token = localStorage.getItem('token');
-  
-  if (!token) {
-    throw new Error('No authentication token found. Please log in.');
-  }
-  
-  const url = `${API_BASE_URL}/users/events`;
-  const payload = {
-    eventId: eventData.eventId.toString(),
-    eventTitle: eventData.eventTitle,
-    eventDate: eventData.eventDate instanceof Date ? eventData.eventDate.toISOString() : eventData.eventDate,
-    eventTime: eventData.eventTime,
-    location: eventData.location,
-    notifyBefore: eventData.notifyBefore || 24
-  };
-
-  console.log('[Add Event to Calendar] Calling:', url);
-  console.log('[Add Event to Calendar] Payload:', payload);
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(payload)
-  });
-  
-  console.log('[Add Event to Calendar] Response status:', response.status);
-  
-  if (!response.ok) {
-    const contentType = response.headers.get('content-type');
-    let errorMessage = `Failed to add event to calendar (Status: ${response.status})`;
-    
-    if (contentType && contentType.includes('application/json')) {
-      const error = await response.json().catch(() => ({ error: errorMessage }));
-      console.error('[Add Event to Calendar] Error response:', error);
-      errorMessage = error.error || error.message || errorMessage;
-    } else {
-      const text = await response.text();
-      console.error('[Add Event to Calendar] Non-JSON response:', text.substring(0, 200));
-      
-      // Check if endpoint doesn't exist (404 HTML response)
-      if (response.status === 404 || text.includes('<!DOCTYPE')) {
-        errorMessage = 'Calendar API endpoint not available. Please ensure the backend server is running.';
-      }
-    }
-    
-    throw new Error(errorMessage);
-  }
-  
-  const result = await response.json();
-  console.log('[Add Event to Calendar] Success:', result);
-  return result;
+export const uploadFile = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const result = await httpClient.post<{ fileUrl: string }>('/upload/file', formData);
+  return result.fileUrl;
 };
-
-// Add other functions as needed

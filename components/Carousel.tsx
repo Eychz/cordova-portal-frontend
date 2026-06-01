@@ -6,18 +6,24 @@ interface CarouselProps {
     children: React.ReactNode[];
     autoSlide?: boolean;
     interval?: number;
+    hideControls?: boolean;
+    className?: string;
+    containerClassName?: string;
 }
 
 const Carousel: React.FC<CarouselProps> = ({ 
     children, 
     autoSlide = true, 
-    interval = 5000 
+    interval = 5000,
+    hideControls = false,
+    className = "relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full h-[500px]",
+    containerClassName = "w-full mb-12"
 }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const childrenArray = React.Children.toArray(children);
 
     useEffect(() => {
-        if (autoSlide && childrenArray.length > 0) {
+        if (autoSlide && childrenArray.length > 1) {
             const slideInterval = setInterval(() => {
                 setCurrentSlide((prev) => (prev + 1) % childrenArray.length);
             }, interval);
@@ -28,25 +34,20 @@ const Carousel: React.FC<CarouselProps> = ({
     if (childrenArray.length === 0) return null;
 
     return (
-        <div className="max-w-[1400px] mx-auto mb-12">
-            <div className="relative overflow-hidden shadow-2xl w-full">
-                {/* Carousel Container */}
-                <div className="relative h-[600px]">
-                    {childrenArray}
-                </div>
-
-                {/* Carousel Indicators */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                    {childrenArray.map((_, index) => (
-                        <button
+        <div className={containerClassName}>
+            <div className={className}>
+                {/* Carousel Slides with Rightward Slide Transition */}
+                <div 
+                    className="relative w-full h-full flex transition-transform duration-1000 ease-in-out"
+                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                    {childrenArray.map((child, index) => (
+                        <div 
                             key={index}
-                            onClick={() => setCurrentSlide(index)}
-                            className={`h-2 rounded-full transition-all ${
-                                index === currentSlide
-                                    ? 'w-8 bg-white'
-                                    : 'w-2 bg-white/50 hover:bg-white/75'
-                            }`}
-                        />
+                            className="w-full h-full flex-shrink-0 relative overflow-hidden"
+                        >
+                            {child}
+                        </div>
                     ))}
                 </div>
             </div>

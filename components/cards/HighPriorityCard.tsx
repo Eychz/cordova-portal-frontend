@@ -9,8 +9,9 @@ interface HighPriorityCardProps {
     imageUrl: string;
     date: string;
     category: string;
-    currentSlide: number;
+    currentSlide?: number;
     index: number;
+    authorName?: string;
     onClick: () => void;
 }
 
@@ -23,6 +24,7 @@ const HighPriorityCard: React.FC<HighPriorityCardProps> = ({
     category,
     currentSlide,
     index,
+    authorName,
     onClick
 }) => {
     const [imageSrc, setImageSrc] = useState(imageUrl);
@@ -32,14 +34,9 @@ const HighPriorityCard: React.FC<HighPriorityCardProps> = ({
     };
 
     return (
-        <div
-            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-                index === currentSlide
-                    ? 'opacity-100 translate-x-0'
-                    : index < currentSlide
-                    ? 'opacity-0 -translate-x-full'
-                    : 'opacity-0 translate-x-full'
-            }`}
+        <div 
+            onClick={onClick}
+            className="w-full h-full cursor-pointer group/card"
         >
             <div 
                 className="h-full bg-cover bg-center"
@@ -51,28 +48,33 @@ const HighPriorityCard: React.FC<HighPriorityCardProps> = ({
                     onError={handleImageError}
                     className="hidden"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
-                    <span className="inline-block bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold mb-4">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16">
+                    <span className="inline-block bg-red-700 text-white px-4 py-0.5 rounded-none text-xs font-bold mb-4 uppercase tracking-widest">
                         {category}
                     </span>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4 leading-tight line-clamp-3 break-words">
+                    <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight line-clamp-2 break-words group-hover/card:text-red-100 transition-colors">
                         {title}
                     </h2>
-                    <p className="text-white/90 text-base md:text-lg mb-4 line-clamp-3 max-w-4xl">
+                    <p className="text-white/90 text-base md:text-lg mb-8 line-clamp-3 max-w-5xl font-medium">
                         {description}
                     </p>
-                    <div className="flex items-center gap-4 text-white/80">
-                        <span className="text-sm">{date}</span>
-                        <button 
-                            onClick={onClick}
-                            className="text-red-400 hover:text-red-300 font-bold flex items-center gap-2 transition-colors"
+                    <div className="flex items-center gap-6">
+                        <span className="text-sm text-white/70 font-mono tracking-tighter">{date}</span>
+                        {authorName && (
+                            <>
+                                <div className="w-1 h-1 bg-white/30 rounded-full"></div>
+                                <span className="text-sm text-white/70 font-black uppercase tracking-widest">{authorName}</span>
+                            </>
+                        )}
+                        <div 
+                            className="bg-white text-red-700 px-8 py-3 rounded-none font-black flex items-center gap-2 hover:bg-gray-100 transition-all uppercase text-sm tracking-tight"
                         >
-                            Read More 
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            Read Full Article
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
-                        </button>
+                        </div>
                     </div>
                 </div>
             </div>

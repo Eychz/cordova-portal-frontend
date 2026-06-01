@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
                     {/* About Section */}
                     <div>
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                            <div className="w-12 h-12 bg-white rounded-none flex items-center justify-center">
                                 <Landmark className="w-6 h-6 text-red-600" />
                             </div>
                             <div>
@@ -116,7 +116,7 @@ const Footer: React.FC = () => {
                 </div>
 
                 {/* Emergency Hotlines Banner */}
-                <div className="bg-red-600/20 border border-red-500/30 rounded-2xl p-6 mb-8">
+                <div className="bg-red-600/20 border border-red-500/30 rounded-none p-6 mb-8">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <Siren className="w-10 h-10 text-red-400" />
@@ -160,7 +160,7 @@ const Footer: React.FC = () => {
             {/* Privacy Policy Modal */}
             {showPrivacyModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowPrivacyModal(false)}>
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-3xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-gray-800 rounded-none max-w-3xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between">
                             <h2 className="text-2xl font-black text-red-900 dark:text-white">Privacy Policy</h2>
                             <button onClick={() => setShowPrivacyModal(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
@@ -221,7 +221,7 @@ const Footer: React.FC = () => {
             {/* Terms of Service Modal */}
             {showTermsModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowTermsModal(false)}>
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-3xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-gray-800 rounded-none max-w-3xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between">
                             <h2 className="text-2xl font-black text-red-900 dark:text-white">Terms of Service</h2>
                             <button onClick={() => setShowTermsModal(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
@@ -279,7 +279,7 @@ const Footer: React.FC = () => {
             {/* Sitemap Modal */}
             {showSitemapModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowSitemapModal(false)}>
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-gray-800 rounded-none max-w-4xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between">
                             <h2 className="text-2xl font-black text-red-900 dark:text-white">Sitemap</h2>
                             <button onClick={() => setShowSitemapModal(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
@@ -290,7 +290,7 @@ const Footer: React.FC = () => {
                             {/* Map Section */}
                             <div className="mb-6">
                                 <h3 className="text-lg font-bold text-red-900 dark:text-white mb-4">Cordova, Cebu Location</h3>
-                                <div className="w-full h-96 bg-gray-200 dark:bg-gray-700 rounded-xl overflow-hidden">
+                                <div className="w-full h-96 bg-gray-200 dark:bg-gray-700 rounded-none overflow-hidden">
                                     <iframe
                                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62834.14904857935!2d123.92915347910158!3d10.253564400000007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a999258575e66d%3A0x6a3d33be73271790!2sCordova%2C%20Cebu!5e0!3m2!1sen!2sph!4v1732614000000!5m2!1sen!2sph"
                                         width="100%"
