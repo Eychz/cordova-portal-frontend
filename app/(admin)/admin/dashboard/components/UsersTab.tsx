@@ -100,8 +100,8 @@ const UsersTab: React.FC<UsersTabProps> = ({ users, onUpdateUser, onDelete }) =>
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 overflow-hidden">
-                <table className="w-full text-left">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 overflow-x-auto">
+                <table className="w-full text-left min-w-[800px]">
                     <thead>
                         <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
                             <th className="px-8 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Citizen</th>

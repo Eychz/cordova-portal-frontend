@@ -160,7 +160,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                         </Link>
 
                         {/* Desktop Menu - Center */}
-                        <div className="hidden md:flex items-center justify-center space-x-6 lg:space-x-8 flex-1">
+                        <div className="hidden lg:flex items-center justify-center space-x-6 lg:space-x-8 flex-1">
                             <Link href="/home" className={`transition-all font-medium py-2 ${isActive('/home')
                                 ? 'text-red-600 dark:text-red-400 font-bold border-b-2 border-red-600'
                                 : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
@@ -228,7 +228,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                         </div>
 
                         {/* Right Side - Search, Notification, Dark Mode Toggle and Profile Icon */}
-                        <div className="hidden md:flex items-center space-x-4">
+                        <div className="hidden lg:flex items-center space-x-4">
                             <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-3 py-1.5 border border-gray-200 dark:border-gray-700 shadow-sm focus-within:ring-2 focus-within:ring-red-500 focus-within:border-transparent transition-all max-w-xs lg:max-w-sm">
                                 <div className="flex items-center gap-1.5 border-r border-gray-300 dark:border-gray-700 pr-2">
                                     <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
@@ -410,7 +410,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                         {/* Mobile menu button */}
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="md:hidden text-gray-700 dark:text-gray-300 focus:outline-none"
+                            className="lg:hidden text-gray-700 dark:text-gray-300 focus:outline-none"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 {isOpen ? (
@@ -423,7 +423,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
 
                         {/* Mobile Menu */}
                         {isOpen && (
-                            <div className="md:hidden pb-4">
+                            <div className="lg:hidden pb-4">
                                 <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700 mb-3">
                                     <div className="flex items-center gap-1.5 flex-1 pr-2 border-r border-gray-300 dark:border-gray-700">
                                         <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />

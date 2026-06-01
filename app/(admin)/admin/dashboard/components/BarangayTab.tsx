@@ -117,7 +117,7 @@ const BarangayTab: React.FC<BarangayTabProps> = ({
                             </button>
                         </div>
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left">
+                            <table className="w-full text-left min-w-[600px]">
                                 <thead>
                                     <tr className="bg-gray-50 dark:bg-gray-800/50">
                                         <th className="px-8 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Official</th>

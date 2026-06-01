@@ -29,6 +29,7 @@ const AdminDashboardPage = () => {
     const router = useRouter();
     const params = useParams();
     const activeTab = (params.tab as string) || 'overview';
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const [users, setUsers] = useState<User[]>([]);
     const [posts, setPosts] = useState<Post[]>([]);
@@ -252,12 +253,22 @@ const AdminDashboardPage = () => {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden">
+        <div className="flex h-screen overflow-hidden relative">
             <Toaster position="top-right" />
-            <DashboardSidebar />
+            
+            {/* Mobile Sidebar overlay backdrop */}
+            {isSidebarOpen && (
+                <div 
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity animate-fadeIn"
+                />
+            )}
+
+            <DashboardSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+            
             <main className="flex-1 flex flex-col overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
-                <DashboardHeader title={getTabTitle()} />
-                <div className="flex-1 overflow-y-auto p-12">
+                <DashboardHeader title={getTabTitle()} onMenuClick={() => setIsSidebarOpen(true)} />
+                <div className="flex-1 overflow-y-auto p-4 md:p-12">
                     <div className="max-w-7xl mx-auto">
                         {renderTabContent()}
                     </div>

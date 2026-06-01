@@ -30,6 +30,7 @@ const EditPostPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const { register, handleSubmit, reset, formState: { errors, dirtyFields } } = useForm<PostFormData>({
         resolver: zodResolver(postSchema),
@@ -99,11 +100,20 @@ const EditPostPage = () => {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden">
+        <div className="flex h-screen overflow-hidden relative">
             <Toaster position="top-right" />
-            <DashboardSidebar />
+            
+            {/* Mobile Sidebar overlay backdrop */}
+            {isSidebarOpen && (
+                <div 
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity animate-fadeIn"
+                />
+            )}
+
+            <DashboardSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
             <main className="flex-1 flex flex-col overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
-                <DashboardHeader title="Edit Post" />
+                <DashboardHeader title="Edit Post" onMenuClick={() => setIsSidebarOpen(true)} />
 
                 <div className="flex-1 overflow-y-auto p-12">
                     <div className="max-w-4xl mx-auto">

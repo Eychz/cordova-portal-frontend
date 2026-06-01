@@ -26,6 +26,7 @@ function CreateOfficialForm() {
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     
     const initialType = searchParams.get('type') || 'MUNICIPAL';
     const initialBarangay = searchParams.get('barangay') || BARANGAYS[0];
@@ -88,11 +89,23 @@ function CreateOfficialForm() {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
+        <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a] relative">
             <Toaster position="top-right" />
-            <DashboardSidebar />
+            
+            {/* Mobile Sidebar overlay backdrop */}
+            {isSidebarOpen && (
+                <div 
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity animate-fadeIn"
+                />
+            )}
+
+            <DashboardSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
             <main className="flex-1 flex flex-col overflow-hidden">
-                <DashboardHeader title={`Add ${TYPES.find(t => t.id === formData.type)?.label || 'Official'}`} />
+                <DashboardHeader 
+                    title={`Add ${TYPES.find(t => t.id === formData.type)?.label || 'Official'}`} 
+                    onMenuClick={() => setIsSidebarOpen(true)}
+                />
                 <div className="flex-1 overflow-y-auto p-12">
                     <div className="max-w-4xl mx-auto">
                         <button

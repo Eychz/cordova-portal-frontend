@@ -333,10 +333,10 @@ const SearchContent = () => {
                                             <div
                                                 key={`${item.type}-${item.id}`}
                                                 onClick={() => handleItemClick(item)}
-                                                className="group cursor-pointer bg-white dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-6 transition-all duration-300 hover:shadow-md hover:border-red-200 dark:hover:border-red-900/50 flex flex-col md:flex-row gap-6"
+                                                className="group cursor-pointer bg-white dark:bg-gray-850 hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl p-6 transition-all duration-300 hover:shadow-md hover:border-red-200 dark:hover:border-red-900/50 flex flex-col sm:flex-row gap-6"
                                             >
                                                 {/* Left Side: Thumbnail or Icon */}
-                                                <div className="md:w-48 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700 relative">
+                                                <div className="w-full h-48 sm:w-48 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700 relative">
                                                     {item.imageUrl ? (
                                                         <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                                     ) : ServiceIconComponent ? (

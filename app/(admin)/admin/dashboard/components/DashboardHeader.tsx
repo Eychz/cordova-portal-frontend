@@ -1,16 +1,23 @@
-import React from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, Menu } from 'lucide-react';
 
 interface DashboardHeaderProps {
     title: string;
+    onMenuClick: () => void;
 }
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ title }) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ title, onMenuClick }) => {
     return (
-        <header className="h-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-12 z-40">
-            <div className="flex items-center gap-4">
-                <div className="w-1 h-8 bg-red-700"></div>
-                <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
+        <header className="h-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 md:px-12 z-40">
+            <div className="flex items-center gap-2 sm:gap-4">
+                <button 
+                    onClick={onMenuClick}
+                    className="p-2 -ml-2 text-gray-500 hover:text-gray-950 dark:hover:text-white lg:hidden"
+                    aria-label="Open Sidebar"
+                >
+                    <Menu className="w-6 h-6" />
+                </button>
+                <div className="w-1 h-8 bg-red-700 hidden sm:block"></div>
+                <h2 className="text-sm sm:text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight truncate max-w-[150px] sm:max-w-none">
                     {title}
                 </h2>
             </div>

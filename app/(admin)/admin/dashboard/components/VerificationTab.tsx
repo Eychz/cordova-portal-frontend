@@ -64,8 +64,8 @@ const VerificationTab: React.FC<VerificationTabProps> = ({ users, onApprove, onR
                 </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 overflow-hidden">
-                <table className="w-full text-left">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 overflow-x-auto">
+                <table className="w-full text-left min-w-[800px]">
                     <thead>
                         <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
                             <th className="px-8 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Citizen</th>
@@ -136,7 +136,7 @@ const VerificationTab: React.FC<VerificationTabProps> = ({ users, onApprove, onR
             {/* Review Modal */}
             {reviewUser && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-                    <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-gray-800 w-full max-w-5xl my-8 flex flex-col md:flex-row shadow-2xl relative">
+                    <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-gray-800 w-full max-w-5xl my-8 flex flex-col md:flex-row shadow-2xl relative md:h-[85vh] md:max-h-[85vh] overflow-y-auto md:overflow-hidden">
 
                         {/* Close button */}
                         <button
@@ -147,7 +147,7 @@ const VerificationTab: React.FC<VerificationTabProps> = ({ users, onApprove, onR
                         </button>
 
                         {/* Documents Section (Left) */}
-                        <div className="w-full md:w-3/5 bg-gray-50 dark:bg-[#111111] p-8 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800 overflow-y-auto max-h-[80vh]">
+                        <div className="w-full md:w-3/5 bg-gray-50 dark:bg-[#111111] p-6 md:p-8 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800 md:overflow-y-auto md:h-full">
                             <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest mb-6">Verification Documents</h3>
 
                             <div className="space-y-8">
@@ -176,7 +176,7 @@ const VerificationTab: React.FC<VerificationTabProps> = ({ users, onApprove, onR
                         </div>
 
                         {/* User Details & Edit Form (Right) */}
-                        <div className="w-full md:w-2/5 p-8 bg-white dark:bg-gray-900 overflow-y-auto max-h-[80vh] flex flex-col">
+                        <div className="w-full md:w-2/5 p-6 md:p-8 bg-white dark:bg-gray-900 md:overflow-y-auto md:h-full flex flex-col">
                             <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest mb-6">Align Citizen Information</h3>
                             <p className="text-xs text-gray-500 mb-6">Verify and edit the information below to exactly match the provided identity documents before approving.</p>
 
