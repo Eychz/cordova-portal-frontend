@@ -9,6 +9,7 @@ import BarangayAbout from '@/components/barangay/BarangayAbout';
 import BarangayOfficials from '@/components/barangay/BarangayOfficials';
 import { barangays } from '@/data/barangays';
 import { officialsApi } from '@/lib/officialsApi';
+import { BarangayOfficialsSkeleton } from '@/components/Skeleton';
 
 export default function BarangaySlugPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = React.use(params);
@@ -61,9 +62,9 @@ export default function BarangaySlugPage({ params }: { params: Promise<{ slug: s
                         <BarangayAbout info={data.info} />
 
                         {loading ? (
-                            <div className="py-20 text-center">
-                                <div className="animate-spin w-10 h-10 border-4 border-red-700 border-t-transparent rounded-full mx-auto mb-4"></div>
-                                <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Loading officials...</p>
+                            <div className="space-y-12">
+                                <BarangayOfficialsSkeleton />
+                                <BarangayOfficialsSkeleton />
                             </div>
                         ) : (
                             <>

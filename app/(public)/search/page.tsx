@@ -292,39 +292,39 @@ const SearchContent = () => {
 
                 {/* Results Section */}
                 <main className="flex-grow maximize-width px-4 py-12">
-                    {loading ? (
-                        <div className="space-y-6">
-                            {[1, 2, 3, 4].map(i => (
-                                <SearchCardSkeleton key={i} />
+                    <div>
+                        {/* Tab Filters */}
+                        <div className="flex border-b border-gray-200 dark:border-gray-800 overflow-x-auto pb-px mb-8 scrollbar-none gap-2">
+                            {(['all', 'news', 'event', 'announcement', 'service'] as const).map(tab => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setSelectedTab(tab)}
+                                    className={`px-4 py-3 text-sm font-bold uppercase tracking-wider border-b-2 whitespace-nowrap transition-all flex items-center gap-2 ${
+                                        selectedTab === tab
+                                            ? 'border-red-600 text-red-600 font-black'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                                    }`}
+                                >
+                                    {tab === 'all' ? 'All Results' : tab + 's'}
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                        selectedTab === tab 
+                                            ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' 
+                                            : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                                    }`}>
+                                        {counts[tab]}
+                                    </span>
+                                </button>
                             ))}
                         </div>
-                    ) : (
-                        <div>
-                            {/* Tab Filters */}
-                            <div className="flex border-b border-gray-200 dark:border-gray-800 overflow-x-auto pb-px mb-8 scrollbar-none gap-2">
-                                {(['all', 'news', 'event', 'announcement', 'service'] as const).map(tab => (
-                                    <button
-                                        key={tab}
-                                        onClick={() => setSelectedTab(tab)}
-                                        className={`px-4 py-3 text-sm font-bold uppercase tracking-wider border-b-2 whitespace-nowrap transition-all flex items-center gap-2 ${
-                                            selectedTab === tab
-                                                ? 'border-red-600 text-red-600 font-black'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-                                        }`}
-                                    >
-                                        {tab === 'all' ? 'All Results' : tab + 's'}
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                            selectedTab === tab 
-                                                ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' 
-                                                : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
-                                        }`}>
-                                            {counts[tab]}
-                                        </span>
-                                    </button>
+
+                        {/* List Container / Skeletons */}
+                        {loading ? (
+                            <div className="space-y-6">
+                                {[1, 2, 3, 4].map(i => (
+                                    <SearchCardSkeleton key={i} />
                                 ))}
                             </div>
-
-                            {/* List Container */}
+                        ) : (
                             <div className="space-y-6">
                                 {paginatedResults.length > 0 ? (
                                     paginatedResults.map(item => {
@@ -343,7 +343,7 @@ const SearchContent = () => {
                                                     ) : ServiceIconComponent ? (
                                                         <ServiceIconComponent className="w-12 h-12 text-red-600 dark:text-red-400" />
                                                     ) : (
-                                                        <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+                                                        <FileText className="w-12 h-12 text-gray-350 dark:text-gray-600" />
                                                     )}
                                                 </div>
 
@@ -403,31 +403,31 @@ const SearchContent = () => {
                                     </div>
                                 )}
                             </div>
+                        )}
 
-                            {/* Pagination Controls */}
-                            {totalPages > 1 && (
-                                <div className="flex items-center justify-center gap-4 mt-12 border-t border-gray-150 dark:border-gray-800/80 pt-6">
-                                    <button
-                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                        disabled={currentPage === 1}
-                                        className="p-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 rounded-lg transition-colors"
-                                    >
-                                        <ChevronLeft className="w-5 h-5 text-gray-650 dark:text-gray-350" />
-                                    </button>
-                                    <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
-                                        Page {currentPage} of {totalPages}
-                                    </span>
-                                    <button
-                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                        disabled={currentPage === totalPages}
-                                        className="p-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 rounded-lg transition-colors"
-                                    >
-                                        <ChevronRight className="w-5 h-5 text-gray-650 dark:text-gray-350" />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
+                        {/* Pagination Controls */}
+                        {!loading && totalPages > 1 && (
+                            <div className="flex items-center justify-center gap-4 mt-12 border-t border-gray-150 dark:border-gray-800/80 pt-6">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="p-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 rounded-lg transition-colors"
+                                >
+                                    <ChevronLeft className="w-5 h-5 text-gray-650 dark:text-gray-350" />
+                                </button>
+                                <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
+                                    Page {currentPage} of {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="p-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 rounded-lg transition-colors"
+                                >
+                                    <ChevronRight className="w-5 h-5 text-gray-650 dark:text-gray-350" />
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </main>
 
                 <Footer />

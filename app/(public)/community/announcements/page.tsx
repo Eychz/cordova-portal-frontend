@@ -11,7 +11,7 @@ import { postsApi } from '@/lib/postsApi';
 import { Post } from '@/data/adminData';
 import { slugify } from '@/utils/slugify';
 import { Search, ChevronLeft, ChevronRight, Info } from 'lucide-react';
-import { ComplexLayoutSkeleton } from '@/components/Skeleton';
+import { NewsCardSkeleton, CarouselSkeleton, LowPriorityCardSkeleton, Skeleton } from '@/components/Skeleton';
 
 interface Announcement {
     id: number;
@@ -184,9 +184,7 @@ const AnnouncementsPage: React.FC = () => {
                 </header>
 
                 <main className="flex-grow maximize-width px-4 py-16">
-                    {loading ? (
-                        <ComplexLayoutSkeleton />
-                    ) : isSearching ? (
+                    {isSearching ? (
                         /* SEARCH MODE LAYOUT */
                         <section className="mb-20">
                             <div className="flex items-center gap-4 mb-10 border-b-2 border-gray-100 dark:border-gray-800 pb-6">
@@ -196,7 +194,13 @@ const AnnouncementsPage: React.FC = () => {
                                 </h2>
                             </div>
                             
-                            {paginatedSearch.length > 0 ? (
+                            {loading ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                                        <NewsCardSkeleton key={i} />
+                                    ))}
+                                </div>
+                            ) : paginatedSearch.length > 0 ? (
                                 <>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none">
                                         {paginatedSearch.map((a) => (
@@ -232,60 +236,78 @@ const AnnouncementsPage: React.FC = () => {
                         /* COMPLEX LAYOUT (DEFAULT) */
                         <>
                             {/* TOP CAROUSEL: 10 Recent Posts */}
-                            {topCarouselPosts.length > 0 && (
+                            {(loading || topCarouselPosts.length > 0) && (
                                 <section className="mb-20">
-                                    <Carousel hideControls={true} interval={5000}>
-                                        {topCarouselPosts.map((a, index) => (
-                                            <HighPriorityCard
-                                                key={a.id}
-                                                id={a.id}
-                                                title={a.title}
-                                                description={a.description}
-                                                imageUrl={a.imageUrl}
-                                                date={a.date}
-                                                category={a.category}
-                                                authorName={a.authorName}
-                                                index={index}
-                                                onClick={() => handleAnnouncementClick(a)}
-                                            />
-                                        ))}
-                                    </Carousel>
+                                    {loading ? (
+                                        <CarouselSkeleton />
+                                    ) : (
+                                        <Carousel hideControls={true} interval={5000}>
+                                            {topCarouselPosts.map((a, index) => (
+                                                <HighPriorityCard
+                                                    key={a.id}
+                                                    id={a.id}
+                                                    title={a.title}
+                                                    description={a.description}
+                                                    imageUrl={a.imageUrl}
+                                                    date={a.date}
+                                                    category={a.category}
+                                                    authorName={a.authorName}
+                                                    index={index}
+                                                    onClick={() => handleAnnouncementClick(a)}
+                                                />
+                                            ))}
+                                        </Carousel>
+                                    )}
                                 </section>
                             )}
 
                             {/* ROW 1: Grid (Left) + Carousel (Right) */}
-                            {(paginatedRow1Grid.length > 0 || row1CarouselPosts.length > 0) && (
+                            {(loading || paginatedRow1Grid.length > 0 || row1CarouselPosts.length > 0) && (
                                 <section className="mb-20">
                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                                         {/* Left Side: 4 Square Grid */}
                                         <div className="lg:col-span-8 flex flex-col">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-800 p-0 border-none">
-                                                {paginatedRow1Grid.map((a) => (
-                                                    <div key={a.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
-                                                        <NormalPriorityCard
-                                                            id={a.id}
-                                                            title={a.title}
-                                                            description={a.description}
-                                                            imageUrl={a.imageUrl}
-                                                            date={a.date}
-                                                            category={a.category}
-                                                            authorName={a.authorName}
-                                                            onClick={() => handleAnnouncementClick(a)}
-                                                        />
+                                            {loading ? (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow">
+                                                    {[1, 2, 3, 4].map(i => (
+                                                        <NewsCardSkeleton key={i} />
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-800 p-0 border-none">
+                                                        {paginatedRow1Grid.map((a) => (
+                                                            <div key={a.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                                                                <NormalPriorityCard
+                                                                    id={a.id}
+                                                                    title={a.title}
+                                                                    description={a.description}
+                                                                    imageUrl={a.imageUrl}
+                                                                    date={a.date}
+                                                                    category={a.category}
+                                                                    authorName={a.authorName}
+                                                                    onClick={() => handleAnnouncementClick(a)}
+                                                                />
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                ))}
-                                            </div>
-                                            <PaginationControls 
-                                                currentPage={currentRow1Page} 
-                                                totalItems={row1GridPosts.length} 
-                                                limit={GRID_LIMIT} 
-                                                onPageChange={setCurrentRow1Page} 
-                                            />
+                                                    <PaginationControls 
+                                                        currentPage={currentRow1Page} 
+                                                        totalItems={row1GridPosts.length} 
+                                                        limit={GRID_LIMIT} 
+                                                        onPageChange={setCurrentRow1Page} 
+                                                    />
+                                                </>
+                                            )}
                                         </div>
 
                                         {/* Right Side: Tall Carousel (8:3 ratio) */}
                                         <div className="lg:col-span-4 hidden lg:block">
-                                            {row1CarouselPosts.length > 0 && (
+                                            {loading ? (
+                                                <div className="relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full h-[800px]">
+                                                    <Skeleton className="w-full h-full" />
+                                                </div>
+                                            ) : row1CarouselPosts.length > 0 && (
                                                 <Carousel 
                                                     hideControls={true} 
                                                     interval={6000}
@@ -315,12 +337,16 @@ const AnnouncementsPage: React.FC = () => {
                             )}
 
                             {/* ROW 2: Carousel (Left) + Grid (Right) */}
-                            {(paginatedRow2Grid.length > 0 || row2CarouselPosts.length > 0) && (
+                            {(loading || paginatedRow2Grid.length > 0 || row2CarouselPosts.length > 0) && (
                                 <section className="mb-20">
                                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                                         {/* Left Side: Tall Carousel */}
                                         <div className="lg:col-span-4 hidden lg:block">
-                                            {row2CarouselPosts.length > 0 && (
+                                            {loading ? (
+                                                <div className="relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full h-[800px]">
+                                                    <Skeleton className="w-full h-full" />
+                                                </div>
+                                            ) : row2CarouselPosts.length > 0 && (
                                                 <Carousel 
                                                     hideControls={true} 
                                                     interval={6000}
@@ -348,60 +374,80 @@ const AnnouncementsPage: React.FC = () => {
 
                                         {/* Right Side: 4 Square Grid */}
                                         <div className="lg:col-span-8 flex flex-col">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-800 p-0 border-none">
-                                                {paginatedRow2Grid.map((a) => (
-                                                    <div key={a.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
-                                                        <NormalPriorityCard
-                                                            id={a.id}
-                                                            title={a.title}
-                                                            description={a.description}
-                                                            imageUrl={a.imageUrl}
-                                                            date={a.date}
-                                                            category={a.category}
-                                                            authorName={a.authorName}
-                                                            onClick={() => handleAnnouncementClick(a)}
-                                                        />
+                                            {loading ? (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow">
+                                                    {[1, 2, 3, 4].map(i => (
+                                                        <NewsCardSkeleton key={i} />
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-0 border-none">
+                                                        {paginatedRow2Grid.map((a) => (
+                                                            <div key={a.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                                                                <NormalPriorityCard
+                                                                    id={a.id}
+                                                                    title={a.title}
+                                                                    description={a.description}
+                                                                    imageUrl={a.imageUrl}
+                                                                    date={a.date}
+                                                                    category={a.category}
+                                                                    authorName={a.authorName}
+                                                                    onClick={() => handleAnnouncementClick(a)}
+                                                                />
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                ))}
-                                            </div>
-                                            <PaginationControls 
-                                                currentPage={currentRow2Page} 
-                                                totalItems={row2GridPosts.length} 
-                                                limit={GRID_LIMIT} 
-                                                onPageChange={setCurrentRow2Page} 
-                                            />
+                                                    <PaginationControls 
+                                                        currentPage={currentRow2Page} 
+                                                        totalItems={row2GridPosts.length} 
+                                                        limit={GRID_LIMIT} 
+                                                        onPageChange={setCurrentRow2Page} 
+                                                    />
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </section>
                             )}
 
                             {/* LOW PRIORITY */}
-                            {paginatedLowPriority.length > 0 && (
+                            {(loading || paginatedLowPriority.length > 0) && (
                                 <section className="mb-20 pt-10 border-t border-gray-200 dark:border-gray-800">
                                     <h2 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-white mb-8">
                                         More Announcements
                                     </h2>
-                                    <div className="space-y-4">
-                                        {paginatedLowPriority.map((a) => (
-                                            <LowPriorityCard
-                                                key={a.id}
-                                                id={a.id}
-                                                title={a.title}
-                                                description={a.description}
-                                                imageUrl={a.imageUrl}
-                                                date={a.date}
-                                                category={a.category}
-                                                authorName={a.authorName}
-                                                onClick={() => handleAnnouncementClick(a)}
+                                    {loading ? (
+                                        <div className="space-y-4">
+                                            {[1, 2, 3, 4].map(i => (
+                                                <LowPriorityCardSkeleton key={i} />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="space-y-4">
+                                                {paginatedLowPriority.map((a) => (
+                                                    <LowPriorityCard
+                                                        key={a.id}
+                                                        id={a.id}
+                                                        title={a.title}
+                                                        description={a.description}
+                                                        imageUrl={a.imageUrl}
+                                                        date={a.date}
+                                                        category={a.category}
+                                                        authorName={a.authorName}
+                                                        onClick={() => handleAnnouncementClick(a)}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <PaginationControls 
+                                                currentPage={currentLowPriorityPage} 
+                                                totalItems={lowPriorityPosts.length} 
+                                                limit={LOW_PRIORITY_LIMIT} 
+                                                onPageChange={setCurrentLowPriorityPage} 
                                             />
-                                        ))}
-                                    </div>
-                                    <PaginationControls 
-                                        currentPage={currentLowPriorityPage} 
-                                        totalItems={lowPriorityPosts.length} 
-                                        limit={LOW_PRIORITY_LIMIT} 
-                                        onPageChange={setCurrentLowPriorityPage} 
-                                    />
+                                        </>
+                                    )}
                                 </section>
                             )}
                         </>

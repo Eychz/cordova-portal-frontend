@@ -37,9 +37,9 @@ export default function ServiceDetailPage() {
     return (
       <PageTransition>
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
-          <Navbar />
-          <main className="flex-grow maximize-width px-4 py-20 mt-16">
-            <div className="max-w-[1200px] mx-auto space-y-8">
+          <Navbar activePage="Services" />
+          <main className="flex-grow maximize-width px-4 py-12 mt-16">
+            <div className="max-w-[1200px] mx-auto">
               {/* Back button skeleton */}
               <Skeleton className="h-4 w-40 mb-10" />
               

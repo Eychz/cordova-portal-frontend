@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import * as LucideIcons from 'lucide-react';
 import { emergencyApi, EmergencyHotline } from '@/lib/emergencyApi';
+import { RescueHotlineCardSkeleton } from '@/components/Skeleton';
 
 const RescueDeskPage: React.FC = () => {
     const [hotlines, setHotlines] = useState<EmergencyHotline[]>([]);
@@ -75,9 +76,10 @@ const RescueDeskPage: React.FC = () => {
 
                     {/* Directory Grid - Flat & Sharp - 2-gap spacing policy */}
                     {loading ? (
-                        <div className="py-20 text-center mb-20">
-                            <div className="animate-spin w-12 h-12 border-4 border-red-700 border-t-transparent rounded-full mx-auto mb-4"></div>
-                            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Loading Emergency Hotlines...</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none mb-20">
+                            {[1, 2, 3, 4, 5, 6].map((i) => (
+                                <RescueHotlineCardSkeleton key={i} />
+                            ))}
                         </div>
                     ) : hotlines.length === 0 ? (
                         <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-20 text-center mb-20">

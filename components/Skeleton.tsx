@@ -228,3 +228,66 @@ export const ComplexLayoutSkeleton: React.FC = () => {
         </div>
     );
 };
+
+export const BarangayOfficialsSkeleton: React.FC = () => {
+    return (
+        <section className="mb-24">
+            <div className="flex items-center gap-4 mb-12">
+                <div className="w-2 h-10 bg-gray-900 dark:bg-white animate-pulse"></div>
+                <Skeleton className="h-10 w-64" />
+            </div>
+
+            {/* Featured Official Skeleton */}
+            <div className="mb-12 border-4 dark:border-gray-800 p-10 bg-white dark:bg-gray-900">
+                <div className="grid md:grid-cols-12 gap-0">
+                    <div className="md:col-span-4 aspect-[3/4] md:aspect-auto h-64 md:h-full">
+                        <Skeleton className="w-full h-full" />
+                    </div>
+                    <div className="md:col-span-8 p-12 flex flex-col justify-center space-y-4">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-12 w-3/4" />
+                        <div className="space-y-2 pt-2">
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-5/6" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Other Officials Grid Skeleton */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-800">
+                {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="bg-white dark:bg-gray-900 p-8 space-y-4">
+                        <Skeleton className="aspect-[3/4] w-full" />
+                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="h-6 w-3/4" />
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+};
+
+export const RescueHotlineCardSkeleton: React.FC = () => {
+    return (
+        <div className="bg-white dark:bg-gray-900 p-10 border border-gray-100 dark:border-gray-850 flex flex-col space-y-6 h-full">
+            <div className="flex justify-between items-start">
+                <Skeleton className="w-16 h-16" />
+                <Skeleton className="h-4 w-20" />
+            </div>
+            <div className="space-y-2 flex-grow">
+                <Skeleton className="h-7 w-3/4" />
+                <div className="space-y-2 pt-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                </div>
+            </div>
+            <div className="space-y-3 pt-6 border-t border-gray-100 dark:border-gray-800/50 mt-auto">
+                <Skeleton className="h-8 w-2/3" />
+                <Skeleton className="h-10 w-full" />
+            </div>
+        </div>
+    );
+};
+
+

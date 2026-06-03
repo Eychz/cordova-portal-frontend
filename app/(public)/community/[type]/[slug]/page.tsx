@@ -58,7 +58,7 @@ export default function UnifiedPostDetailPage() {
     return (
       <PageTransition>
         <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
-          <Navbar />
+          <Navbar activePage="Community" />
           <main className="flex-grow w-full maximize-width px-4 py-12 mt-16">
             <DetailSkeleton />
           </main>
