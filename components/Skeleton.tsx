@@ -40,6 +40,25 @@ export const NewsCardSkeleton: React.FC = () => {
     );
 };
 
+export const LowPriorityCardSkeleton: React.FC = () => {
+    return (
+        <div className="flex gap-4 bg-white dark:bg-gray-800 p-4 border border-gray-100 dark:border-gray-700">
+            {/* Image square */}
+            <Skeleton className="w-24 h-24 flex-shrink-0" />
+            {/* Content area */}
+            <div className="flex-1 flex flex-col justify-center space-y-2">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-5 w-5/6" />
+                <Skeleton className="h-3.5 w-full" />
+                <div className="flex items-center gap-2 pt-1">
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-3 w-16" />
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export const ServiceCardSkeleton: React.FC = () => {
     return (
         <div className="bg-white dark:bg-gray-900 p-8 border border-gray-200 dark:border-gray-800 flex flex-col h-full space-y-6">
@@ -140,6 +159,71 @@ export const DetailSkeleton: React.FC = () => {
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-3/4" />
+            </div>
+        </div>
+    );
+};
+
+export const ComplexLayoutSkeleton: React.FC = () => {
+    return (
+        <div className="space-y-20">
+            {/* 1. Top Carousel Skeleton */}
+            <CarouselSkeleton />
+
+            {/* 2. Row 1: Grid (Left) + Tall Carousel (Right) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pulse">
+                {/* Left Side: 4 Square Grid Skeletons */}
+                <div className="lg:col-span-8 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {[1, 2, 3, 4].map(i => (
+                            <NewsCardSkeleton key={i} />
+                        ))}
+                    </div>
+                </div>
+                {/* Right Side: Tall Carousel Placeholder */}
+                <div className="lg:col-span-4 hidden lg:block">
+                    <div className="relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full h-[800px]">
+                        <Skeleton className="w-full h-full" />
+                        <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent space-y-3">
+                            <Skeleton className="h-4 w-16 bg-gray-300 dark:bg-gray-650" />
+                            <Skeleton className="h-8 w-5/6 bg-gray-300 dark:bg-gray-650" />
+                            <Skeleton className="h-4 w-full bg-gray-400 dark:bg-gray-600" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 3. Row 2: Tall Carousel (Left) + Grid (Right) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pulse">
+                {/* Left Side: Tall Carousel Placeholder */}
+                <div className="lg:col-span-4 hidden lg:block">
+                    <div className="relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full h-[800px]">
+                        <Skeleton className="w-full h-full" />
+                        <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent space-y-3">
+                            <Skeleton className="h-4 w-16 bg-gray-300 dark:bg-gray-650" />
+                            <Skeleton className="h-8 w-5/6 bg-gray-300 dark:bg-gray-650" />
+                            <Skeleton className="h-4 w-full bg-gray-400 dark:bg-gray-600" />
+                        </div>
+                    </div>
+                </div>
+                {/* Right Side: 4 Square Grid Skeletons */}
+                <div className="lg:col-span-8 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {[1, 2, 3, 4].map(i => (
+                            <NewsCardSkeleton key={i} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* 4. More Updates Low Priority List Skeleton */}
+            <div className="pt-10 border-t border-gray-200 dark:border-gray-800 space-y-6">
+                <Skeleton className="h-8 w-40" />
+                <div className="space-y-4">
+                    {[1, 2, 3, 4].map(i => (
+                        <LowPriorityCardSkeleton key={i} />
+                    ))}
+                </div>
             </div>
         </div>
     );
