@@ -11,6 +11,7 @@ import { postsApi } from '@/lib/postsApi';
 import { Post } from '@/data/adminData';
 import { slugify } from '@/utils/slugify';
 import { Search, ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { NewsCardSkeleton } from '@/components/Skeleton';
 
 interface Announcement {
     id: number;
@@ -184,9 +185,9 @@ const AnnouncementsPage: React.FC = () => {
 
                 <main className="flex-grow maximize-width px-4 py-16">
                     {loading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
                             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                                <div key={i} className="h-96 bg-gray-100 dark:bg-gray-800 animate-pulse border border-gray-200 dark:border-gray-700"></div>
+                                <NewsCardSkeleton key={i} />
                             ))}
                         </div>
                     ) : isSearching ? (

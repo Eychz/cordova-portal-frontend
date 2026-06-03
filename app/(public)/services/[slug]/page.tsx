@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { ArrowLeft, CheckCircle2, Clock, DollarSign, Info, Building2, Construction, FileText, CheckCircle, Baby, Heart, Bird, Diamond, Home, Map, Hospital, Hammer, Fence, Pickaxe, Sprout, PhilippinePeso, PhoneCallIcon } from 'lucide-react';
 import { servicesApi, Service as ApiService } from '@/lib/servicesApi';
 import { getIconByName } from '@/utils/iconMapper';
+import { Skeleton } from '@/components/Skeleton';
 
 export default function ServiceDetailPage() {
   const params = useParams();
@@ -37,12 +38,49 @@ export default function ServiceDetailPage() {
       <PageTransition>
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
           <Navbar />
-          <main className="flex-grow maximize-width px-4 py-20 mt-16 animate-pulse">
-            <div className="h-4 bg-gray-200 w-24 mb-8"></div>
-            <div className="h-12 bg-gray-200 w-1/2 mb-12"></div>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="col-span-2 h-96 bg-gray-200"></div>
-              <div className="h-96 bg-gray-200"></div>
+          <main className="flex-grow maximize-width px-4 py-20 mt-16">
+            <div className="max-w-[1200px] mx-auto space-y-8">
+              {/* Back button skeleton */}
+              <Skeleton className="h-4 w-40 mb-10" />
+              
+              <div className="grid lg:grid-cols-3 gap-12 items-start">
+                {/* Left side details skeleton */}
+                <div className="lg:col-span-2 space-y-12">
+                  <div className="space-y-6">
+                    <Skeleton className="h-6 w-24" />
+                    <Skeleton className="h-16 w-3/4" />
+                    <Skeleton className="h-24 w-full" />
+                  </div>
+                  
+                  <div className="pt-8 border-t border-gray-100 dark:border-gray-800 space-y-4">
+                    <Skeleton className="h-8 w-48" />
+                    <div className="space-y-3">
+                      <Skeleton className="h-6 w-full" />
+                      <Skeleton className="h-6 w-11/12" />
+                      <Skeleton className="h-6 w-5/6" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right side info card skeleton */}
+                <div className="space-y-6 bg-gray-50 dark:bg-gray-850 p-8 border border-gray-100 dark:border-gray-800">
+                  <Skeleton className="h-8 w-32" />
+                  <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-28" />
+                    </div>
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </main>
           <Footer />

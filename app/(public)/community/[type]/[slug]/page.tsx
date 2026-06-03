@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { ArrowLeft, Calendar, User, Tag, MapPin, Clock, Plus, Bell } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { postsApi, Post } from '@/lib/postsApi';
+import { DetailSkeleton } from '@/components/Skeleton';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -59,11 +60,7 @@ export default function UnifiedPostDetailPage() {
         <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
           <Navbar />
           <main className="flex-grow w-full maximize-width px-4 py-12 mt-16">
-            <div className="animate-pulse space-y-8">
-              <div className="h-4 bg-gray-200 dark:bg-gray-800 w-24"></div>
-              <div className="h-12 bg-gray-200 dark:bg-gray-800 w-3/4"></div>
-              <div className="h-[500px] bg-gray-200 dark:bg-gray-800 w-full"></div>
-            </div>
+            <DetailSkeleton />
           </main>
           <Footer />
         </div>

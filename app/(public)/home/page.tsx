@@ -14,6 +14,7 @@ import Carousel from '@/components/Carousel';
 import { HighPriorityCard } from '@/components/cards';
 import { Bell, ChevronRight, X, Phone, Building2, Landmark, Siren, ShieldAlert, ArrowRight } from 'lucide-react';
 import { slugify } from '@/utils/slugify';
+import { CarouselSkeleton, NewsCardSkeleton } from '@/components/Skeleton';
 
 interface AnnouncementItem {
     id: number;
@@ -201,7 +202,7 @@ const HomeGuestPage: React.FC = () => {
                 <section className="py-12 px-4 bg-white dark:bg-gray-900">
                     <div className="maximize-width">
                         {loading ? (
-                            <div className="w-full h-[500px] bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse"></div>
+                            <CarouselSkeleton />
                         ) : announcements.length > 0 && (
                             <Carousel>
                                 {announcements.map((item, index) => (
@@ -224,7 +225,26 @@ const HomeGuestPage: React.FC = () => {
                 </section>
 
                 {/* Featured Posts Section - Flat & Wide - 2-gap spacing policy */}
-                {!loadingFeatured && featuredPosts.length > 0 && (
+                {loadingFeatured ? (
+                    <section className="py-20 px-4 bg-white dark:bg-gray-900">
+                        <div className="maximize-width">
+                            <div className="mb-12 border-l-8 border-red-700 pl-6">
+                                <h2 className="text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                                    Latest Featured Updates
+                                </h2>
+                                <p className="text-gray-600 dark:text-gray-400 font-medium">
+                                    Important news and upcoming events from the municipality.
+                                </p>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {[1, 2, 3].map(i => (
+                                    <NewsCardSkeleton key={i} />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                ) : featuredPosts.length > 0 && (
                     <section className="py-20 px-4 bg-white dark:bg-gray-900">
                         <div className="maximize-width">
                             <div className="mb-12 border-l-8 border-red-700 pl-6">

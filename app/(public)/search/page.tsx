@@ -10,6 +10,7 @@ import { servicesApi, Service } from '@/lib/servicesApi';
 import { slugify } from '@/utils/slugify';
 import { getIconByName } from '@/utils/iconMapper';
 import { Search as SearchIcon, Calendar as CalendarIcon, ArrowRight, FileText, Info, HelpCircle, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SearchCardSkeleton } from '@/components/Skeleton';
 
 interface UnifiedResult {
     id: string | number;
@@ -292,9 +293,9 @@ const SearchContent = () => {
                 {/* Results Section */}
                 <main className="flex-grow maximize-width px-4 py-12">
                     {loading ? (
-                        <div className="space-y-4">
-                            {[1, 2, 3, 4, 5].map(i => (
-                                <div key={i} className="h-32 bg-gray-100 dark:bg-gray-800 animate-pulse rounded-lg"></div>
+                        <div className="space-y-6">
+                            {[1, 2, 3, 4].map(i => (
+                                <SearchCardSkeleton key={i} />
                             ))}
                         </div>
                     ) : (

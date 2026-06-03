@@ -11,7 +11,6 @@ interface LowPriorityEventCardProps {
     date: string;
     time: string;
     location: string;
-    status: 'featured' | 'upcoming' | 'done';
     authorName?: string;
     onClick: () => void;
 }
@@ -24,38 +23,25 @@ const LowPriorityEventCard: React.FC<LowPriorityEventCardProps> = ({
     date,
     time,
     location,
-    status,
     authorName,
     onClick
 }) => {
-    const statusConfig: Record<string, { text: string; color: string }> = {
-        featured: { text: 'Featured', color: 'text-orange-400' },
-        upcoming: { text: 'Upcoming', color: 'text-green-400' },
-        done: { text: 'Done', color: 'text-gray-400' }
-    };
-
-    const eventStatus = statusConfig[status] || { text: status, color: 'text-gray-400' };
 
     return (
-        <div 
+        <div
             onClick={onClick}
             className="flex gap-4 relative bg-white dark:bg-gray-800 rounded-none p-4 border border-gray-100 dark:border-gray-700 premium-flag-card group cursor-pointer min-w-0"
         >
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-transparent pointer-events-none rounded-xl"></div>
-            
+
             <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden">
-                <img 
+                <img
                     src={imageUrl}
                     alt={name}
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute top-2 right-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-2 py-0.5 rounded-full">
-                    <span className={`${eventStatus.color} text-xs font-bold`}>
-                        {eventStatus.text}
-                    </span>
-                </div>
             </div>
-            
+
             <div className="flex-1 relative z-10 flex flex-col justify-between">
                 <div>
                     <h4 className="font-bold text-gray-900 dark:text-white mb-1 line-clamp-1 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors text-base break-words">

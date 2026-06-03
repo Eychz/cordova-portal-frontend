@@ -11,6 +11,7 @@ import { postsApi } from '@/lib/postsApi';
 import { Post } from '@/data/adminData';
 import { slugify } from '@/utils/slugify';
 import { Search, ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { NewsCardSkeleton } from '@/components/Skeleton';
 
 interface EventItem {
     id: number;
@@ -175,28 +176,15 @@ const EventsPage: React.FC = () => {
                                     Official schedule of activities, community gatherings, and public ceremonies in the Municipality of Cordova.
                                 </p>
                             </div>
-
-                            {/* Filter Bar */}
-                            <div className="bg-white/5 p-2 flex items-center gap-2 border border-white/10">
-                                <select
-                                    value={selectedStatusFilter}
-                                    onChange={(e) => { setSelectedStatusFilter(e.target.value); setCurrentSearchPage(1); }}
-                                    className="bg-white/5 border border-white/10 px-4 py-2 text-sm text-white focus:outline-none focus:border-red-700 cursor-pointer"
-                                >
-                                    <option value="All" className="text-gray-900">All Status</option>
-                                    <option value="Upcoming" className="text-gray-900">Upcoming</option>
-                                    <option value="Done" className="text-gray-900">Done</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
                 </header>
 
                 <main className="flex-grow maximize-width px-4 py-16">
                     {loading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                                <div key={i} className="h-96 bg-gray-100 dark:bg-gray-800 animate-pulse border border-gray-200 dark:border-gray-700"></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[1, 2, 3, 4, 5, 6].map(i => (
+                                <NewsCardSkeleton key={i} />
                             ))}
                         </div>
                     ) : isSearching ? (
@@ -221,7 +209,6 @@ const EventsPage: React.FC = () => {
                                                 location={event.location}
                                                 date={event.date}
                                                 imageUrl={event.imageUrl}
-                                                status={event.status}
                                                 onClick={() => handleEventClick(event)}
                                                 authorName={event.authorName}
                                             />
@@ -282,7 +269,6 @@ const EventsPage: React.FC = () => {
                                                         location={event.location}
                                                         date={event.date}
                                                         imageUrl={event.imageUrl}
-                                                        status={event.status}
                                                         onClick={() => handleEventClick(event)}
                                                         authorName={event.authorName}
                                                     />
@@ -345,9 +331,6 @@ const EventsPage: React.FC = () => {
                                                             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
                                                             <img src={a.imageUrl} alt={a.title} className="w-full h-full object-cover" />
                                                             <div className="absolute bottom-0 left-0 p-8 z-20 w-full bg-gradient-to-t from-black/90 via-black/50 to-transparent">
-                                                                <span className="inline-block px-3 py-1 bg-red-700 text-white text-[10px] font-black uppercase tracking-widest mb-4">
-                                                                    {a.status}
-                                                                </span>
                                                                 <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2 line-clamp-3">
                                                                     {a.title}
                                                                 </h3>
@@ -371,7 +354,6 @@ const EventsPage: React.FC = () => {
                                                         location={event.location}
                                                         date={event.date}
                                                         imageUrl={event.imageUrl}
-                                                        status={event.status}
                                                         onClick={() => handleEventClick(event)}
                                                         authorName={event.authorName}
                                                     />
@@ -405,7 +387,6 @@ const EventsPage: React.FC = () => {
                                                 date={event.date}
                                                 time={event.time}
                                                 imageUrl={event.imageUrl}
-                                                status={event.status}
                                                 onClick={() => handleEventClick(event)}
                                                 authorName={event.authorName}
                                             />
