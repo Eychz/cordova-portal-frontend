@@ -34,7 +34,7 @@ const AnnouncementsPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [searchQuery, setSearchQuery] = useState('');
-    
+
     // Pagination states
     const [currentSearchPage, setCurrentSearchPage] = useState(1);
     const [currentRow1Page, setCurrentRow1Page] = useState(1);
@@ -50,9 +50,9 @@ const AnnouncementsPage: React.FC = () => {
             try {
                 setLoading(true);
                 const adminPosts = await postsApi.getAll({ type: 'announcement' });
-                
+
                 // Sort by createdAt descending (most recent first)
-                const sortedPosts = adminPosts.sort((a: Post, b: Post) => 
+                const sortedPosts = adminPosts.sort((a: Post, b: Post) =>
                     new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
                 );
 
@@ -91,8 +91,8 @@ const AnnouncementsPage: React.FC = () => {
 
     const searchResults = useMemo(() => {
         return announcements.filter(a => {
-            const matchesSearch = a.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                 a.description.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesSearch = a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                a.description.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesCategory = selectedCategory === 'All' || a.category === selectedCategory;
             return matchesSearch && matchesCategory;
         });
@@ -125,14 +125,14 @@ const AnnouncementsPage: React.FC = () => {
                     Page {currentPage} of {totalPages}
                 </span>
                 <div className="flex gap-1">
-                    <button 
+                    <button
                         onClick={() => onPageChange(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
                         className="p-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30"
                     >
                         <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <button 
+                    <button
                         onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
                         className="p-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30"
@@ -148,7 +148,7 @@ const AnnouncementsPage: React.FC = () => {
         <PageTransition>
             <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
                 <Navbar activePage="Community" />
-                
+
                 {/* Formal Government Header */}
                 <header className="bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-950">
                     <div className="maximize-width px-4">
@@ -164,36 +164,13 @@ const AnnouncementsPage: React.FC = () => {
                                     Official news, public notices, and administrative updates from the Cordova Municipal Government.
                                 </p>
                             </div>
-                            
-                            {/* Filter Bar */}
-                            <div className="bg-black/20 p-2 flex items-center gap-2 border border-white/10">
-                                <select 
-                                    value={selectedCategory}
-                                    onChange={(e) => { setSelectedCategory(e.target.value); setCurrentSearchPage(1); }}
-                                    className="bg-white/10 border border-white/20 px-4 py-2 text-sm text-white focus:outline-none focus:border-white cursor-pointer"
-                                >
-                                    <option value="All" className="text-gray-900">All Categories</option>
-                                    <option value="Emergency Alert" className="text-gray-900">Emergency Alert</option>
-                                    <option value="Public Notice" className="text-gray-900">Public Notice</option>
-                                    <option value="Health Advisory" className="text-gray-900">Health Advisory</option>
-                                    <option value="Community Update" className="text-gray-900">Community Update</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
                 </header>
 
                 <main className="flex-grow maximize-width px-4 py-16">
                     {isSearching ? (
-                        /* SEARCH MODE LAYOUT */
                         <section className="mb-20">
-                            <div className="flex items-center gap-4 mb-10 border-b-2 border-gray-100 dark:border-gray-800 pb-6">
-                                <div className="w-2 h-10 bg-gray-900 dark:bg-gray-100"></div>
-                                <h2 className="text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
-                                    Search Results
-                                </h2>
-                            </div>
-                            
                             {loading ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
                                     {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
@@ -218,11 +195,11 @@ const AnnouncementsPage: React.FC = () => {
                                             </div>
                                         ))}
                                     </div>
-                                    <PaginationControls 
-                                        currentPage={currentSearchPage} 
-                                        totalItems={searchResults.length} 
-                                        limit={SEARCH_LIMIT} 
-                                        onPageChange={setCurrentSearchPage} 
+                                    <PaginationControls
+                                        currentPage={currentSearchPage}
+                                        totalItems={searchResults.length}
+                                        limit={SEARCH_LIMIT}
+                                        onPageChange={setCurrentSearchPage}
                                     />
                                 </>
                             ) : (
@@ -291,11 +268,11 @@ const AnnouncementsPage: React.FC = () => {
                                                             </div>
                                                         ))}
                                                     </div>
-                                                    <PaginationControls 
-                                                        currentPage={currentRow1Page} 
-                                                        totalItems={row1GridPosts.length} 
-                                                        limit={GRID_LIMIT} 
-                                                        onPageChange={setCurrentRow1Page} 
+                                                    <PaginationControls
+                                                        currentPage={currentRow1Page}
+                                                        totalItems={row1GridPosts.length}
+                                                        limit={GRID_LIMIT}
+                                                        onPageChange={setCurrentRow1Page}
                                                     />
                                                 </>
                                             )}
@@ -308,8 +285,8 @@ const AnnouncementsPage: React.FC = () => {
                                                     <Skeleton className="w-full h-full" />
                                                 </div>
                                             ) : row1CarouselPosts.length > 0 && (
-                                                <Carousel 
-                                                    hideControls={true} 
+                                                <Carousel
+                                                    hideControls={true}
                                                     interval={6000}
                                                     containerClassName="w-full h-full"
                                                     className="relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full h-[800px]"
@@ -347,8 +324,8 @@ const AnnouncementsPage: React.FC = () => {
                                                     <Skeleton className="w-full h-full" />
                                                 </div>
                                             ) : row2CarouselPosts.length > 0 && (
-                                                <Carousel 
-                                                    hideControls={true} 
+                                                <Carousel
+                                                    hideControls={true}
                                                     interval={6000}
                                                     containerClassName="w-full h-full"
                                                     className="relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full h-[800px]"
@@ -398,11 +375,11 @@ const AnnouncementsPage: React.FC = () => {
                                                             </div>
                                                         ))}
                                                     </div>
-                                                    <PaginationControls 
-                                                        currentPage={currentRow2Page} 
-                                                        totalItems={row2GridPosts.length} 
-                                                        limit={GRID_LIMIT} 
-                                                        onPageChange={setCurrentRow2Page} 
+                                                    <PaginationControls
+                                                        currentPage={currentRow2Page}
+                                                        totalItems={row2GridPosts.length}
+                                                        limit={GRID_LIMIT}
+                                                        onPageChange={setCurrentRow2Page}
                                                     />
                                                 </>
                                             )}
@@ -440,11 +417,11 @@ const AnnouncementsPage: React.FC = () => {
                                                     />
                                                 ))}
                                             </div>
-                                            <PaginationControls 
-                                                currentPage={currentLowPriorityPage} 
-                                                totalItems={lowPriorityPosts.length} 
-                                                limit={LOW_PRIORITY_LIMIT} 
-                                                onPageChange={setCurrentLowPriorityPage} 
+                                            <PaginationControls
+                                                currentPage={currentLowPriorityPage}
+                                                totalItems={lowPriorityPosts.length}
+                                                limit={LOW_PRIORITY_LIMIT}
+                                                onPageChange={setCurrentLowPriorityPage}
                                             />
                                         </>
                                     )}

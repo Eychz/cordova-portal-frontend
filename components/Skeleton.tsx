@@ -12,7 +12,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({ className = '' }) => {
 
 export const NewsCardSkeleton: React.FC = () => {
     return (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm flex flex-col h-full">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm flex flex-col h-full w-full">
             {/* Image placeholder */}
             <Skeleton className="h-48 w-full" />
             {/* Content area */}
@@ -42,7 +42,7 @@ export const NewsCardSkeleton: React.FC = () => {
 
 export const LowPriorityCardSkeleton: React.FC = () => {
     return (
-        <div className="flex gap-4 bg-white dark:bg-gray-800 p-4 border border-gray-100 dark:border-gray-700">
+        <div className="flex gap-4 bg-white dark:bg-gray-800 p-4 border border-gray-100 dark:border-gray-700 w-full">
             {/* Image square */}
             <Skeleton className="w-24 h-24 flex-shrink-0" />
             {/* Content area */}
@@ -61,7 +61,7 @@ export const LowPriorityCardSkeleton: React.FC = () => {
 
 export const ServiceCardSkeleton: React.FC = () => {
     return (
-        <div className="bg-white dark:bg-gray-900 p-8 border border-gray-200 dark:border-gray-800 flex flex-col h-full space-y-6">
+        <div className="bg-white dark:bg-gray-900 p-8 border border-gray-200 dark:border-gray-800 flex flex-col h-full space-y-6 w-full">
             {/* Icon placeholder */}
             <Skeleton className="w-16 h-16" />
             {/* Title & Description */}
@@ -87,7 +87,7 @@ export const ServiceCardSkeleton: React.FC = () => {
 
 export const SearchCardSkeleton: React.FC = () => {
     return (
-        <div className="bg-white dark:bg-gray-850 border border-gray-200 dark:border-gray-800 p-6 flex flex-col sm:flex-row gap-6">
+        <div className="bg-white dark:bg-gray-850 border border-gray-200 dark:border-gray-800 p-6 flex flex-col sm:flex-row gap-6 w-full">
             {/* Left side: Thumbnail */}
             <Skeleton className="w-full h-48 sm:w-48 sm:h-32 flex-shrink-0" />
             {/* Right side: Content */}
@@ -140,7 +140,7 @@ export const CarouselSkeleton: React.FC = () => {
 
 export const DetailSkeleton: React.FC = () => {
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 w-full">
             {/* Category & Title */}
             <div className="space-y-4">
                 <Skeleton className="h-5 w-24" />
@@ -231,14 +231,14 @@ export const ComplexLayoutSkeleton: React.FC = () => {
 
 export const BarangayOfficialsSkeleton: React.FC = () => {
     return (
-        <section className="mb-24">
+        <section className="mb-24 w-full">
             <div className="flex items-center gap-4 mb-12">
                 <div className="w-2 h-10 bg-gray-900 dark:bg-white animate-pulse"></div>
                 <Skeleton className="h-10 w-64" />
             </div>
 
             {/* Featured Official Skeleton */}
-            <div className="mb-12 border-4 dark:border-gray-800 p-10 bg-white dark:bg-gray-900">
+            <div className="mb-12 border-4 dark:border-gray-800 p-10 bg-white dark:bg-gray-900 w-full">
                 <div className="grid md:grid-cols-12 gap-0">
                     <div className="md:col-span-4 aspect-[3/4] md:aspect-auto h-64 md:h-full">
                         <Skeleton className="w-full h-full" />
@@ -255,7 +255,7 @@ export const BarangayOfficialsSkeleton: React.FC = () => {
             </div>
 
             {/* Other Officials Grid Skeleton */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-800">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 w-full">
                 {[1, 2, 3, 4].map(i => (
                     <div key={i} className="bg-white dark:bg-gray-900 p-8 space-y-4">
                         <Skeleton className="aspect-[3/4] w-full" />
@@ -270,7 +270,7 @@ export const BarangayOfficialsSkeleton: React.FC = () => {
 
 export const RescueHotlineCardSkeleton: React.FC = () => {
     return (
-        <div className="bg-white dark:bg-gray-900 p-10 border border-gray-100 dark:border-gray-850 flex flex-col space-y-6 h-full">
+        <div className="bg-white dark:bg-gray-900 p-10 border border-gray-100 dark:border-gray-850 flex flex-col space-y-6 h-full w-full">
             <div className="flex justify-between items-start">
                 <Skeleton className="w-16 h-16" />
                 <Skeleton className="h-4 w-20" />
