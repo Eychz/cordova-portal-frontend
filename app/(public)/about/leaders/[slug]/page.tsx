@@ -41,7 +41,7 @@ export default function LeaderProfilePage() {
         <PageTransition>
             <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
                 <Navbar activePage="About" />
-                
+
                 <main className="flex-grow pt-24 pb-16">
                     <div className="maximize-width px-4">
                         <button
@@ -56,8 +56,8 @@ export default function LeaderProfilePage() {
                             <div className="lg:w-1/4 space-y-6">
                                 <div className="aspect-[4/5] bg-gray-50 dark:bg-black border-4 border-red-800 shadow-lg overflow-hidden rounded-xl">
                                     {official.imageUrl ? (
-                                        <img 
-                                            src={official.imageUrl} 
+                                        <img
+                                            src={official.imageUrl}
                                             alt={official.name}
                                             className="w-full h-full object-cover"
                                         />
@@ -85,7 +85,7 @@ export default function LeaderProfilePage() {
                                         <div className="w-1.5 h-6 bg-red-700"></div>
                                         <h2 className="text-xl font-black uppercase tracking-tight text-gray-900 dark:text-white">Official Information</h2>
                                     </div>
-                                    
+
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="bg-gray-50 dark:bg-gray-800 p-6 border border-gray-100 dark:border-gray-700 space-y-4 rounded-xl">
                                             <div className="space-y-1">
@@ -93,10 +93,10 @@ export default function LeaderProfilePage() {
                                                 <div className="flex items-center gap-2">
                                                     <Building2 className="w-3.5 h-3.5 text-red-700" />
                                                     <p className="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-tight">
-                                                        {official.type === 'MUNICIPAL' ? 'Sangguniang Bayan' : 
-                                                         official.type === 'DEPARTMENT' ? 'Executive Department' : 
-                                                         official.type === 'BARANGAY' ? `Barangay ${official.barangayName}` : 
-                                                         `SK ${official.barangayName}`}
+                                                        {official.type === 'MUNICIPAL' ? 'Municipal' :
+                                                            official.type === 'DEPARTMENT' ? 'Executive Department' :
+                                                                official.type === 'BARANGAY' ? `Barangay ${official.barangayName}` :
+                                                                    `SK ${official.barangayName}`}
                                                     </p>
                                                 </div>
                                             </div>
@@ -107,7 +107,7 @@ export default function LeaderProfilePage() {
                                                     <div className="flex items-center gap-2">
                                                         <MapPin className="w-3.5 h-3.5 text-red-700" />
                                                         <p className="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-tight">
-                                                            Barangay {official.barangayName}, Cordova
+                                                            Municipality of Cordova
                                                         </p>
                                                     </div>
                                                 </div>
@@ -116,7 +116,7 @@ export default function LeaderProfilePage() {
                                             <div className="space-y-1 border-t border-gray-250 dark:border-gray-700 pt-3">
                                                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Office Location</p>
                                                 <p className="text-gray-600 dark:text-gray-300 text-xs font-semibold">
-                                                    Cordova Municipal Hall, Poblacion, Cordova, Cebu
+                                                    Cordova Municipal Hall | Poblacion Cordova, Cebu
                                                 </p>
                                             </div>
                                         </div>

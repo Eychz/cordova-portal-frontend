@@ -11,7 +11,7 @@ import { postsApi } from '@/lib/postsApi';
 import { Post } from '@/data/adminData';
 import { slugify } from '@/utils/slugify';
 import { Search, ChevronLeft, ChevronRight, Info } from 'lucide-react';
-import { NewsCardSkeleton, CarouselSkeleton, LowPriorityCardSkeleton, Skeleton } from '@/components/Skeleton';
+import { NewsCardSkeleton, CarouselSkeleton, LowPriorityCardSkeleton, Skeleton, NormalPriorityCardSkeleton } from '@/components/Skeleton';
 
 interface NewsItem {
     id: number;
@@ -195,9 +195,11 @@ const NewsPage: React.FC = () => {
                             </div>
 
                             {loading ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none">
                                     {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                                        <NewsCardSkeleton key={i} />
+                                        <div key={i} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                                            <NormalPriorityCardSkeleton />
+                                        </div>
                                     ))}
                                 </div>
                             ) : paginatedSearch.length > 0 ? (
@@ -268,9 +270,11 @@ const NewsPage: React.FC = () => {
                                         {/* Left Side: 4 Square Grid */}
                                         <div className="lg:col-span-8 flex flex-col">
                                             {loading ? (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-800 p-0 border-none">
                                                     {[1, 2, 3, 4].map(i => (
-                                                        <NewsCardSkeleton key={i} />
+                                                        <div key={i} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                                                            <NormalPriorityCardSkeleton />
+                                                        </div>
                                                     ))}
                                                 </div>
                                             ) : (
@@ -375,9 +379,11 @@ const NewsPage: React.FC = () => {
                                         {/* Right Side: 4 Square Grid */}
                                         <div className="lg:col-span-8 flex flex-col">
                                             {loading ? (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-800 p-0 border-none">
                                                     {[1, 2, 3, 4].map(i => (
-                                                        <NewsCardSkeleton key={i} />
+                                                        <div key={i} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                                                            <NormalPriorityCardSkeleton />
+                                                        </div>
                                                     ))}
                                                 </div>
                                             ) : (

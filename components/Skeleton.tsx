@@ -40,6 +40,38 @@ export const NewsCardSkeleton: React.FC = () => {
     );
 };
 
+export const NormalPriorityCardSkeleton: React.FC = () => {
+    return (
+        <div className="group cursor-pointer min-w-0">
+            <div className="relative bg-white dark:bg-gray-800 rounded-none overflow-hidden border border-gray-200 dark:border-gray-700 premium-flag-card">
+                <div className="h-48 bg-gray-200 dark:bg-gray-700 animate-pulse relative overflow-hidden">
+                    <div className="h-full bg-gradient-to-t from-black/60 to-transparent"></div>
+                </div>
+                <div className="p-5 relative animate-pulse">
+                    <div className="bg-gray-400 dark:bg-gray-600 h-4 w-16 mb-3 rounded-none"></div>
+                    <div className="space-y-2 mb-4">
+                        <div className="h-6 bg-gray-300 dark:bg-gray-500 rounded-none w-full"></div>
+                        <div className="h-6 bg-gray-300 dark:bg-gray-500 rounded-none w-3/4"></div>
+                    </div>
+                    <div className="space-y-2 mb-4">
+                        <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded-none w-full"></div>
+                        <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded-none w-full"></div>
+                        <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded-none w-4/5"></div>
+                    </div>
+                    <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-700 pt-4 mt-2">
+                        <div className="flex items-center gap-2 w-1/2">
+                            <div className="h-3 bg-gray-300 dark:bg-gray-500 rounded-none w-16"></div>
+                            <span className="text-gray-300 dark:text-gray-600">•</span>
+                            <div className="h-3 bg-gray-300 dark:bg-gray-500 rounded-none w-20"></div>
+                        </div>
+                        <div className="h-3 bg-gray-300 dark:bg-gray-500 rounded-none w-24"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export const LowPriorityCardSkeleton: React.FC = () => {
     return (
         <div className="flex gap-4 bg-white dark:bg-gray-800 p-4 border border-gray-100 dark:border-gray-700 w-full">
@@ -119,20 +151,9 @@ export const SearchCardSkeleton: React.FC = () => {
 
 export const CarouselSkeleton: React.FC = () => {
     return (
-        <div className="w-full h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] relative overflow-hidden bg-gray-100 dark:bg-gray-800 border border-gray-250 dark:border-gray-800">
-            {/* Background pulse */}
-            <Skeleton className="w-full h-full" />
-            {/* Floating Overlay Card Skeleton */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-12 md:p-16 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end space-y-4">
-                {/* Floating content */}
-                <div className="max-w-3xl space-y-3">
-                    <Skeleton className="h-5 w-24 bg-gray-300 dark:bg-gray-650" />
-                    <Skeleton className="h-10 w-5/6 bg-gray-300 dark:bg-gray-650" />
-                    <div className="space-y-2 pt-2 hidden sm:block">
-                        <Skeleton className="h-4 w-full bg-gray-400 dark:bg-gray-600" />
-                        <Skeleton className="h-4 w-3/4 bg-gray-400 dark:bg-gray-600" />
-                    </div>
-                </div>
+        <div className="w-full mb-12">
+            <div className="w-full h-[250px] sm:h-[350px] md:h-[450px] lg:h-[500px] relative overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+                <HighPriorityCardSkeleton />
             </div>
         </div>
     );
@@ -290,4 +311,37 @@ export const RescueHotlineCardSkeleton: React.FC = () => {
     );
 };
 
+export const HighPriorityCardSkeleton: React.FC = () => {
+    return (
+        <div className="w-full h-full">
+            <div className="h-full bg-gray-200 dark:bg-gray-700 animate-pulse relative">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 md:p-16">
+                    {/* Category */}
+                    <div className="bg-gray-400/80 dark:bg-gray-600/80 h-4 sm:h-5 w-20 mb-2 sm:mb-4 rounded-none"></div>
+
+                    {/* Title */}
+                    <div className="space-y-2 mb-2 sm:mb-6">
+                        <div className="bg-gray-300 dark:bg-gray-500 h-6 sm:h-10 md:h-12 w-full max-w-5xl"></div>
+                        <div className="bg-gray-300 dark:bg-gray-500 h-6 sm:h-10 md:h-12 w-11/12 max-w-4xl"></div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="space-y-2 mb-4 sm:mb-8 hidden sm:block">
+                        <div className="bg-gray-400/60 dark:bg-gray-600/60 h-3 sm:h-4 md:h-5 w-full max-w-5xl"></div>
+                        <div className="bg-gray-400/60 dark:bg-gray-600/60 h-3 sm:h-4 md:h-5 w-[90%] max-w-4xl"></div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-6">
+                        <div className="bg-gray-400/60 dark:bg-gray-600/60 h-3 sm:h-4 w-24"></div>
+                        <div className="w-1 h-1 bg-gray-400/60 rounded-full hidden sm:block"></div>
+                        <div className="bg-gray-400/60 dark:bg-gray-600/60 h-3 sm:h-4 w-32 hidden sm:block"></div>
+                        <div className="bg-gray-300 dark:bg-gray-500 h-8 sm:h-10 w-32 rounded-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
