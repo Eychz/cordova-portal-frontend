@@ -139,10 +139,10 @@ const ServicesPage = () => {
                       </div>
 
                       <div className="flex-grow">
-                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 uppercase tracking-tighter leading-tight group-hover:text-red-700 transition-colors">
+                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 uppercase tracking-tighter leading-tight group-hover:text-red-700 transition-colors line-clamp-2 min-h-[60px]">
                           {service.name || service.title}
                         </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed line-clamp-3 font-medium">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed line-clamp-3 font-medium min-h-[72px]">
                           {service.description}
                         </p>
                       </div>
