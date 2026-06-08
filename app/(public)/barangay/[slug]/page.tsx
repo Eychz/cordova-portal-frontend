@@ -58,7 +58,7 @@ export default function BarangaySlugPage({ params }: { params: Promise<{ slug: s
                 <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">
                     <BarangayHeader name={data.name} tagline={data.tagline} />
 
-                    <div className="max-w-7xl mx-auto px-4 py-12">
+                    <div className="maximize-width py-12">
                         <BarangayAbout info={data.info} />
 
                         {loading ? (

@@ -59,7 +59,7 @@ export default function UnifiedPostDetailPage() {
       <PageTransition>
         <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
           <Navbar activePage="Community" />
-          <main className="flex-grow w-full maximize-width px-4 py-12 mt-16">
+          <main className="flex-grow w-full maximize-width py-12 mt-16">
             <DetailSkeleton />
           </main>
           <Footer />
@@ -73,7 +73,7 @@ export default function UnifiedPostDetailPage() {
       <PageTransition>
         <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
           <Navbar />
-          <main className="flex-grow w-full maximize-width px-4 py-20 mt-16 text-center">
+          <main className="flex-grow w-full maximize-width py-20 mt-16 text-center">
             <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-6 uppercase">
               {type?.toUpperCase()} Not Found
             </h1>
@@ -98,7 +98,7 @@ export default function UnifiedPostDetailPage() {
     <PageTransition>
       <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
         <Navbar activePage="Community" />
-        <main className="flex-grow w-full maximize-width px-4 py-12 mt-16">
+        <main className="flex-grow w-full maximize-width py-12 mt-16">
           <div className="max-w-[1200px] mx-auto">
             {/* Back Button */}
             <button
@@ -138,7 +138,7 @@ export default function UnifiedPostDetailPage() {
                 </div>
               )}
 
-              <div className="p-8 md:p-12 lg:p-16">
+              <div className="p-6 md:p-12 lg:p-16">
                 {/* Meta Information Row */}
                 <div className="flex flex-wrap items-center gap-6 mb-10 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700 pb-8">
                   <div className="flex items-center gap-2">
@@ -155,13 +155,13 @@ export default function UnifiedPostDetailPage() {
                   </div>
                 </div>
                 {/* Title */}
-                <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-10 leading-tight uppercase tracking-tight">
+                <h1 className="text-3xl md:text-6xl font-black text-gray-900 dark:text-white mb-10 leading-tight uppercase tracking-tight">
                   {post.title}
                 </h1>
 
                 {/* Event Specific Details Section */}
                 {(post.eventDate || post.location) && (
-                  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 p-8 mb-12">
+                  <div className="bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 p-6 md:p-8 mb-12">
                     <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 uppercase tracking-widest border-b border-gray-200 dark:border-gray-700 pb-2">
                       Operational Details
                     </h3>

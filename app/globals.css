@@ -111,14 +111,21 @@ a {
 
 /* Layout width maximization */
 .maximize-width {
-  max-width: 80% !important;
+  width: 98% !important;
+  max-width: none !important;
   margin-left: auto;
   margin-right: auto;
 }
 
-@media (min-width: 1536px) {
+@media (min-width: 768px) {
   .maximize-width {
-    max-width: 80% !important;
+    width: 90% !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .maximize-width {
+    width: 80% !important;
   }
 }
 

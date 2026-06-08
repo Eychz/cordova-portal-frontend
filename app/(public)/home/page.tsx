@@ -9,7 +9,6 @@ import { barangays } from '@/data/barangays';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
-import Footer from '@/components/Footer';
 import Carousel from '@/components/Carousel';
 import { HighPriorityCard } from '@/components/cards';
 import { Bell, ChevronRight, X, Phone, Building2, Landmark, Siren, ShieldAlert, ArrowRight } from 'lucide-react';
@@ -138,40 +137,6 @@ const HomeGuestPage: React.FC = () => {
     return (
         <PageTransition>
             <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
-                {/* Announcement Banner */}
-                {showBanner && (
-                    <div className="bg-red-700 text-white py-4 px-4 border-b border-red-800">
-                        <div className="maximize-width flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-4 flex-1">
-                                <div className="bg-white/10 p-2 flex-shrink-0 rounded-lg">
-                                    <Bell className="w-6 h-6" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-black text-sm md:text-base uppercase tracking-wider">
-                                        Welcome to the Official Portal of the Municipality of Cordova
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <Link
-                                    href="/community/news"
-                                    className="bg-white text-red-700 px-6 py-2 rounded-lg font-black hover:bg-gray-100 transition-colors text-xs uppercase tracking-widest whitespace-nowrap flex items-center gap-2 shadow"
-                                >
-                                    Latest News
-                                    <ChevronRight className="w-4 h-4" />
-                                </Link>
-                                <button
-                                    onClick={() => setShowBanner(false)}
-                                    className="text-white/60 hover:text-white p-2 transition-colors flex-shrink-0"
-                                    aria-label="Close banner"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {/* Hero Section - Flat & Wide */}
                 <section className="relative py-24 px-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div className="maximize-width text-center">
@@ -460,7 +425,6 @@ const HomeGuestPage: React.FC = () => {
                         </Link>
                     </div>
                 </section>
-
             </div>
         </PageTransition>
     );

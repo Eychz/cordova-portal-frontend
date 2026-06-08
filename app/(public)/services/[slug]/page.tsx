@@ -38,7 +38,7 @@ export default function ServiceDetailPage() {
       <PageTransition>
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
           <Navbar activePage="Services" />
-          <main className="flex-grow maximize-width px-4 py-12 mt-16">
+          <main className="flex-grow maximize-width py-12 mt-16">
             <div className="max-w-[1200px] mx-auto">
               {/* Back button skeleton */}
               <Skeleton className="h-4 w-40 mb-10" />
@@ -94,7 +94,7 @@ export default function ServiceDetailPage() {
       <PageTransition>
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
           <Navbar />
-          <main className="flex-grow maximize-width px-4 py-32 mt-16 text-center">
+          <main className="flex-grow maximize-width py-32 mt-16 text-center">
             <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-6 uppercase">Service Not Found</h1>
             <button
               onClick={() => router.push('/services')}
@@ -115,7 +115,7 @@ export default function ServiceDetailPage() {
     <PageTransition>
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
         <Navbar activePage="Services" />
-        <main className="flex-grow maximize-width px-4 py-12 mt-16">
+        <main className="flex-grow maximize-width py-12 mt-16">
           <div className="max-w-[1200px] mx-auto">
             {/* Back Button */}
             <button
@@ -133,7 +133,7 @@ export default function ServiceDetailPage() {
                   <div className="inline-block bg-gray-100 dark:bg-gray-800 px-4 py-1 text-[10px] font-black uppercase bg-red-700 text-white tracking-widest text-gray-500">
                     {service.category}
                   </div>
-                  <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-none">
+                  <h1 className="text-4xl md:text-7xl font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-none">
                     {service.name || service.title}
                   </h1>
                   <p className="text-xl text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
@@ -142,8 +142,8 @@ export default function ServiceDetailPage() {
                 </div>
 
                 {/* Requirements Section - Uniform Border */}
-                <div className="bg-white dark:bg-gray-900 p-10 border-l-8 border-red-700 shadow-xl">
-                  <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-8 border-b border-gray-100 dark:border-gray-800 pb-6 flex items-center gap-4">
+                <div className="bg-white dark:bg-gray-900 p-6 md:p-10 border-l-4 md:border-l-8 border-red-700 shadow-xl">
+                  <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-8 border-b border-gray-100 dark:border-gray-800 pb-6 flex items-center gap-4">
                     <CheckCircle2 className="w-8 h-8 text-red-700" />
                     Documentary Requirements
                   </h2>
@@ -165,8 +165,8 @@ export default function ServiceDetailPage() {
                   </div>
                 </div>
 
-                <div className="p-10 border-l-8 border-red-700 bg-gray-50 dark:bg-gray-800/50 shadow-inner">
-                  <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-10">Step-by-Step Procedure</h2>
+                <div className="p-6 md:p-10 border-l-4 md:border-l-8 border-red-700 bg-gray-50 dark:bg-gray-800/50 shadow-inner">
+                  <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-10">Step-by-Step Procedure</h2>
                   <div className="space-y-8">
                     {Array.isArray(service.processSteps || service.steps) && (service.processSteps || service.steps).length > 0 ? (
                       (service.processSteps || service.steps).map((step: string, index: number) => (

@@ -43,7 +43,7 @@ export default function LeaderProfilePage() {
                 <Navbar activePage="About" />
 
                 <main className="flex-grow pt-24 pb-16">
-                    <div className="maximize-width px-4">
+                    <div className="maximize-width">
                         <button
                             onClick={() => router.back()}
                             className="flex items-center gap-2 text-gray-500 hover:text-red-700 font-bold text-xs uppercase tracking-widest mb-8 transition-colors group"
@@ -69,7 +69,7 @@ export default function LeaderProfilePage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <h1 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-none">
+                                    <h1 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-none">
                                         {official.name}
                                     </h1>
                                     <p className="text-red-700 dark:text-red-400 font-black text-xs uppercase tracking-[0.2em]">
@@ -87,7 +87,7 @@ export default function LeaderProfilePage() {
                                     </div>
 
                                     <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="bg-gray-50 dark:bg-gray-800 p-6 border border-gray-100 dark:border-gray-700 space-y-4 rounded-xl">
+                                        <div className="bg-gray-50 dark:bg-gray-800 p-4 md:p-6 border border-gray-100 dark:border-gray-700 space-y-4 rounded-xl">
                                             <div className="space-y-1">
                                                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Office / Level</p>
                                                 <div className="flex items-center gap-2">
@@ -121,7 +121,7 @@ export default function LeaderProfilePage() {
                                             </div>
                                         </div>
 
-                                        <div className="bg-gray-50 dark:bg-gray-800 p-6 border border-gray-100 dark:border-gray-700 space-y-4 rounded-xl">
+                                        <div className="bg-gray-50 dark:bg-gray-800 p-4 md:p-6 border border-gray-100 dark:border-gray-700 space-y-4 rounded-xl">
                                             <div className="space-y-1">
                                                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Contact Email</p>
                                                 <div className="flex items-center gap-2">

@@ -29,7 +29,7 @@ const Footer: React.FC = () => {
 
     return (
         <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-red-900 text-white pt-16 pb-8 transition-colors">
-            <div className="maximize-width px-4">
+            <div className="maximize-width">
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                     {/* About Section */}

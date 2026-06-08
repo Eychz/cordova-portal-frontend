@@ -98,15 +98,15 @@ const ServicesPage = () => {
           </div>
         </header>
 
-        <main className="flex-grow maximize-width px-2 md:px-4 py-8 md:py-16">
+        <main className="flex-grow maximize-width py-8 md:py-16">
           {/* Category Filter - Sticky & Horizontally Scrollable on Mobile */}
-          <div className="sticky top-20 z-20 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md py-4 mb-8 -mx-2 px-2 md:mx-0 md:px-0 border-b border-gray-100 dark:border-gray-800">
+          <div className="sticky top-20 z-20 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md py-4 mb-8 border-b border-gray-100 dark:border-gray-800">
             <div className="flex overflow-x-auto w-full gap-2 pb-2 hide-scrollbar whitespace-nowrap md:flex-wrap md:whitespace-normal">
               {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`flex-shrink-0 px-8 py-4 font-bold text-xs uppercase tracking-widest transition-all ${selectedCategory === category
+                  className={`flex-shrink-0 px-3 py-2 md:px-8 md:py-4 font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all ${selectedCategory === category
                     ? 'bg-red-700 text-white'
                     : 'bg-white dark:bg-gray-900 text-gray-500 hover:text-red-700 hover:bg-gray-50'
                     }`}
