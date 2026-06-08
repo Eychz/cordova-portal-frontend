@@ -76,7 +76,7 @@ const RescueDeskPage: React.FC = () => {
 
                     {/* Directory Grid - Flat & Sharp - 2-gap spacing policy */}
                     {loading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none mb-20">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none mb-20">
                             {[1, 2, 3, 4, 5, 6].map((i) => (
                                 <RescueHotlineCardSkeleton key={i} />
                             ))}
@@ -86,30 +86,30 @@ const RescueDeskPage: React.FC = () => {
                             <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No active hotlines registered</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none mb-20">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none mb-20">
                             {hotlines.map((contact) => {
                                 const IconComponent = (LucideIcons as any)[contact.icon] || LucideIcons.Siren;
                                 return (
                                     <div
                                         key={contact.id}
-                                        className="bg-white dark:bg-gray-900 p-10 group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border border-gray-100 dark:border-gray-800"
+                                        className="bg-white dark:bg-gray-900 p-4 md:p-10 group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border border-gray-100 dark:border-gray-800"
                                     >
-                                        <div className="flex justify-between items-start mb-8">
-                                            <div className="p-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900">
-                                                <IconComponent className="w-8 h-8" />
+                                        <div className="flex justify-between items-start mb-4 md:mb-8">
+                                            <div className="p-2 md:p-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900">
+                                                <IconComponent className="w-5 h-5 md:w-8 md:h-8" />
                                             </div>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-red-700">
+                                            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-red-700 max-w-[50%] text-right line-clamp-2">
                                                 {contact.category}
                                             </span>
                                         </div>
-                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tight">
+                                        <h3 className="text-sm md:text-2xl font-black text-gray-900 dark:text-white mb-1 md:mb-2 uppercase tracking-tight line-clamp-2 min-h-[30px] md:min-h-0">
                                             {contact.title}
                                         </h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
+                                        <p className="text-[10px] md:text-sm text-gray-500 dark:text-gray-400 mb-4 md:mb-8 leading-relaxed line-clamp-2 md:line-clamp-3 min-h-[30px] md:min-h-0">
                                             {contact.description}
                                         </p>
-                                        <div className="space-y-4">
-                                            <div className="text-3xl font-black text-red-700 tabular-nums tracking-tighter whitespace-pre-line">
+                                        <div className="space-y-2 md:space-y-4">
+                                            <div className="text-lg md:text-3xl font-black text-red-700 tabular-nums tracking-tighter whitespace-pre-line truncate">
                                                 {contact.contact}
                                             </div>
                                             <a

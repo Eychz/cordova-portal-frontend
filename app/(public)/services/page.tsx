@@ -120,13 +120,13 @@ const ServicesPage = () => {
           {/* Services Grid and Empty State - Wrapped for static stability */}
           <div className="min-h-[100vh]">
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
                 {[1, 2, 3, 4, 5, 6].map(i => (
                   <ServiceCardSkeleton key={i} />
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
                 {filteredServices.map((service) => {
                   const Icon = getIconByName(service.icon);
                   const colors = getCategoryColor(service.category);
@@ -134,30 +134,30 @@ const ServicesPage = () => {
                     <div
                       key={service.id}
                       onClick={() => handleServiceClick(service)}
-                      className="bg-transparent p-6 md:p-8 rounded-none border border-red-800 hover:border-l-4 hover:border-l-red-800 hover:shadow-2xl hover:-translate-y-1 group transition-all duration-300 cursor-pointer flex flex-col h-full"
+                      className="bg-transparent p-3 md:p-8 rounded-none border border-red-800 hover:border-l-4 hover:border-l-red-800 hover:shadow-2xl hover:-translate-y-1 group transition-all duration-300 cursor-pointer flex flex-col h-full"
                     >
-                      <div className={`${colors.bg} ${colors.text} w-16 h-16 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300`}>
-                        <Icon className="w-8 h-8" />
+                      <div className={`${colors.bg} ${colors.text} w-10 h-10 md:w-16 md:h-16 flex items-center justify-center mb-3 md:mb-8 group-hover:scale-110 transition-transform duration-300`}>
+                        <Icon className="w-5 h-5 md:w-8 md:h-8" />
                       </div>
 
                       <div className="flex-grow">
-                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 uppercase tracking-tighter leading-tight group-hover:text-red-700 transition-colors line-clamp-2 min-h-[60px]">
+                        <h3 className="text-xs md:text-2xl font-black text-gray-900 dark:text-white mb-1 md:mb-3 uppercase tracking-tighter leading-tight group-hover:text-red-700 transition-colors line-clamp-2 min-h-[32px] md:min-h-[60px]">
                           {service.name || service.title}
                         </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed line-clamp-3 font-medium min-h-[72px]">
+                        <p className="text-[10px] md:text-sm text-gray-500 dark:text-gray-400 mb-3 md:mb-8 leading-relaxed line-clamp-2 md:line-clamp-3 font-medium min-h-[30px] md:min-h-[72px]">
                           {service.description}
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between mt-auto pt-6 border-t border-gray-50 dark:border-gray-800/50">
+                      <div className="flex items-center justify-between mt-auto pt-3 md:pt-6 border-t border-gray-50 dark:border-gray-800/50">
                         <div className="flex flex-col">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Category</span>
-                          <span className={`text-xs font-bold uppercase tracking-wide ${colors.text}`}>
+                          <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-gray-400 mb-0.5 md:mb-1">Category</span>
+                          <span className={`text-[10px] md:text-xs font-bold uppercase tracking-wide ${colors.text}`}>
                             {service.category || 'General'}
                           </span>
                         </div>
-                        <div className={`w-10 h-10 rounded-full ${colors.bg} flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0`}>
-                          <ArrowRight className={`w-5 h-5 ${colors.text}`} />
+                        <div className={`w-6 h-6 md:w-10 md:h-10 rounded-full ${colors.bg} flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0 hidden md:flex`}>
+                          <ArrowRight className={`w-3 h-3 md:w-5 md:h-5 ${colors.text}`} />
                         </div>
                       </div>
                     </div>

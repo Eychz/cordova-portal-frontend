@@ -418,122 +418,121 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
             </div>
 
             {/* Mobile Menu - Full Width Dropdown */}
-            <div 
-                className={`lg:hidden absolute left-0 right-0 top-full bg-white dark:bg-gray-900 shadow-2xl z-40 origin-top transition-all duration-300 ease-in-out border-b dark:border-gray-700 overflow-hidden rounded-none ${
-                    isOpen 
-                        ? 'max-h-[50vh] opacity-100 border-gray-200' 
-                        : 'max-h-0 opacity-0 border-transparent pointer-events-none'
-                }`}
+            <div
+                className={`lg:hidden absolute left-0 right-0 top-full bg-white dark:bg-gray-900 shadow-2xl z-40 origin-top transition-all duration-300 ease-in-out border-b dark:border-gray-700 overflow-hidden rounded-none ${isOpen
+                    ? 'max-h-[50vh] opacity-100 border-gray-200'
+                    : 'max-h-0 opacity-0 border-transparent pointer-events-none'
+                    }`}
             >
                 <div className="maximize-width py-6 overflow-y-auto max-h-[50vh]">
-                        <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-800 p-2 border-gray-200 dark:border-gray-700 mb-6">
-                            <div className="flex items-center gap-1.5 flex-1 pr-2 border-gray-300 dark:border-gray-700">
-                                <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-                                <input
-                                    type="text"
-                                    placeholder="Search community, services..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="bg-transparent border-none outline-none text-xs text-gray-800 dark:text-gray-200 w-full focus:ring-0 focus:outline-none"
-                                />
-                            </div>
-                            <div className="flex items-center gap-1 pl-2 relative">
-                                <input
-                                    type="date"
-                                    value={searchDate}
-                                    onChange={(e) => setSearchDate(e.target.value)}
-                                    className="bg-transparent border-none outline-none text-xs text-gray-750 dark:text-gray-350 focus:ring-0 focus:outline-none w-24 dark:[color-scheme:dark]"
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                className="ml-2 bg-red-700 hover:bg-red-800 text-white p-1.5 transition-colors"
-                            >
-                                <Search className="w-3.5 h-3.5" />
-                            </button>
-                        </form>
-                        <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700 mb-2">
-                            <span className="text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-xs">Theme</span>
-                            <DarkModeToggle />
+                    <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-800 p-2 border-gray-200 dark:border-gray-700 mb-6">
+                        <div className="flex items-center gap-1.5 flex-1 pr-2 border-gray-300 dark:border-gray-700">
+                            <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                            <input
+                                type="text"
+                                placeholder="Search community, services..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="bg-transparent border-none outline-none text-xs text-gray-800 dark:text-gray-200 w-full focus:ring-0 focus:outline-none"
+                            />
                         </div>
-                        <div className="flex flex-col space-y-1 mt-4">
-                            <Link href="/home" className={`block py-3 ${isActive('/home')
-                                ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
-                                : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}>Home</Link>
-                            <Link href="/community/news" className={`block py-3 ${isActive('/community/news')
-                                ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
-                                : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}>News</Link>
-                            <Link href="/community/events" className={`block py-3 ${isActive('/community/events')
-                                ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
-                                : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}>Events</Link>
-                            <Link href="/community/announcements" className={`block py-3 ${isActive('/community/announcements')
-                                ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
-                                : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}>Announcements</Link>
-                            <Link href="/services" className={`block py-3 ${isActive('/services')
-                                ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
-                                : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}>Services</Link>
-                            <Link href="/rescue-desk" className={`block py-3 ${isActive('/rescue-desk')
-                                ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
-                                : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                }`}>Rescue Desk</Link>
-                            <Link
-                                href="/barangay"
-                                className={`block py-3 ${isActive('/barangay')
-                                    ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
-                                    : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                    }`}
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Barangay
-                            </Link>
+                        <div className="flex items-center gap-1 pl-2 relative">
+                            <input
+                                type="date"
+                                value={searchDate}
+                                onChange={(e) => setSearchDate(e.target.value)}
+                                className="bg-transparent border-none outline-none text-xs text-gray-750 dark:text-gray-350 focus:ring-0 focus:outline-none w-24 dark:[color-scheme:dark]"
+                            />
                         </div>
-                        <div className="border-t border-gray-200 dark:border-gray-700 mt-6 pt-6 flex flex-col gap-3">
-                            {isLoggedIn ? (
-                                <>
-                                    {userName && (
-                                        <div className="py-2 text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest text-center border-b border-gray-200 dark:border-gray-700 mb-2">
-                                            {userName}
-                                        </div>
-                                    )}
-                                    <Link href="/dashboard" className="block w-full py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-none border border-gray-200 dark:border-gray-700 font-bold tracking-widest uppercase text-xs" onClick={() => setIsOpen(false)}>My Dashboard</Link>
-                                    <button onClick={() => {
-                                        localStorage.removeItem('token');
-                                        localStorage.removeItem('user');
-                                        setIsLoggedIn(false);
-                                        setIsOpen(false);
-                                        window.location.href = '/home';
-                                    }} className="w-full py-3 text-center bg-red-700 hover:bg-red-800 text-white font-bold tracking-widest uppercase text-xs">Logout</button>
-                                </>
-                            ) : (
-                                <>
-                                    <Link href="/auth/login" className="block w-full py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-none border border-gray-200 dark:border-gray-700 font-bold tracking-widest uppercase text-xs" onClick={() => setIsOpen(false)}>Login</Link>
-                                    <Link href="/auth/register" className="block w-full py-3 text-center bg-red-700 text-white rounded-none font-bold tracking-widest uppercase text-xs hover:bg-red-800" onClick={() => setIsOpen(false)}>Register</Link>
-                                </>
-                            )}
-                        </div>
+                        <button
+                            type="submit"
+                            className="ml-2 bg-red-700 hover:bg-red-800 text-white p-1.5 transition-colors"
+                        >
+                            <Search className="w-3.5 h-3.5" />
+                        </button>
+                    </form>
+                    <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700 mb-2">
+                        <span className="text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-xs">Theme</span>
+                        <DarkModeToggle />
+                    </div>
+                    <div className="flex flex-col space-y-1 mt-4">
+                        <Link href="/home" className={`block py-3 ${isActive('/home')
+                            ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
+                            }`}>Home</Link>
+                        <Link href="/community/news" className={`block py-3 ${isActive('/community/news')
+                            ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
+                            }`}>News</Link>
+                        <Link href="/community/events" className={`block py-3 ${isActive('/community/events')
+                            ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
+                            }`}>Events</Link>
+                        <Link href="/community/announcements" className={`block py-3 ${isActive('/community/announcements')
+                            ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
+                            }`}>Announcements</Link>
+                        <Link href="/services" className={`block py-3 ${isActive('/services')
+                            ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
+                            }`}>Services</Link>
+                        <Link href="/rescue-desk" className={`block py-3 ${isActive('/rescue-desk')
+                            ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
+                            }`}>Rescue Desk</Link>
+                        <Link
+                            href="/barangay"
+                            className={`block py-3 ${isActive('/barangay')
+                                ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
+                                : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                }`}
+                            onClick={() => setIsOpen(false)}
+                        >
+                            Barangay
+                        </Link>
+                    </div>
+                    <div className="border-t border-gray-200 dark:border-gray-700 mt-6 pt-6 flex flex-col gap-3">
+                        {isLoggedIn ? (
+                            <>
+                                {userName && (
+                                    <div className="py-2 text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest text-center border-b border-gray-200 dark:border-gray-700 mb-2">
+                                        {userName}
+                                    </div>
+                                )}
+                                <Link href="/dashboard" className="block w-full py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-none border border-gray-200 dark:border-gray-700 font-bold tracking-widest uppercase text-xs" onClick={() => setIsOpen(false)}>My Dashboard</Link>
+                                <button onClick={() => {
+                                    localStorage.removeItem('token');
+                                    localStorage.removeItem('user');
+                                    setIsLoggedIn(false);
+                                    setIsOpen(false);
+                                    window.location.href = '/home';
+                                }} className="w-full py-3 text-center bg-red-700 hover:bg-red-800 text-white font-bold tracking-widest uppercase text-xs">Logout</button>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/auth/login" className="block w-full py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-none border border-gray-200 dark:border-gray-700 font-bold tracking-widest uppercase text-xs" onClick={() => setIsOpen(false)}>Login</Link>
+                                <Link href="/auth/register" className="block w-full py-3 text-center bg-red-700 text-white rounded-none font-bold tracking-widest uppercase text-xs hover:bg-red-800" onClick={() => setIsOpen(false)}>Register</Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
 
             {/* Back to Top Button */}
-            {showBackToTop && (
-                <button
-                    onClick={scrollToTop}
-                    className="fixed bottom-6 left-1/2 transform -translate-x-1/2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-all duration-200 z-40 hover:scale-110"
-                    aria-label="Back to top"
-                >
-                    <svg className="w-8 h-8 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-            )}
-        </nav>
+            {
+                showBackToTop && (
+                    <button
+                        onClick={scrollToTop}
+                        className="fixed bottom-6 left-1/2 transform -translate-x-1/2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-all duration-200 z-40 hover:scale-110"
+                        aria-label="Back to top"
+                    >
+                        <svg className="w-8 h-8 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                )
+            }
+        </nav >
     );
-};
-
+}
 export default Navbar;
