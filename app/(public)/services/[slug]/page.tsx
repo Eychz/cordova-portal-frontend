@@ -38,11 +38,11 @@ export default function ServiceDetailPage() {
       <PageTransition>
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
           <Navbar activePage="Services" />
-          <main className="flex-grow maximize-width py-12 mt-16">
+          <main className="flex-grow maximize-width py-4 mt-4 md:py-8 md:mt-8">
             <div className="max-w-[1200px] mx-auto">
               {/* Back button skeleton */}
               <Skeleton className="h-4 w-40 mb-10" />
-              
+
               <div className="grid lg:grid-cols-3 gap-12 items-start">
                 {/* Left side details skeleton */}
                 <div className="lg:col-span-2 space-y-12">
@@ -51,7 +51,7 @@ export default function ServiceDetailPage() {
                     <Skeleton className="h-16 w-3/4" />
                     <Skeleton className="h-24 w-full" />
                   </div>
-                  
+
                   <div className="pt-8 border-t border-gray-100 dark:border-gray-800 space-y-4">
                     <Skeleton className="h-8 w-48" />
                     <div className="space-y-3">
@@ -94,7 +94,7 @@ export default function ServiceDetailPage() {
       <PageTransition>
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
           <Navbar />
-          <main className="flex-grow maximize-width py-32 mt-16 text-center">
+          <main className="flex-grow maximize-width py-10 mt-6 md:py-20 md:mt-12 text-center">
             <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-6 uppercase">Service Not Found</h1>
             <button
               onClick={() => router.push('/services')}
@@ -115,7 +115,7 @@ export default function ServiceDetailPage() {
     <PageTransition>
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
         <Navbar activePage="Services" />
-        <main className="flex-grow maximize-width py-12 mt-16">
+        <main className="flex-grow maximize-width py-4 mt-4">
           <div className="max-w-[1200px] mx-auto">
             {/* Back Button */}
             <button
