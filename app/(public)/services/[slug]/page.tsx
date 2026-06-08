@@ -38,7 +38,7 @@ export default function ServiceDetailPage() {
       <PageTransition>
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
           <Navbar activePage="Services" />
-          <main className="flex-grow maximize-width px-4 py-12 mt-16">
+          <main className="flex-grow maximize-width px-4 py-16">
             <div className="max-w-[1200px] mx-auto">
               {/* Back button skeleton */}
               <Skeleton className="h-4 w-40 mb-10" />
@@ -94,7 +94,7 @@ export default function ServiceDetailPage() {
       <PageTransition>
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
           <Navbar />
-          <main className="flex-grow maximize-width px-4 py-32 mt-16 text-center">
+          <main className="flex-grow maximize-width px-4 py-16 text-center">
             <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-6 uppercase">Service Not Found</h1>
             <button
               onClick={() => router.push('/services')}
@@ -115,8 +115,8 @@ export default function ServiceDetailPage() {
     <PageTransition>
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
         <Navbar activePage="Services" />
-        <main className="flex-grow maximize-width py-5 mt-5">
-          <div className="max-w-[1200px] mx-auto">
+        <main className="flex-grow maximize-width px-4 py-16">
+          <div className="max-w-[1000px] mx-auto">
             {/* Back Button */}
             <button
               onClick={() => router.push('/services')}
