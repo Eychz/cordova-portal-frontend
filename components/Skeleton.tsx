@@ -93,7 +93,7 @@ export const LowPriorityCardSkeleton: React.FC = () => {
 
 export const ServiceCardSkeleton: React.FC = () => {
     return (
-        <div className="bg-white dark:bg-gray-900 p-8 border border-gray-200 dark:border-gray-800 flex flex-col h-full space-y-6 w-full">
+        <div className="bg-transparent p-6 md:p-8 rounded-none border border-red-800 flex flex-col h-full space-y-6 w-full">
             {/* Icon placeholder */}
             <Skeleton className="w-16 h-16" />
             {/* Title & Description */}

@@ -98,33 +98,35 @@ const ServicesPage = () => {
           </div>
         </header>
 
-        <main className="flex-grow maximize-width px-4 py-16">
-          {/* Category Filter - Flat Bar */}
-          <div className="flex flex-wrap gap-2 mb-12">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-8 py-4 font-bold text-xs uppercase tracking-widest transition-all ${selectedCategory === category
-                  ? 'bg-red-700 text-white'
-                  : 'bg-white dark:bg-gray-900 text-gray-500 hover:text-red-700 hover:bg-gray-50'
-                  }`}
-              >
-                {category}
-              </button>
-            ))}
+        <main className="flex-grow maximize-width px-2 md:px-4 py-8 md:py-16">
+          {/* Category Filter - Sticky & Horizontally Scrollable on Mobile */}
+          <div className="sticky top-20 z-20 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md py-4 mb-8 -mx-2 px-2 md:mx-0 md:px-0 border-b border-gray-100 dark:border-gray-800">
+            <div className="flex overflow-x-auto w-full gap-2 pb-2 hide-scrollbar whitespace-nowrap md:flex-wrap md:whitespace-normal">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`flex-shrink-0 px-8 py-4 font-bold text-xs uppercase tracking-widest transition-all ${selectedCategory === category
+                    ? 'bg-red-700 text-white'
+                    : 'bg-white dark:bg-gray-900 text-gray-500 hover:text-red-700 hover:bg-gray-50'
+                    }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Services Grid and Empty State - Wrapped for static stability */}
           <div className="min-h-[100vh]">
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {[1, 2, 3, 4, 5, 6].map(i => (
                   <ServiceCardSkeleton key={i} />
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {filteredServices.map((service) => {
                   const Icon = getIconByName(service.icon);
                   const colors = getCategoryColor(service.category);
@@ -132,7 +134,7 @@ const ServicesPage = () => {
                     <div
                       key={service.id}
                       onClick={() => handleServiceClick(service)}
-                      className={`bg-white dark:bg-gray-900 p-8 rounded-none border-b-4 ${colors.border} ${colors.hover} hover:shadow-2xl hover:-translate-y-0.5 group transition-all duration-300 cursor-pointer flex flex-col h-full`}
+                      className="bg-transparent p-6 md:p-8 rounded-none border border-red-800 hover:border-l-4 hover:border-l-red-800 hover:shadow-2xl hover:-translate-y-1 group transition-all duration-300 cursor-pointer flex flex-col h-full"
                     >
                       <div className={`${colors.bg} ${colors.text} w-16 h-16 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300`}>
                         <Icon className="w-8 h-8" />

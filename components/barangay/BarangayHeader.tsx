@@ -10,21 +10,21 @@ interface BarangayHeaderProps {
 
 const BarangayHeader: React.FC<BarangayHeaderProps> = ({ name, tagline, backgroundImage = '/municipality-bg.jpg' }) => {
     return (
-        <header className="bg-gray-900 text-white pt-32 pb-20 border-b-8 border-red-700 relative overflow-hidden">
+        <header className="bg-red-800 text-white pt-32 pb-20 border-b-8 border-red-700 relative overflow-hidden">
             {/* Background Image Overlay */}
-            <div 
+            <div
                 className="absolute inset-0 bg-cover bg-center opacity-10"
                 style={{ backgroundImage: `url('${backgroundImage}')` }}
             />
             <div className="maximize-width px-4 relative z-10">
                 <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2 bg-red-700 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
+                    <div className="inline-flex items-center gap-2 bg-white text-red-800 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
                         Village Authority Profile
                     </div>
                     <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
                         Barangay {name}
                     </h1>
-                    <p className="text-xl text-gray-400 font-medium max-w-2xl">
+                    <p className="text-xl text-white font-medium max-w-2xl">
                         {tagline}
                     </p>
                 </div>
