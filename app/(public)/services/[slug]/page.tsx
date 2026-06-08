@@ -42,7 +42,7 @@ export default function ServiceDetailPage() {
             <div className="max-w-[1200px] mx-auto">
               {/* Back button skeleton */}
               <Skeleton className="h-4 w-40 mb-10" />
-              
+
               <div className="grid lg:grid-cols-3 gap-12 items-start">
                 {/* Left side details skeleton */}
                 <div className="lg:col-span-2 space-y-12">
@@ -51,7 +51,7 @@ export default function ServiceDetailPage() {
                     <Skeleton className="h-16 w-3/4" />
                     <Skeleton className="h-24 w-full" />
                   </div>
-                  
+
                   <div className="pt-8 border-t border-gray-100 dark:border-gray-800 space-y-4">
                     <Skeleton className="h-8 w-48" />
                     <div className="space-y-3">
@@ -115,7 +115,7 @@ export default function ServiceDetailPage() {
     <PageTransition>
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
         <Navbar activePage="Services" />
-        <main className="flex-grow maximize-width px-4 py-12 mt-16">
+        <main className="flex-grow maximize-width py-5 mt-5">
           <div className="max-w-[1200px] mx-auto">
             {/* Back Button */}
             <button

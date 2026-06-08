@@ -33,12 +33,12 @@ export default function BarangaysListPage() {
                 </header>
 
                 <main className="flex-grow maximize-width px-4 py-16">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 bg-transparent border-none">
                         {barangays.map((b) => (
                             <Link
                                 href={`/barangay/${b.id}`}
                                 key={b.id}
-                                className="group bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex flex-col"
+                                className="group bg-transparent dark:bg-transparent border border-gray-200 dark:border-gray-700 hover:border-red-800 hover:border-l-4 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 flex flex-col cursor-pointer"
                             >
                                 <div className="h-64 w-full relative overflow-hidden">
                                     <Image

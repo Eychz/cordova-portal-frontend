@@ -76,7 +76,7 @@ const RescueDeskPage: React.FC = () => {
 
                     {/* Directory Grid - Flat & Sharp - 2-gap spacing policy */}
                     {loading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none mb-20">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 bg-transparent border-none mb-20">
                             {[1, 2, 3, 4, 5, 6].map((i) => (
                                 <RescueHotlineCardSkeleton key={i} />
                             ))}
@@ -86,13 +86,13 @@ const RescueDeskPage: React.FC = () => {
                             <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No active hotlines registered</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none mb-20">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 bg-transparent border-none mb-20">
                             {hotlines.map((contact) => {
                                 const IconComponent = (LucideIcons as any)[contact.icon] || LucideIcons.Siren;
                                 return (
                                     <div
                                         key={contact.id}
-                                        className="bg-white dark:bg-gray-900 p-10 group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border border-gray-100 dark:border-gray-800"
+                                        className="bg-transparent dark:bg-transparent p-10 group transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-red-800 hover:border-l-4 hover:-translate-y-1 hover:shadow-2xl cursor-pointer"
                                     >
                                         <div className="flex justify-between items-start mb-8">
                                             <div className="p-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900">
