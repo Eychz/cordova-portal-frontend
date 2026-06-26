@@ -25,8 +25,8 @@ const BarangayAbout: React.FC<BarangayAboutProps> = ({ info }) => {
             <div className="grid lg:grid-cols-1 gap-px bg-gray-200 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 mb-12">
                 {/* Description - Sharp Panel */}
                 <div className="bg-white dark:bg-gray-900 p-12">
-                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-12">
-                        <div className="flex-1">
+                    <div className="flex flex-col gap-12">
+                        <div className="w-full">
                             <div className="flex items-center gap-4 mb-8">
                                 <div className="w-2 h-10 bg-red-700"></div>
                                 <h2 className="text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">
@@ -38,26 +38,26 @@ const BarangayAbout: React.FC<BarangayAboutProps> = ({ info }) => {
                             </p>
                         </div>
 
-                        {/* Stats Grid - Sharp - Integrated into side on large screens */}
-                        <div className="w-full md:w-80 flex flex-col gap-2 bg-gray-100 dark:bg-gray-800 p-2">
+                        {/* Stats Grid - Sharp */}
+                        <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-5">
                             {info.established && (
-                                <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 hover:border-2 hover:scale-105 transition-all duration-200">
+                                <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 transition-all duration-200">
                                     <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Established</div>
                                     <div className="text-xl font-black text-gray-900 dark:text-white uppercase">{info.established}</div>
                                 </div>
                             )}
-                            <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 hover:border-2 hover:scale-105 transition-all duration-200">
+                            <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 transition-all duration-200">
                                 <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Population</div>
                                 <div className="text-xl font-black text-gray-900 dark:text-white uppercase">{info.population}</div>
                             </div>
                             {info.area && (
-                                <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 hover:border-2 hover:scale-105 transition-all duration-200">
+                                <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 transition-all duration-200">
                                     <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Land Area</div>
                                     <div className="text-xl font-black text-gray-900 dark:text-white uppercase">{info.area}</div>
                                 </div>
                             )}
                             {info.zipCode && (
-                                <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 hover:border-2 hover:scale-105 transition-all duration-200">
+                                <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 transition-all duration-200">
                                     <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Zip Code</div>
                                     <div className="text-xl font-black text-gray-900 dark:text-white uppercase">{info.zipCode}</div>
                                 </div>
@@ -89,9 +89,9 @@ const BarangayAbout: React.FC<BarangayAboutProps> = ({ info }) => {
 
             {/* Key Features - Sharp Cards */}
             {info.keyFeatures && info.keyFeatures.length > 0 && (
-                <div className="grid md:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800 mt-12">
+                <div className="grid md:grid-cols-3 gap-2 mt-12">
                     {info.keyFeatures.map((feature, index) => (
-                        <div key={index} className="p-12 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                        <div key={index} className="p-12 bg-white">
                             <div className="flex items-center gap-3 mb-6">
                                 <TrendingUp className="w-5 h-5 text-red-700" />
                                 <h4 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">

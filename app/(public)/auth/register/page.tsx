@@ -7,8 +7,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { authApi } from '@/lib/authApi';
 import { RegisterSchema, type RegisterInput } from '@/lib/validations';
+import { useReCaptcha } from '@/hooks/useReCaptcha';
 
 const RegisterPage: React.FC = () => {
+    const { getReCaptchaToken, isVerifying, isReady } = useReCaptcha();
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
@@ -36,11 +38,26 @@ const RegisterPage: React.FC = () => {
         setSuccess('');
         setLoading(true);
 
+        // Safety check: reCAPTCHA initialization
+        if (!isReady) {
+            setError('Security check is still loading. Please wait a moment and try again.');
+            setLoading(false);
+            return;
+        }
+
         try {
+            // 1. Fetch reCAPTCHA token
+            const token = await getReCaptchaToken('register_submit');
+            if (!token) {
+                setError('Security verification failed to initialize. Please refresh.');
+                setLoading(false);
+                return;
+            }
+
             const result = await authApi.register({
                 email: data.email,
                 password: data.password,
-            });
+            }, token);
 
             setSuccess('Registration successful! Redirecting to verification...');
             setTimeout(() => {
@@ -148,13 +165,13 @@ const RegisterPage: React.FC = () => {
 
                 <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || isVerifying}
                     className="w-full bg-red-700 text-white py-4 rounded-none text-sm font-black uppercase tracking-widest hover:bg-red-800 transition-all duration-300 mt-6 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] flex items-center justify-center gap-2"
                 >
-                    {loading ? (
+                    {loading || isVerifying ? (
                         <>
                             <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-none animate-spin"></div>
-                            <span>Processing Registry...</span>
+                            <span>{isVerifying ? 'Securing Check...' : 'Processing Registry...'}</span>
                         </>
                     ) : 'Create Account'}
                 </button>

@@ -58,8 +58,8 @@ const BarangayOfficials: React.FC<BarangayOfficialsProps> = ({
             </div>
 
             {/* Featured Official (Captain/Chairperson) - Formal Layout */}
-            <div className="mb-12 border-4 dark:border-gray-100 p-10">
-                <div className="grid md:grid-cols-12 gap-0">
+            <div className="mb-12 dark:border-gray-100">
+                <div className="grid md:grid-cols-12">
                     <div className="md:col-span-4 aspect-square md:aspect-auto h-full relative">
                         <img
                             src={officials[0]?.imageUrl || "/municipal-logo.jpg"}
@@ -77,18 +77,12 @@ const BarangayOfficials: React.FC<BarangayOfficialsProps> = ({
                         <p className="text-lg text-gray-500 dark:text-gray-400 font-medium leading-relaxed max-w-2xl">
                             {captainDescription}
                         </p>
-                        <div className="mt-10 pt-10 border-t border-gray-100 dark:border-gray-800">
-                            <div className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                <div className="w-12 h-[1px] bg-gray-300"></div>
-                                Official Representative
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Other Officials Grid - Institutional Style */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-800">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
                 {officials.slice(1).map((official, index) => (
                     <div key={index} className="bg-white dark:bg-gray-900 group">
                         <div className="aspect-[3/4] overflow-hidden transition-all duration-500 border-b border-gray-100 dark:border-gray-800">

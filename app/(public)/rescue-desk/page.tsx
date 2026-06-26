@@ -1,30 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import * as LucideIcons from 'lucide-react';
-import { emergencyApi, EmergencyHotline } from '@/lib/emergencyApi';
+import { useRescueHotlines } from '@/hooks/useRescueHotlines';
 import { RescueHotlineCardSkeleton } from '@/components/Skeleton';
 
 const RescueDeskPage: React.FC = () => {
-    const [hotlines, setHotlines] = useState<EmergencyHotline[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchHotlines = async () => {
-            try {
-                const data = await emergencyApi.getAll();
-                setHotlines(data);
-            } catch (err) {
-                console.error("Failed to load emergency hotlines:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchHotlines();
-    }, []);
+    const { data: hotlines = [], isLoading: loading } = useRescueHotlines();
 
     return (
         <PageTransition>
@@ -76,7 +61,7 @@ const RescueDeskPage: React.FC = () => {
 
                     {/* Directory Grid - Flat & Sharp - 2-gap spacing policy */}
                     {loading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none mb-20">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 p-0 border-none mb-20">
                             {[1, 2, 3, 4, 5, 6].map((i) => (
                                 <RescueHotlineCardSkeleton key={i} />
                             ))}
@@ -86,28 +71,30 @@ const RescueDeskPage: React.FC = () => {
                             <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No active hotlines registered</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none mb-20">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 p-0 border-none mb-20">
                             {hotlines.map((contact) => {
                                 const IconComponent = (LucideIcons as any)[contact.icon] || LucideIcons.Siren;
                                 return (
                                     <div
                                         key={contact.id}
-                                        className="bg-white dark:bg-gray-900 p-10 group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border border-gray-100 dark:border-gray-800"
+                                        className="bg-white dark:bg-gray-900 p-10 group hover:bg-gray-50 dark:hover:bg-gray-800 hover: border hover:border-red-700 transition-colors duration-300 flex flex-col justify-between h-full"
                                     >
-                                        <div className="flex justify-between items-start mb-8">
-                                            <div className="p-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900">
-                                                <IconComponent className="w-8 h-8" />
+                                        <div>
+                                            <div className="flex justify-between items-start mb-8">
+                                                <div className="w-16 h-16 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 flex items-center justify-center flex-shrink-0">
+                                                    <IconComponent className="w-8 h-8" />
+                                                </div>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-red-700">
+                                                    {contact.category}
+                                                </span>
                                             </div>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-red-700">
-                                                {contact.category}
-                                            </span>
+                                            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tight">
+                                                {contact.title}
+                                            </h3>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
+                                                {contact.description}
+                                            </p>
                                         </div>
-                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tight">
-                                            {contact.title}
-                                        </h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">
-                                            {contact.description}
-                                        </p>
                                         <div className="space-y-4">
                                             <div className="text-3xl font-black text-red-700 tabular-nums tracking-tighter whitespace-pre-line">
                                                 {contact.contact}

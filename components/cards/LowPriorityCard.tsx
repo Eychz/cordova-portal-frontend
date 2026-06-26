@@ -32,7 +32,7 @@ const LowPriorityCard: React.FC<LowPriorityCardProps> = ({
     return (
         <div 
             onClick={onClick}
-            className="flex gap-4 relative bg-white dark:bg-gray-800 rounded-none p-4 border border-gray-100 dark:border-gray-700 premium-flag-card group cursor-pointer min-w-0"
+            className="flex gap-4 relative bg-white dark:bg-gray-800 rounded-none p-4 border border-gray-100 dark:border-gray-700 premium-flag-card group cursor-pointer min-w-0 h-full"
             >
             <div 
                 className="w-24 h-24 flex-shrink-0 bg-cover bg-center rounded-none relative z-10"
@@ -44,17 +44,19 @@ const LowPriorityCard: React.FC<LowPriorityCardProps> = ({
                     onError={handleImageError}
                     className="hidden"
                 /></div>
-            <div className="flex-1 relative z-10 flex flex-col justify-center">
-                <span className="inline-block text-red-700 dark:text-red-400 text-[10px] font-bold mb-1 uppercase tracking-tighter">
-                    {category}
-                </span>
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-red-700 dark:group-hover:text-red-400 transition-colors text-base break-words">
-                    {title}
-                </h4>
-                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-2">
-                    {description}
-                </p>
-                <div className="mt-auto flex items-center gap-2">
+            <div className="flex-1 relative z-10 flex flex-col justify-between">
+                <div>
+                    <span className="inline-block text-red-700 dark:text-red-400 text-[10px] font-bold mb-1 uppercase tracking-tighter">
+                        {category}
+                    </span>
+                    <h4 className="font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-red-700 dark:group-hover:text-red-400 transition-colors text-base break-words">
+                        {title}
+                    </h4>
+                    <p className="text-xs text-gray-505 dark:text-gray-400 line-clamp-2">
+                        {description}
+                    </p>
+                </div>
+                <div className="mt-auto flex items-center gap-2 pt-2">
                     <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase">{date}</span>
                     {authorName && (
                         <>

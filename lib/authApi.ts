@@ -27,22 +27,26 @@ interface ResetPasswordData {
 }
 
 export const authApi = {
-  register: async (data: RegisterData) => {
+  register: async (data: RegisterData, recaptchaToken?: string) => {
     console.log('authApi.register called with:', {
       ...data,
       password: '***',
       barangay: data.barangay,
     });
-    return httpClient.post<any>('/auth/register', data);
+    return httpClient.post<any>('/auth/register', data, {
+      headers: recaptchaToken ? { 'X-Recaptcha-Token': recaptchaToken } : undefined
+    });
   },
 
   verifyEmail: async (data: VerifyEmailData) => {
     return httpClient.post<any>('/auth/verify-email', data);
   },
 
-  login: async (data: LoginData) => {
+  login: async (data: LoginData, recaptchaToken?: string) => {
     try {
-      return await httpClient.post<any>('/auth/login', data);
+      return await httpClient.post<any>('/auth/login', data, {
+        headers: recaptchaToken ? { 'X-Recaptcha-Token': recaptchaToken } : undefined
+      });
     } catch (err: any) {
       if (err.name === 'HttpError') {
         const error: any = new Error(err.message);
@@ -55,8 +59,10 @@ export const authApi = {
     }
   },
 
-  forgotPassword: async (email: string) => {
-    return httpClient.post<any>('/auth/forgot-password', { email });
+  forgotPassword: async (email: string, recaptchaToken?: string) => {
+    return httpClient.post<any>('/auth/forgot-password', { email }, {
+      headers: recaptchaToken ? { 'X-Recaptcha-Token': recaptchaToken } : undefined
+    });
   },
 
   resetPassword: async (data: ResetPasswordData) => {

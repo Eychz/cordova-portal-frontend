@@ -7,8 +7,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Carousel from '@/components/Carousel';
 import { HighPriorityCard, NormalPriorityCard, LowPriorityCard } from '@/components/cards';
-import { postsApi } from '@/lib/postsApi';
-import { Post } from '@/data/adminData';
+import { usePosts } from '@/hooks/usePosts';
+import { Post } from '@/lib/postsApi';
 import { slugify } from '@/utils/slugify';
 import { Search, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { NewsCardSkeleton, CarouselSkeleton, LowPriorityCardSkeleton, Skeleton } from '@/components/Skeleton';
@@ -30,8 +30,7 @@ interface Announcement {
 
 const AnnouncementsPage: React.FC = () => {
     const router = useRouter();
-    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: rawPosts = [], isLoading: loading } = usePosts({ type: 'announcement' });
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -45,46 +44,31 @@ const AnnouncementsPage: React.FC = () => {
     const SEARCH_LIMIT = 12;
     const LOW_PRIORITY_LIMIT = 6;
 
-    useEffect(() => {
-        const loadAnnouncements = async () => {
-            try {
-                setLoading(true);
-                const adminPosts = await postsApi.getAll({ type: 'announcement' });
+    const announcements = useMemo(() => {
+        // Sort by createdAt descending (most recent first)
+        const sortedPosts = [...rawPosts].sort((a: Post, b: Post) =>
+            new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+        );
 
-                // Sort by createdAt descending (most recent first)
-                const sortedPosts = adminPosts.sort((a: Post, b: Post) =>
-                    new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-                );
-
-                const mappedAnnouncements: Announcement[] = sortedPosts.map((post: Post) => ({
-                    id: post.id!,
-                    uuid: post.uuid,
-                    title: post.title,
-                    description: post.content.slice(0, 150) + '...',
-                    content: post.content,
-                    date: new Date(post.createdAt!).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    }),
-                    imageUrl: post.imageUrl || `https://picsum.photos/seed/${post.id! + 300}/800/600`,
-                    category: post.category || 'Public Notice',
-                    type: post.type,
-                    authorName: post.authorName,
-                    priority: post.priority || 'low_priority',
-                    createdAt: post.createdAt!
-                }));
-
-                setAnnouncements(mappedAnnouncements);
-            } catch (err) {
-                console.error('Failed to load announcements:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadAnnouncements();
-    }, []);
+        return sortedPosts.map((post: Post) => ({
+            id: post.id!,
+            uuid: post.uuid,
+            title: post.title,
+            description: post.content.slice(0, 150) + '...',
+            content: post.content,
+            date: new Date(post.createdAt!).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }),
+            imageUrl: post.imageUrl || `https://picsum.photos/seed/${post.id! + 300}/800/600`,
+            category: post.category || 'Public Notice',
+            type: post.type,
+            authorName: post.authorName,
+            priority: post.priority || 'low_priority',
+            createdAt: post.createdAt!
+        }));
+    }, [rawPosts]);
 
     // Filter Logic
     const isSearching = searchQuery.trim() !== '' || selectedCategory !== 'All';
@@ -252,7 +236,7 @@ const AnnouncementsPage: React.FC = () => {
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-800 p-0 border-none">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow p-0 border-none">
                                                         {paginatedRow1Grid.map((a) => (
                                                             <div key={a.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
                                                                 <NormalPriorityCard
@@ -359,7 +343,7 @@ const AnnouncementsPage: React.FC = () => {
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-0 border-none">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow p-0 border-none">
                                                         {paginatedRow2Grid.map((a) => (
                                                             <div key={a.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
                                                                 <NormalPriorityCard
@@ -395,14 +379,14 @@ const AnnouncementsPage: React.FC = () => {
                                         More Announcements
                                     </h2>
                                     {loading ? (
-                                        <div className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {[1, 2, 3, 4].map(i => (
                                                 <LowPriorityCardSkeleton key={i} />
                                             ))}
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="space-y-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {paginatedLowPriority.map((a) => (
                                                     <LowPriorityCard
                                                         key={a.id}

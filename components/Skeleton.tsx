@@ -161,26 +161,73 @@ export const CarouselSkeleton: React.FC = () => {
 
 export const DetailSkeleton: React.FC = () => {
     return (
-        <div className="space-y-8 w-full">
-            {/* Category & Title */}
-            <div className="space-y-4">
-                <Skeleton className="h-5 w-24" />
-                <Skeleton className="h-12 w-5/6" />
-                <Skeleton className="h-6 w-1/3" />
+        <div className="bg-[#faf6ee] dark:bg-[#181614] border border-[#e5dec9] dark:border-[#2a2622] shadow-2xl relative overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x divide-[#e5dec9] dark:divide-[#2a2622] min-h-[600px] animate-pulse">
+            
+            {/* LEFT PAGE SKELETON */}
+            <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-between bg-[#fdfbf7] dark:bg-[#1c1b19] h-full">
+                <div className="space-y-6">
+                    {/* Header Banner Skeleton */}
+                    <div className="flex items-center gap-3 border-b border-[#e5dec9]/60 dark:border-[#2a2622]/60 pb-4">
+                        <Skeleton className="w-5 h-5 bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700" />
+                    </div>
+
+                    {/* Metadata Skeleton */}
+                    <div className="flex flex-wrap items-center gap-4 pb-4 border-b border-[#e5dec9]/30 dark:border-[#2a2622]/30">
+                        <Skeleton className="h-3 w-32 bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-3 w-24 bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-3 w-20 bg-gray-200 dark:bg-gray-700" />
+                    </div>
+
+                    {/* Featured Image Skeleton */}
+                    <div className="w-full aspect-[4/3] bg-gray-200 dark:bg-gray-700 border border-[#e5dec9] dark:border-[#2a2622] p-1 shadow-sm">
+                        <Skeleton className="w-full h-full bg-gray-300 dark:bg-gray-650" />
+                    </div>
+
+                    {/* Operational Details Skeleton */}
+                    <div className="bg-[#faf6ee]/50 dark:bg-gray-900/30 border border-[#e5dec9] dark:border-[#2a2622] p-4 md:p-6 space-y-4">
+                        <Skeleton className="h-3 w-32 bg-gray-200 dark:bg-gray-700 mb-2" />
+                        <Skeleton className="h-5 w-4/5 bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                </div>
+
+                <div className="mt-8 pt-4 border-t border-[#e5dec9]/60 dark:border-[#2a2622]/60 flex justify-between items-center">
+                    <Skeleton className="h-3 w-20 bg-gray-200 dark:bg-gray-700" />
+                    <Skeleton className="h-3 w-10 bg-gray-200 dark:bg-gray-700" />
+                </div>
             </div>
-            {/* Featured Image */}
-            <Skeleton className="w-full h-[300px] sm:h-[450px]" />
-            {/* Article Content Paragraphs */}
-            <div className="space-y-4">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-11/12" />
-                <Skeleton className="h-4 w-5/6" />
-                <div className="h-4" /> {/* spacing */}
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
+
+            {/* RIGHT PAGE SKELETON */}
+            <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-between bg-[#fdfbf7] dark:bg-[#1c1b19] h-full relative md:shadow-[-10px_0_15px_-10px_rgba(0,0,0,0.15)] dark:md:shadow-[-10px_0_15px_-10px_rgba(0,0,0,0.5)]">
+                <div className="absolute top-0 bottom-0 left-0 w-8 pointer-events-none bg-gradient-to-r from-black/5 via-transparent to-transparent hidden md:block" />
+                
+                <div className="space-y-6">
+                    {/* Title Skeleton */}
+                    <div className="space-y-3">
+                        <Skeleton className="h-10 w-full bg-gray-300 dark:bg-gray-650" />
+                        <Skeleton className="h-10 w-4/5 bg-gray-300 dark:bg-gray-650" />
+                    </div>
+
+                    {/* Content Paragraph Skeletons */}
+                    <div className="space-y-4 pt-4">
+                        <Skeleton className="h-4 w-full bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-4 w-full bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-4 w-11/12 bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-4 w-5/6 bg-gray-200 dark:bg-gray-700" />
+                        <div className="h-2" />
+                        <Skeleton className="h-4 w-full bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-4 w-full bg-gray-200 dark:bg-gray-700" />
+                        <Skeleton className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                </div>
+
+                <div className="mt-8 pt-4 border-t border-[#e5dec9]/60 dark:border-[#2a2622]/60 flex justify-between items-center">
+                    <Skeleton className="h-3 w-24 bg-gray-200 dark:bg-gray-700" />
+                    <Skeleton className="h-3 w-10 bg-gray-200 dark:bg-gray-700" />
+                </div>
             </div>
+
         </div>
     );
 };

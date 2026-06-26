@@ -30,34 +30,38 @@ const NormalPriorityCard: React.FC<NormalPriorityCardProps> = ({
     };
 
     return (
-        <div 
+        <div
             onClick={onClick}
-            className="group cursor-pointer min-w-0"
+            className="group bg:none cursor-pointer min-w-0 h-full"
         >
-            <div className="relative bg-white dark:bg-gray-800 rounded-none overflow-hidden border border-gray-200 dark:border-gray-700 premium-flag-card">
-                <div 
-                    className="h-48 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 relative overflow-hidden"
-                    style={{ backgroundImage: `url(${imageSrc})`, backgroundColor: '#f3f4f6' }}
-                >
-                    <img 
-                        src={imageSrc} 
-                        alt={title}
-                        onError={handleImageError}
-                        className="hidden"
-                    />
-                    <div className="h-full bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div className="relative premium-flag-card h-full flex flex-col justify-between">
+                <div className="p-3">
+                    <div
+                        className="h-48 bg-cover bg-top relative overflow-hidden"
+                        style={{ backgroundImage: `url(${imageSrc})` }}
+                    >
+                        <img
+                            src={imageSrc}
+                            alt={title}
+                            onError={handleImageError}
+                            className="hidden"
+                        />
+                        <div className="h-full bg-gradient-to-t from-black/60 to-transparent"></div>
+                    </div>
+                    <div className="p-5 relative">
+                        <span className="inline-block bg-red-600 text-white px-3 py-0.5 rounded-none text-[10px] font-bold mb-3 uppercase tracking-wider">
+                            {category}
+                        </span>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-red-700 dark:group-hover:text-red-400 transition-colors break-words">
+                            {title}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
+                            {description}
+                        </p>
+                    </div>
                 </div>
-                <div className="p-5 relative">
-                    <span className="inline-block bg-red-600 text-white px-3 py-0.5 rounded-none text-[10px] font-bold mb-3 uppercase tracking-wider">
-                        {category}
-                    </span>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-red-700 dark:group-hover:text-red-400 transition-colors break-words">
-                        {title}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-4">
-                        {description}
-                    </p>
-                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4 mt-2">
+                <div className="p-5 pt-0 relative">
+                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4">
                         <div className="flex items-center gap-2">
                             <span>{date}</span>
                             {authorName && (

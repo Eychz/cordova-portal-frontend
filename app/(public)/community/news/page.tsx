@@ -7,8 +7,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Carousel from '@/components/Carousel';
 import { HighPriorityCard, NormalPriorityCard, LowPriorityCard } from '@/components/cards';
-import { postsApi } from '@/lib/postsApi';
-import { Post } from '@/data/adminData';
+import { usePosts } from '@/hooks/usePosts';
+import { Post } from '@/lib/postsApi';
 import { slugify } from '@/utils/slugify';
 import { Search, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { NewsCardSkeleton, CarouselSkeleton, LowPriorityCardSkeleton, Skeleton, NormalPriorityCardSkeleton } from '@/components/Skeleton';
@@ -30,8 +30,7 @@ interface NewsItem {
 
 const NewsPage: React.FC = () => {
     const router = useRouter();
-    const [news, setNews] = useState<NewsItem[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: rawPosts = [], isLoading: loading } = usePosts({ type: 'news' });
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -45,46 +44,31 @@ const NewsPage: React.FC = () => {
     const SEARCH_LIMIT = 12;
     const LOW_PRIORITY_LIMIT = 6;
 
-    useEffect(() => {
-        const loadNews = async () => {
-            try {
-                setLoading(true);
-                const adminPosts = await postsApi.getAll({ type: 'news' });
+    const news = useMemo(() => {
+        // Sort by createdAt descending (most recent first)
+        const sortedPosts = [...rawPosts].sort((a: Post, b: Post) =>
+            new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+        );
 
-                // Sort by createdAt descending (most recent first)
-                const sortedPosts = adminPosts.sort((a: Post, b: Post) =>
-                    new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-                );
-
-                const mappedNews: NewsItem[] = sortedPosts.map((post: Post) => ({
-                    id: post.id!,
-                    uuid: post.uuid,
-                    title: post.title,
-                    description: post.content.slice(0, 150) + '...',
-                    content: post.content,
-                    date: new Date(post.createdAt!).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    }),
-                    imageUrl: post.imageUrl || `https://picsum.photos/seed/${post.id! + 500}/800/600`,
-                    category: post.category || 'General News',
-                    type: post.type,
-                    authorName: post.authorName,
-                    priority: post.priority || 'low_priority',
-                    createdAt: post.createdAt!
-                }));
-
-                setNews(mappedNews);
-            } catch (err) {
-                console.error('Failed to load news:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadNews();
-    }, []);
+        return sortedPosts.map((post: Post) => ({
+            id: post.id!,
+            uuid: post.uuid,
+            title: post.title,
+            description: post.content.slice(0, 150) + '...',
+            content: post.content,
+            date: new Date(post.createdAt!).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }),
+            imageUrl: post.imageUrl || `https://picsum.photos/seed/${post.id! + 500}/800/600`,
+            category: post.category || 'General News',
+            type: post.type,
+            authorName: post.authorName,
+            priority: post.priority || 'low_priority',
+            createdAt: post.createdAt!
+        }));
+    }, [rawPosts]);
 
     // Filter Logic
     const isSearching = searchQuery.trim() !== '' || selectedCategory !== 'All';
@@ -187,26 +171,25 @@ const NewsPage: React.FC = () => {
                     {isSearching ? (
                         /* SEARCH MODE LAYOUT */
                         <section className="mb-20">
-                            <div className="flex items-center gap-4 mb-10 border-b-2 border-gray-100 dark:border-gray-800 pb-6">
-                                <div className="w-2 h-10 bg-gray-900 dark:bg-gray-100"></div>
+                            <div className="flex items-center gap-4 mb-10 border-b-2 pb-6">
                                 <h2 className="text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
                                     Search Results
                                 </h2>
                             </div>
 
                             {loading ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 p-0 border-none">
                                     {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                                        <div key={i} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                                        <div key={i} className="bg-white border">
                                             <NormalPriorityCardSkeleton />
                                         </div>
                                     ))}
                                 </div>
                             ) : paginatedSearch.length > 0 ? (
                                 <>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2  p-0 border-none">
                                         {paginatedSearch.map((a) => (
-                                            <div key={a.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                                            <div key={a.id} className="bg-white border">
                                                 <NormalPriorityCard
                                                     id={a.id}
                                                     title={a.title}
@@ -228,7 +211,7 @@ const NewsPage: React.FC = () => {
                                     />
                                 </>
                             ) : (
-                                <div className="py-32 text-center bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700">
+                                <div className="py-32 text-center">
                                     <Info className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                                     <p className="text-gray-500 font-black uppercase tracking-widest">No results found for your search.</p>
                                 </div>
@@ -270,16 +253,16 @@ const NewsPage: React.FC = () => {
                                         {/* Left Side: 4 Square Grid */}
                                         <div className="lg:col-span-8 flex flex-col">
                                             {loading ? (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-800 p-0 border-none">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow p-0 border-none">
                                                     {[1, 2, 3, 4].map(i => (
-                                                        <div key={i} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                                                        <div key={i} className="bg-white border">
                                                             <NormalPriorityCardSkeleton />
                                                         </div>
                                                     ))}
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-800 p-0 border-none">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow p-0 border-none">
                                                         {paginatedRow1Grid.map((a) => (
                                                             <div key={a.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
                                                                 <NormalPriorityCard
@@ -388,7 +371,7 @@ const NewsPage: React.FC = () => {
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow bg-gray-200 dark:bg-gray-800 p-0 border-none">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 flex-grow p-0 border-none">
                                                         {paginatedRow2Grid.map((a) => (
                                                             <div key={a.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
                                                                 <NormalPriorityCard
@@ -424,14 +407,14 @@ const NewsPage: React.FC = () => {
                                         More News
                                     </h2>
                                     {loading ? (
-                                        <div className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {[1, 2, 3, 4].map(i => (
                                                 <LowPriorityCardSkeleton key={i} />
                                             ))}
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="space-y-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {paginatedLowPriority.map((a) => (
                                                     <LowPriorityCard
                                                         key={a.id}

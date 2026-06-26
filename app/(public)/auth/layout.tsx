@@ -13,14 +13,14 @@ export default function AuthLayout({
         <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col transition-colors">
             <div className="flex-1 flex flex-col md:flex-row relative">
                 {/* Left Side - Logo and Details (50%) */}
-                <div 
+                <div
                     className="w-full md:w-1/2 relative flex flex-col items-center justify-center p-12 overflow-hidden hidden md:flex"
                     style={{
                         background: 'linear-gradient(135deg, #450a0a 0%, #7f1d1d 50%, #450a0a 100%)',
                     }}
                 >
                     {/* Background Image overlay */}
-                    <div 
+                    <div
                         className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
                         style={{
                             backgroundImage: "url('/auth-background.jpg')",
@@ -28,8 +28,8 @@ export default function AuthLayout({
                         }}
                     />
                     <div className="relative z-10 flex flex-col items-center">
-                        <Link 
-                            href="/home" 
+                        <Link
+                            href="/home"
                             className="group transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] transform hover:scale-110 hover:rotate-3 active:scale-95"
                         >
                             <Image
@@ -72,6 +72,11 @@ export default function AuthLayout({
                             </Link>
                         </div>
                         {children}
+                        <p className="text-[10px] text-gray-500 py-5 text-center">
+                            This site is protected by reCAPTCHA and the Google
+                            <a href="https://policies.google.com/privacy" className="underline text-blue-600"> Privacy Policy </a> and
+                            <a href="https://policies.google.com/terms" className="underline text-blue-600"> Terms of Service </a> apply.
+                        </p>
                     </div>
                 </div>
             </div>
