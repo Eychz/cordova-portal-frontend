@@ -14,6 +14,7 @@ import VerificationTab from '../components/VerificationTab';
 import ServicesTab from '../components/ServicesTab';
 import OfficialsTab from '../components/OfficialsTab';
 import EmergenciesTab from '../components/EmergenciesTab';
+import ChangeLogsTab from '../components/ChangeLogsTab';
 
 import {
     type Post,
@@ -220,6 +221,8 @@ const AdminDashboardPage = () => {
                 return <OfficialsTab />;
             case 'emergencies':
                 return <EmergenciesTab />;
+            case 'changelog':
+                return <ChangeLogsTab />;
             default:
                 return <OverviewTab stats={stats} adminActivities={adminActivities} />;
         }
@@ -234,7 +237,8 @@ const AdminDashboardPage = () => {
             services: 'LGU Services',
             barangay: 'Barangay Units',
             municipal: 'Municipal Leaders',
-            emergencies: 'Emergency Hotlines'
+            emergencies: 'Emergency Hotlines',
+            changelog: 'Change Log Tracking'
         };
         return titles[activeTab] || 'Dashboard';
     };

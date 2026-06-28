@@ -18,6 +18,7 @@ export async function POST(request: Request) {
         const { token } = await request.json();
 
         console.log("Token received by server:", token);
+
         if (!token) {
             return NextResponse.json(
                 { success: false, message: 'Verification token is missing.' },

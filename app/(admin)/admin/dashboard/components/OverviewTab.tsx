@@ -34,7 +34,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, adminActivities }) => 
                             </div>
                             <span className="text-[10px] font-black text-green-600 uppercase tracking-widest">+12% New</span>
                         </div>
-                        <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Total Citizens</h3>
+                        <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Total Users</h3>
                         <p className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">{stats.totalUsers}</p>
                     </div>
 
@@ -56,7 +56,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, adminActivities }) => 
                             </div>
                             <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Demographics</span>
                         </div>
-                        <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Total Population</h3>
+                        <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Estimated Population</h3>
                         <p className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">{stats.totalPopulation.toLocaleString()}</p>
                     </div>
 
@@ -81,7 +81,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, adminActivities }) => 
                         <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Live System Logs</span>
                     </div>
                 </div>
-                
+
                 <div className="divide-y divide-gray-100 dark:divide-gray-800">
                     {paginatedActivities.length === 0 ? (
                         <div className="p-12 text-center">

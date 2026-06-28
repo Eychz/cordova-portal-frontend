@@ -122,6 +122,31 @@ const HomeGuestPage: React.FC = () => {
 
     return (
         <PageTransition>
+
+            {/* Discover Cordova - Premium About CTA Banner (Item 6: High Visibility About Page) */}
+            <section className="py-10 px-4 bg-gradient-to-r from-red-950 via-red-900 to-red-950 text-white border-y border-red-900">
+                <div className="maximize-width flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="space-y-3 max-w-3xl">
+                        <span className="inline-block bg-red-700 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] rounded">
+                            Institutional Profile
+                        </span>
+                        <h2 className="text-4xl md:text-5xl font-black uppercase">
+                            Discover Our Municipal Profile & History
+                        </h2>
+                        <p className="text-red-200 text-lg leading-relaxed font-medium">
+                            Meet the Municipality's officials, check executive department heads, review the vision and mission, and read the historical timeline of the Municipality of Cordova.
+                        </p>
+                    </div>
+                    <Link
+                        href="/about"
+                        className="bg-white text-red-950 px-10 py-5 font-black hover:bg-gray-100 transition-colors uppercase tracking-widest text-sm rounded-lg whitespace-nowrap shadow-lg flex items-center gap-2 group"
+                    >
+                        Visit About Page
+                        <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                    </Link>
+                </div>
+
+            </section>
             <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
                 {/* Hero Section - Flat & Wide */}
                 <section className="relative py-24 px-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -175,85 +200,7 @@ const HomeGuestPage: React.FC = () => {
                     </div>
                 </section>
 
-                {/* Featured Posts Section - Flat & Wide - 2-gap spacing policy */}
-                {loadingFeatured ? (
-                    <section className="py-20 px-4 bg-white dark:bg-gray-900">
-                        <div className="maximize-width">
-                            <div className="mb-12 border-l-8 border-red-700 pl-6">
-                                <h2 className="text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
-                                    Latest Featured Updates
-                                </h2>
-                                <p className="text-gray-600 dark:text-gray-400 font-medium">
-                                    Important news and upcoming events from the municipality.
-                                </p>
-                            </div>
 
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {[1, 2, 3].map(i => (
-                                    <NewsCardSkeleton key={i} />
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-                ) : featuredPosts.length > 0 && (
-                    <section className="py-20 px-4 bg-white dark:bg-gray-900">
-                        <div className="maximize-width">
-                            <div className="mb-12 border-l-8 border-red-700 pl-6">
-                                <h2 className="text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
-                                    Latest Featured Updates
-                                </h2>
-                                <p className="text-gray-600 dark:text-gray-400 font-medium">
-                                    Important news and upcoming events from the municipality.
-                                </p>
-                            </div>
-
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {featuredPosts.map((post) => (
-                                    <Link
-                                        key={post.id}
-                                        href={`/community/${post.type}/${slugify(post.title)}`}
-                                        className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-800 hover:shadow-lg transition-all group cursor-pointer block"
-                                    >
-                                        {post.imageUrl && (
-                                            <div className="relative h-64 overflow-hidden">
-                                                <img
-                                                    src={post.imageUrl}
-                                                    alt={post.title}
-                                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                                />
-                                                <div className="absolute top-0 left-0">
-                                                    <span className={`px-4 py-1 font-bold text-[10px] uppercase tracking-widest ${post.type === 'event' ? 'bg-blue-700 text-white' :
-                                                        post.type === 'announcement' ? 'bg-red-700 text-white' :
-                                                            'bg-gray-700 text-white'
-                                                        }`}>
-                                                        {post.type}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        )}
-                                        <div className="p-10">
-                                            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 uppercase tracking-tight leading-tight group-hover:text-red-700 transition-colors">
-                                                {post.title}
-                                            </h3>
-                                            <p className="text-gray-500 dark:text-gray-400 text-sm mb-8 line-clamp-3 leading-relaxed font-medium">
-                                                {post.content}
-                                            </p>
-                                            <div className="flex items-center justify-between pt-6 border-t border-gray-50 dark:border-gray-800">
-                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-700 flex items-center gap-2">
-                                                    Read More
-                                                    <ChevronRight className="w-4 h-4" />
-                                                </span>
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                                    {new Date(post.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-                )}
 
                 {/* Restructured Newspaper Frontpage Section */}
                 <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800/50 border-t border-b border-gray-200 dark:border-gray-800">
@@ -265,7 +212,7 @@ const HomeGuestPage: React.FC = () => {
                                 Cordova Public Digest
                             </h1>
                             <p className="text-xs text-gray-500 mt-2 font-mono">
-                                Vol. LVIII • Cordova Public Information Office • Published {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                Cordova Public Information Office • Updated {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                             </p>
                         </div>
 
@@ -388,29 +335,7 @@ const HomeGuestPage: React.FC = () => {
                     </div>
                 </section>
 
-                {/* Discover Cordova - Premium About CTA Banner (Item 6: High Visibility About Page) */}
-                <section className="py-16 px-4 bg-gradient-to-r from-red-950 via-red-900 to-red-950 text-white border-y border-red-900">
-                    <div className="maximize-width flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div className="space-y-3 max-w-3xl">
-                            <span className="inline-block bg-red-700 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] rounded">
-                                Institutional Profile
-                            </span>
-                            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
-                                Discover Our Municipal Profile & History
-                            </h2>
-                            <p className="text-red-200 text-lg leading-relaxed font-medium">
-                                Meet the Sangguniang Bayan officials, check executive department heads, review the vision and mission, and read the historical timeline of the Municipality of Cordova.
-                            </p>
-                        </div>
-                        <Link
-                            href="/about"
-                            className="bg-white text-red-950 px-10 py-5 font-black hover:bg-gray-100 transition-colors uppercase tracking-widest text-sm rounded-lg whitespace-nowrap shadow-lg flex items-center gap-2 group"
-                        >
-                            Visit About Page
-                            <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                        </Link>
-                    </div>
-                </section>
+
             </div>
         </PageTransition>
     );

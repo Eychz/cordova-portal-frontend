@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Shield, FileText, Users, UserCheck, Package, Siren } from 'lucide-react';
+import { Shield, FileText, Users, UserCheck, Package, Siren, History } from 'lucide-react';
 
 interface DashboardSidebarProps {
     isOpen: boolean;
@@ -15,7 +15,8 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen, onClose }) 
                       pathname.includes('/users') ? 'users' :
                       pathname.includes('/verification') ? 'verification' :
                       pathname.includes('/officials') ? 'officials' :
-                      pathname.includes('/emergencies') ? 'emergencies' : 'overview';
+                      pathname.includes('/emergencies') ? 'emergencies' :
+                      pathname.includes('/changelog') ? 'changelog' : 'overview';
 
     const menuItems = [
         { id: 'overview', label: 'Dashboard', icon: Shield },
@@ -25,6 +26,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen, onClose }) 
         { id: 'services', label: 'LGU Services', icon: Package },
         { id: 'officials', label: 'LGU Officials', icon: Users },
         { id: 'emergencies', label: 'Emergency Hotlines', icon: Siren },
+        { id: 'changelog', label: 'Change Logs', icon: History },
     ];
 
     return (
