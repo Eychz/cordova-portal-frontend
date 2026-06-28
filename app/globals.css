@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 :root {
-  --primary-red: #D1001F;
+  --primary-red: #0036C5;
   --primary-black: #000000;
   --primary-white: #FFFFFF;
   --accent-gray: #F5F5F5;
@@ -87,7 +87,7 @@ a {
 }
 
 .gov-flat-card:hover {
-  border-color: #D1001F;
+  border-color: #0036C5;
 }
 
 .sharp-corners {
@@ -141,7 +141,7 @@ a {
 
 .premium-flag-card:hover {
   transform: translateY(-8px);
-  border: 1px solid #D1001F !important;
+  border: 1px solid #0036C5 !important;
   border-left-width: 8px !important;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
@@ -153,13 +153,13 @@ a {
 }
 
 .premium-flag-container:hover {
-  border: 1px solid #D1001F !important;
+  border: 1px solid #0036C5 !important;
   border-left-width: 6px !important;
-  background-color: rgba(209, 0, 31, 0.02);
+  background-color: rgba(0, 54, 197, 0.02);
 }
 
 .dark .premium-flag-container:hover {
-  background-color: rgba(209, 0, 31, 0.05);
+  background-color: rgba(0, 54, 197, 0.05);
 }
 
 /* Universal border radius of 3% (12px) on all box-type containers, inputs, buttons, and cards */

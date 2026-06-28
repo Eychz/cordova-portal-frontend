@@ -16,7 +16,7 @@ export default function AuthLayout({
                 <div
                     className="w-full md:w-1/2 relative flex flex-col items-center justify-center p-12 overflow-hidden hidden md:flex"
                     style={{
-                        background: 'linear-gradient(135deg, #450a0a 0%, #7f1d1d 50%, #450a0a 100%)',
+                        background: 'linear-gradient(135deg, #450a0a 0%, #0036C5 50%, #450a0a 100%)',
                     }}
                 >
                     {/* Background Image overlay */}

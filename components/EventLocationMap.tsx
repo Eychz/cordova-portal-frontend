@@ -161,8 +161,8 @@ export default function EventLocationMap({ initialLat, initialLng, onLocationCha
             onDragEnd={handleMarkerDragEnd}
           >
             <Pin
-              background="#D1001F"
-              borderColor="#8B0000"
+              background="#0036C5"
+              borderColor="#002087"
               glyphColor="#FFFFFF"
             />
           </AdvancedMarker>

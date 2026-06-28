@@ -179,7 +179,7 @@ const AboutPage = () => {
                                         <div className="w-8 h-8 border-4 border-red-700 border-t-transparent animate-spin rounded-full"></div>
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 bg-gray-150 dark:bg-gray-800">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                         {municipalOfficials.map((official) => (
                                             <div
                                                 key={official.id}
@@ -191,7 +191,7 @@ const AboutPage = () => {
                                                         <img
                                                             src={official.imageUrl}
                                                             alt={official.name}
-                                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                                            className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center">
@@ -225,12 +225,12 @@ const AboutPage = () => {
                                         Executive Departments
                                     </h2>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                                     {departmentHeads.map((official) => (
                                         <div
                                             key={official.id}
                                             onClick={() => router.push(`/about/leaders/${official.slug}`)}
-                                            className="bg-white dark:bg-gray-900 p-8 border border-gray-100 dark:border-gray-800 flex items-center gap-6 cursor-pointer group hover:bg-gray-50 dark:hover:bg-black transition-colors"
+                                            className="bg-white dark:bg-gray-900 p-8 border border-gray-100 dark:border-gray-800 flex items-center gap-6 cursor-pointer group hover:bg-blue-300/20 dark:hover:bg-gray-800 transition-colors"
                                         >
                                             <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 flex-shrink-0 overflow-hidden">
                                                 {official.imageUrl ? (
@@ -246,10 +246,10 @@ const AboutPage = () => {
                                                 )}
                                             </div>
                                             <div>
-                                                <h3 className="text-md font-black text-gray-900 dark:text-white mb-1 uppercase tracking-tight leading-none group-hover:text-red-700 transition-colors">
+                                                <h3 className="text-md font-black text-blue-400 dark:text-white mb-1 uppercase tracking-tight leading-none group-hover:text-red-500 transition-colors">
                                                     {official.name}
                                                 </h3>
-                                                <p className="text-red-700 dark:text-red-400 font-bold text-[10px] uppercase tracking-widest">
+                                                <p className="text-blue-600 dark:text-blue-400 font-bold text-[10px] uppercase tracking-widest">
                                                     {official.position}
                                                 </p>
                                             </div>
