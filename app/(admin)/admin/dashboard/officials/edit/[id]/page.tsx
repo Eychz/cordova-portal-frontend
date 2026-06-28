@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Save, User, Camera, MapPin, Building2, UserPlus, Upload, Trash2 } from 'lucide-react';
 import { officialsApi } from '@/lib/officialsApi';
 import { uploadFile } from '@/lib/apiClient';
+import { useQueryClient } from '@tanstack/react-query';
 import DashboardSidebar from '../../../components/DashboardSidebar';
 import DashboardHeader from '../../../components/DashboardHeader';
 import toast, { Toaster } from 'react-hot-toast';
@@ -24,6 +25,7 @@ const TYPES = [
 export default function EditOfficialPage() {
     const router = useRouter();
     const params = useParams();
+    const queryClient = useQueryClient();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -99,6 +101,8 @@ export default function EditOfficialPage() {
         setSaving(true);
         try {
             await officialsApi.update(parseInt(params.id as string), formData);
+            queryClient.invalidateQueries({ queryKey: ['adminOfficials'] });
+            queryClient.invalidateQueries({ queryKey: ['publicOfficials'] });
             toast.success('Profile updated successfully');
             router.push('/admin/dashboard/officials');
         } catch (err) {

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Edit, Trash2, Plus, Siren, X, Save, ShieldCheck, Flame, Cross, Ambulance, Anchor, Landmark, Phone } from 'lucide-react';
 import { emergencyApi, EmergencyHotline } from '@/lib/emergencyApi';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = [
@@ -25,9 +26,8 @@ const ICON_MAP: Record<string, any> = {
 };
 
 export default function EmergenciesTab() {
-    const [hotlines, setHotlines] = useState<EmergencyHotline[]>([]);
+    const queryClient = useQueryClient();
     const [search, setSearch] = useState('');
-    const [loading, setLoading] = useState(true);
     
     // Modal states
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,22 +43,11 @@ export default function EmergenciesTab() {
         icon: 'ShieldCheck'
     });
 
-    const fetchHotlines = async () => {
-        setLoading(true);
-        try {
-            const data = await emergencyApi.getAll();
-            setHotlines(data);
-        } catch (err) {
-            console.error(err);
-            toast.error('Failed to load emergency hotlines');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchHotlines();
-    }, []);
+    const { data: hotlines = [], isLoading: loading } = useQuery<EmergencyHotline[]>({
+        queryKey: ['adminHotlines'],
+        queryFn: () => emergencyApi.getAll(),
+        staleTime: 5 * 60 * 1000,
+    });
 
     // Auto select icon base on category & title changes
     useEffect(() => {
@@ -121,12 +110,14 @@ export default function EmergenciesTab() {
         setSubmitting(true);
         try {
             if (editingHotline) {
-                const updated = await emergencyApi.update(editingHotline.id, formData);
-                setHotlines(prev => prev.map(h => h.id === editingHotline.id ? updated : h));
+                await emergencyApi.update(editingHotline.id, formData);
+                queryClient.invalidateQueries({ queryKey: ['adminHotlines'] });
+                queryClient.invalidateQueries({ queryKey: ['rescueHotlines'] });
                 toast.success('Emergency hotline updated successfully');
             } else {
-                const created = await emergencyApi.create(formData);
-                setHotlines(prev => [created, ...prev]);
+                await emergencyApi.create(formData);
+                queryClient.invalidateQueries({ queryKey: ['adminHotlines'] });
+                queryClient.invalidateQueries({ queryKey: ['rescueHotlines'] });
                 toast.success('Emergency hotline added successfully');
             }
             setIsModalOpen(false);
@@ -142,7 +133,8 @@ export default function EmergenciesTab() {
         if (!confirm('Are you sure you want to delete this emergency hotline?')) return;
         try {
             await emergencyApi.delete(id);
-            setHotlines(prev => prev.filter(h => h.id !== id));
+            queryClient.invalidateQueries({ queryKey: ['adminHotlines'] });
+            queryClient.invalidateQueries({ queryKey: ['rescueHotlines'] });
             toast.success('Emergency hotline deleted successfully');
         } catch (err) {
             console.error(err);

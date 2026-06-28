@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import toast, { Toaster } from 'react-hot-toast';
 import DashboardSidebar from '../components/DashboardSidebar';
 import { servicesApi, Service } from 'lib/servicesApi';
@@ -30,16 +31,51 @@ const AdminDashboardPage = () => {
     const params = useParams();
     const activeTab = (params.tab as string) || 'overview';
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const queryClient = useQueryClient();
 
-    const [users, setUsers] = useState<User[]>([]);
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [services, setServices] = useState<Service[]>([]);
-    const [adminActivities, setAdminActivities] = useState<any[]>([]);
-    const [stats, setStats] = useState({ 
-        totalUsers: 0, 
-        verificationRequests: 0, 
-        totalPopulation: 0, 
-        publishedPosts: 0 
+    const { data: posts = [] } = useQuery<Post[]>({
+        queryKey: ['adminPosts'],
+        queryFn: () => postsApi.getAll().then(res => res || []),
+        staleTime: 5 * 60 * 1000,
+    });
+
+    const { data: users = [] } = useQuery<User[]>({
+        queryKey: ['adminUsers'],
+        queryFn: async () => {
+            const dbUsers = await statsApi.getAllUsers();
+            return dbUsers.map(u => ({
+                id: u.id,
+                name: `${u.firstName || ''} ${u.middleName || ''} ${u.lastName || ''}`.trim() || u.email,
+                firstName: u.firstName,
+                middleName: u.middleName,
+                lastName: u.lastName,
+                email: u.email,
+                barangay: u.barangay || 'Not specified',
+                role: u.role as any,
+                verified: u.isVerified,
+                isVerified: u.isVerified,
+                points: 0,
+                registeredAt: new Date(u.createdAt).toLocaleDateString(),
+                contactNumber: u.contactNumber || 'Not provided',
+                profileImageUrl: u.profileImageUrl,
+                frontIdDocumentUrl: u.frontIdDocumentUrl,
+                backIdDocumentUrl: u.backIdDocumentUrl,
+                faceVerificationUrl: u.faceVerificationUrl
+            }));
+        },
+        staleTime: 5 * 60 * 1000,
+    });
+
+    const { data: services = [] } = useQuery<Service[]>({
+        queryKey: ['adminServices'],
+        queryFn: () => servicesApi.getAll().catch(() => []),
+        staleTime: 5 * 60 * 1000,
+    });
+
+    const { data: adminActivities = [] } = useQuery<any[]>({
+        queryKey: ['adminActivities'],
+        queryFn: () => apiClient.getAdminActivities(100),
+        staleTime: 5 * 60 * 1000,
     });
 
     // Admin role protection
@@ -58,113 +94,60 @@ const AdminDashboardPage = () => {
         }
     }, [router]);
 
-    // Data loading
-    useEffect(() => {
-        const initData = async () => {
-            try {
-                const apiPosts = await postsApi.getAll();
-                setPosts(apiPosts || []);
-
-                const dbUsers = await statsApi.getAllUsers();
-                const mappedUsers = dbUsers.map(u => ({
-                    id: u.id,
-                    name: `${u.firstName || ''} ${u.middleName || ''} ${u.lastName || ''}`.trim() || u.email,
-                    firstName: u.firstName,
-                    middleName: u.middleName,
-                    lastName: u.lastName,
-                    email: u.email,
-                    barangay: u.barangay || 'Not specified',
-                    role: u.role as any,
-                    verified: u.isVerified,
-                    isVerified: u.isVerified,
-                    points: 0,
-                    registeredAt: new Date(u.createdAt).toLocaleDateString(),
-                    contactNumber: u.contactNumber || 'Not provided',
-                    profileImageUrl: u.profileImageUrl,
-                    frontIdDocumentUrl: u.frontIdDocumentUrl,
-                    backIdDocumentUrl: u.backIdDocumentUrl,
-                    faceVerificationUrl: u.faceVerificationUrl
-                }));
-                setUsers(mappedUsers);
-
-                const loadedServices = await servicesApi.getAll().catch(() => []);
-                setServices(loadedServices);
-
-                const activities = await apiClient.getAdminActivities(100);
-                setAdminActivities(activities);
-
-                const totalPop = 7500 + 6200 + 5100 + 4500 + 3800 + 5200 + 4100 + 6500 + 1800 + 4300 + 5800 + 7200 + 4900;
-                setStats({
-                    totalUsers: mappedUsers.length,
-                    verificationRequests: mappedUsers.filter(u => u.frontIdDocumentUrl && !u.isVerified).length,
-                    totalPopulation: totalPop,
-                    publishedPosts: apiPosts.length
-                });
-
-            } catch (err) {
-                console.error('Failed to load dashboard data:', err);
-                toast.error('Failed to load data from server.');
-            }
-        };
-        initData();
-    }, []);
+    // Compute stats dynamically
+    const totalPop = 7500 + 6200 + 5100 + 4500 + 3800 + 5200 + 4100 + 6500 + 1800 + 4300 + 5800 + 7200 + 4900;
+    const stats = {
+        totalUsers: users.length,
+        verificationRequests: users.filter(u => u.frontIdDocumentUrl && !u.isVerified).length,
+        totalPopulation: totalPop,
+        publishedPosts: posts.length
+    };
 
     // Handlers
     const handleUpdateUser = async (userId: number, updatedData: any) => {
-        const previous = users;
-        setUsers(users.map(u => {
-            if (u.id === userId) {
-                const updated = { ...u, ...updatedData };
-                // Also update the full name display
-                const first = updated.firstName || '';
-                const last = updated.lastName || '';
-                if (first || last) {
-                    updated.name = `${first} ${last}`.trim();
-                }
-                return updated;
-            }
-            return u;
-        }));
-        
         try {
             await apiClient.updateUser(userId, updatedData);
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
             toast.success('User updated successfully');
         } catch (err) {
-            setUsers(previous);
             toast.error('Failed to update user');
         }
     };
 
     const handleDeleteUser = async (id: number) => {
         if (!confirm('Are you sure you want to delete this user?')) return;
-        const previous = users;
-        setUsers(users.filter(u => u.id !== id));
         try {
             await apiClient.deleteUser(id);
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
             toast.success('User deleted successfully');
         } catch (err) {
-            setUsers(previous);
             toast.error('Failed to delete user');
         }
     };
 
     const handleDeletePost = async (id: number) => {
         if (!confirm('Are you sure you want to delete this post?')) return;
-        const previous = posts;
-        setPosts(posts.filter(p => p.id !== id));
         try {
             await postsApi.delete(id);
+            queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
+            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
+            queryClient.invalidateQueries({ queryKey: ['posts'] });
+            queryClient.invalidateQueries({ queryKey: ['publicHomeCarouselPosts'] });
+            queryClient.invalidateQueries({ queryKey: ['publicHomeFeaturedPosts'] });
             toast.success('Post deleted successfully');
         } catch (err) {
-            setPosts(previous);
             toast.error('Failed to delete post');
         }
     };
 
     const handleCreateService = async (data: any) => {
         try {
-            const newService = await servicesApi.create(data);
-            setServices([newService, ...services]);
+            await servicesApi.create(data);
+            queryClient.invalidateQueries({ queryKey: ['adminServices'] });
+            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
+            queryClient.invalidateQueries({ queryKey: ['publicServices'] });
             toast.success('Service created successfully');
         } catch (err) {
             toast.error('Failed to create service');
@@ -173,8 +156,10 @@ const AdminDashboardPage = () => {
 
     const handleUpdateService = async (id: number, data: any) => {
         try {
-            const updated = await servicesApi.update(id, data);
-            setServices(services.map(s => s.id === id ? updated : s));
+            await servicesApi.update(id, data);
+            queryClient.invalidateQueries({ queryKey: ['adminServices'] });
+            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
+            queryClient.invalidateQueries({ queryKey: ['publicServices'] });
             toast.success('Service updated successfully');
         } catch (err) {
             toast.error('Failed to update service');
@@ -183,13 +168,13 @@ const AdminDashboardPage = () => {
 
     const handleDeleteService = async (id: number) => {
         if (!confirm('Are you sure you want to delete this service?')) return;
-        const previous = services;
-        setServices(services.filter(s => s.id !== id));
         try {
             await servicesApi.delete(id);
+            queryClient.invalidateQueries({ queryKey: ['adminServices'] });
+            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
+            queryClient.invalidateQueries({ queryKey: ['publicServices'] });
             toast.success('Service deleted successfully');
         } catch (err) {
-            setServices(previous);
             toast.error('Failed to delete service');
         }
     };
@@ -200,7 +185,8 @@ const AdminDashboardPage = () => {
                 await apiClient.updateUser(id, updatedData);
             }
             await apiClient.verifyUser(id, { isVerified: true });
-            setUsers(users.map(u => u.id === id ? { ...u, ...updatedData, isVerified: true, verified: true } : u));
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
             toast.success('Verification approved');
         } catch (err) {
             toast.error('Failed to approve verification');
@@ -210,7 +196,8 @@ const AdminDashboardPage = () => {
     const handleRejectVerification = async (id: number) => {
         try {
             await apiClient.updateUser(id, { isVerified: false, frontIdDocumentUrl: null });
-            setUsers(users.map(u => u.id === id ? { ...u, isVerified: false, verified: false, frontIdDocumentUrl: null } : u));
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
             toast.success('Verification rejected');
         } catch (err) {
             toast.error('Failed to reject verification');

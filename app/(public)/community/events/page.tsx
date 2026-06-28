@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Carousel from '@/components/Carousel';
 import { HighPriorityCard, NormalPriorityEventCard, LowPriorityEventCard } from '@/components/cards';
-import { postsApi } from '@/lib/postsApi';
-import { Post } from '@/data/adminData';
+import { usePosts } from '@/hooks/usePosts';
+import { Post } from '@/lib/postsApi';
 import { slugify } from '@/utils/slugify';
 import { Search, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { NewsCardSkeleton, CarouselSkeleton, LowPriorityCardSkeleton, Skeleton } from '@/components/Skeleton';
@@ -34,8 +34,7 @@ interface EventItem {
 
 const EventsPage: React.FC = () => {
     const router = useRouter();
-    const [events, setEvents] = useState<EventItem[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: rawPosts = [], isLoading: loading } = usePosts({ type: 'event' });
     const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('All');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -49,54 +48,39 @@ const EventsPage: React.FC = () => {
     const SEARCH_LIMIT = 12;
     const LOW_PRIORITY_LIMIT = 6;
 
-    useEffect(() => {
-        const loadEvents = async () => {
-            try {
-                setLoading(true);
-                const adminPosts = await postsApi.getAll({ type: 'event' });
+    const events = useMemo(() => {
+        // Sort by createdAt descending (most recent first)
+        const sortedPosts = [...rawPosts].sort((a: Post, b: Post) =>
+            new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+        );
 
-                // Sort by createdAt descending (most recent first)
-                const sortedPosts = adminPosts.sort((a: Post, b: Post) =>
-                    new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-                );
-
-                const mappedEvents: EventItem[] = sortedPosts.map((post: Post) => ({
-                    id: post.id!,
-                    uuid: post.uuid,
-                    title: post.title,
-                    name: post.title,
-                    description: post.content.slice(0, 150) + '...',
-                    content: post.content,
-                    location: post.location || 'Cordova Municipal Hall',
-                    date: post.eventDate ? new Date(post.eventDate).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    }) : new Date(post.createdAt!).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    }),
-                    time: post.eventTime || 'TBA',
-                    imageUrl: post.imageUrl || `https://picsum.photos/seed/${post.id! + 200}/800/600`,
-                    category: post.category || 'General Event',
-                    status: (post.eventStatus || 'upcoming') as 'featured' | 'upcoming' | 'done',
-                    type: post.type,
-                    authorName: post.authorName,
-                    priority: post.priority || 'low_priority',
-                    createdAt: post.createdAt!
-                }));
-
-                setEvents(mappedEvents);
-            } catch (err) {
-                console.error('Failed to load events:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadEvents();
-    }, []);
+        return sortedPosts.map((post: Post) => ({
+            id: post.id!,
+            uuid: post.uuid,
+            title: post.title,
+            name: post.title,
+            description: post.content.slice(0, 150) + '...',
+            content: post.content,
+            location: post.location || 'Cordova Municipal Hall',
+            date: post.eventDate ? new Date(post.eventDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }) : new Date(post.createdAt!).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }),
+            time: post.eventTime || 'TBA',
+            imageUrl: post.imageUrl || `https://picsum.photos/seed/${post.id! + 200}/800/600`,
+            category: post.category || 'General Event',
+            status: (post.eventStatus || 'upcoming') as 'featured' | 'upcoming' | 'done',
+            type: post.type,
+            authorName: post.authorName,
+            priority: post.priority || 'low_priority',
+            createdAt: post.createdAt!
+        }));
+    }, [rawPosts]);
 
     // Filter Logic
     const isSearching = searchQuery.trim() !== '' || selectedStatusFilter !== 'All';

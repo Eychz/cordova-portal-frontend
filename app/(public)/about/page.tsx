@@ -1,37 +1,31 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Target, Rocket, Mail, Phone, MapPin, Users, History, Info, User } from 'lucide-react';
 import { officialsApi, Official } from '@/lib/officialsApi';
+import { useQuery } from '@tanstack/react-query';
 
 const AboutPage = () => {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'about' | 'officials' | 'history'>('about');
-    const [municipalOfficials, setMunicipalOfficials] = useState<Official[]>([]);
-    const [departmentHeads, setDepartmentHeads] = useState<Official[]>([]);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchAll = async () => {
-            try {
-                const [municipal, departments] = await Promise.all([
-                    officialsApi.getAll('MUNICIPAL'),
-                    officialsApi.getAll('DEPARTMENT')
-                ]);
-                setMunicipalOfficials(municipal);
-                setDepartmentHeads(departments);
-            } catch (err) {
-                console.error('Failed to fetch officials', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchAll();
-    }, []);
+    const { data: municipalOfficials = [], isLoading: loadingMunicipal } = useQuery<Official[]>({
+        queryKey: ['publicOfficials', 'MUNICIPAL'],
+        queryFn: () => officialsApi.getAll('MUNICIPAL'),
+        staleTime: 5 * 60 * 1000,
+    });
+
+    const { data: departmentHeads = [], isLoading: loadingDepartment } = useQuery<Official[]>({
+        queryKey: ['publicOfficials', 'DEPARTMENT'],
+        queryFn: () => officialsApi.getAll('DEPARTMENT'),
+        staleTime: 5 * 60 * 1000,
+    });
+
+    const loading = loadingMunicipal || loadingDepartment;
 
     return (
         <PageTransition>

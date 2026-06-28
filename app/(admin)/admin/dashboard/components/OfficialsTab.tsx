@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Search, MapPin, Building2, User, ChevronDown, Trash2, Edit } from 'lucide-react';
 import { officialsApi, Official } from '@/lib/officialsApi';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
 const BARANGAYS = [
@@ -20,37 +21,26 @@ const CATEGORIES = [
 
 const OfficialsTab = () => {
     const router = useRouter();
-    const [officials, setOfficials] = useState<Official[]>([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [selectedType, setSelectedType] = useState<string>('MUNICIPAL');
     const [selectedBarangay, setSelectedBarangay] = useState<string>(BARANGAYS[0]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const fetchOfficials = async () => {
-        setLoading(true);
-        try {
-            const data = await officialsApi.getAll(
-                selectedType,
-                (selectedType === 'BARANGAY' || selectedType === 'SK') ? selectedBarangay : undefined
-            );
-            setOfficials(data);
-        } catch (err) {
-            console.error(err);
-            toast.error('Failed to load officials');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchOfficials();
-    }, [selectedType, selectedBarangay]);
+    const { data: officials = [], isLoading: loading } = useQuery<Official[]>({
+        queryKey: ['adminOfficials', selectedType, selectedBarangay],
+        queryFn: () => officialsApi.getAll(
+            selectedType,
+            (selectedType === 'BARANGAY' || selectedType === 'SK') ? selectedBarangay : undefined
+        ),
+        staleTime: 5 * 60 * 1000,
+    });
 
     const handleDelete = async (id: number) => {
         if (!confirm('Are you sure you want to remove this official?')) return;
         try {
             await officialsApi.delete(id);
-            setOfficials(officials.filter(o => o.id !== id));
+            queryClient.invalidateQueries({ queryKey: ['adminOfficials'] });
+            queryClient.invalidateQueries({ queryKey: ['publicOfficials'] });
             toast.success('Official removed');
         } catch (err) {
             toast.error('Failed to delete');

@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Building2, Construction, FileText, CheckCircle, Baby, Heart, Bird, Diamond, Home, Map, Hospital, DollarSign, Hammer, Fence, Pickaxe, Sprout, Search, ArrowRight, Info } from 'lucide-react';
 import { slugify } from '@/utils/slugify';
+import { useQuery } from '@tanstack/react-query';
 
 export interface Service {
   id: number;
@@ -36,25 +37,14 @@ const getCategoryColor = (category: string) => {
 
 const ServicesPage = () => {
   const router = useRouter();
-  const [services, setServices] = useState<ApiService[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        setLoading(true);
-        const data = await servicesApi.getAll();
-        setServices(data);
-      } catch (err) {
-        console.error('Failed to fetch services:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchServices();
-  }, []);
+  const { data: services = [], isLoading: loading } = useQuery<ApiService[]>({
+    queryKey: ['publicServices'],
+    queryFn: () => servicesApi.getAll(),
+    staleTime: 5 * 60 * 1000,
+  });
 
   const categories = ['All', ...Array.from(new Set(services.map(s => s.category)))];
 
@@ -69,8 +59,11 @@ const ServicesPage = () => {
   });
 
   const handleServiceClick = (service: ApiService) => {
-    const titleForSlug = service.name || service.title || 'service';
-    router.push(`/services/${slugify(titleForSlug)}`);
+    let url = service.externalUrl || 'https://bpbc.ibpls.com/cordovacebu/';
+    if (url && !/^https?:\/\//i.test(url)) {
+      url = 'https://' + url;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -93,7 +86,6 @@ const ServicesPage = () => {
                   Fast, transparent, and efficient access to all municipal services and regulatory requirements in Cordova.
                 </p>
               </div>
-              {/* Removed local search bar */}
             </div>
           </div>
         </header>
@@ -118,7 +110,7 @@ const ServicesPage = () => {
           </div>
 
           {/* Services Grid and Empty State - Wrapped for static stability */}
-          <div className="min-h-[100vh]">
+          <div className="min-h-[300px]">
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {[1, 2, 3, 4, 5, 6].map(i => (
@@ -128,36 +120,41 @@ const ServicesPage = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {filteredServices.map((service) => {
-                  const Icon = getIconByName(service.icon);
-                  const colors = getCategoryColor(service.category);
                   return (
                     <div
                       key={service.id}
                       onClick={() => handleServiceClick(service)}
-                      className="bg-transparent p-6 md:p-8 rounded-none border border-red-800 hover:border-l-4 hover:border-l-red-800 hover:shadow-2xl hover:-translate-y-1 group transition-all duration-300 cursor-pointer flex flex-col h-full"
+                      className="group bg-none cursor-pointer min-w-0 h-full flex flex-col justify-between border border-gray-200 dark:border-gray-800 hover:border-red-700 dark:hover:border-red-500 transition-all duration-300 rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 bg-white dark:bg-gray-900"
                     >
-                      <div className={`${colors.bg} ${colors.text} w-16 h-16 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300`}>
-                        <Icon className="w-8 h-8" />
-                      </div>
-
-                      <div className="flex-grow">
-                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 uppercase tracking-tighter leading-tight group-hover:text-red-700 transition-colors line-clamp-2 min-h-[60px]">
-                          {service.name || service.title}
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 leading-relaxed line-clamp-3 font-medium min-h-[72px]">
-                          {service.description}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-auto pt-6 border-t border-gray-50 dark:border-gray-800/50">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Category</span>
-                          <span className={`text-xs font-bold uppercase tracking-wide ${colors.text}`}>
+                      <div className="p-3">
+                        <div
+                          className="h-48 bg-cover bg-center relative overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center"
+                          style={service.imageUrl ? { backgroundImage: `url(${service.imageUrl})` } : undefined}
+                        >
+                          {!service.imageUrl && (
+                            <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                          <span className="absolute top-4 left-4 bg-red-700 text-white px-3 py-0.5 rounded-none text-[10px] font-bold uppercase tracking-wider">
                             {service.category || 'General'}
                           </span>
                         </div>
-                        <div className={`w-10 h-10 rounded-full ${colors.bg} flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0`}>
-                          <ArrowRight className={`w-5 h-5 ${colors.text}`} />
+                        <div className="p-5">
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-red-700 dark:group-hover:text-red-400 transition-colors break-words uppercase tracking-tight">
+                            {service.name || service.title}
+                          </h3>
+                          <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 font-medium">
+                            {service.description}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="p-5 pt-0">
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-4">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Online Access</span>
+                          <span className="text-red-700 dark:text-red-400 font-black flex items-center gap-1 uppercase tracking-widest text-[10px]">
+                            Proceed to Service
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                          </span>
                         </div>
                       </div>
                     </div>

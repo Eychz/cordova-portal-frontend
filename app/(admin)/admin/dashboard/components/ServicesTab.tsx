@@ -64,36 +64,38 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ services, onDelete }) => {
             </div>
 
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 overflow-x-auto">
-                <table className="w-full text-left min-w-[800px]">
+                <table className="w-full text-left min-w-[600px]">
                     <thead>
                         <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                            <th className="px-8 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Service Name</th>
-                            <th className="px-8 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Requirements</th>
-                            <th className="px-8 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Processing Fee</th>
+                            <th className="px-8 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Title</th>
+                            <th className="px-8 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Category</th>
                             <th className="px-8 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                         {paginatedServices.length === 0 ? (
                             <tr>
-                                <td colSpan={4} className="px-8 py-12 text-center">
+                                <td colSpan={3} className="px-8 py-12 text-center">
                                     <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">No services found in the catalog</p>
                                 </td>
                             </tr>
                         ) : (
-                            paginatedServices.map((service) => {
+                          paginatedServices.map((service) => {
                                 const title = service.name || service.title || 'Untitled';
                                 const desc = service.description || service.details || '';
-                                const reqCount = Array.isArray(service.requirements) ? service.requirements.length : 0;
 
                                 return (
                                     <tr key={service.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors group">
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-red-50 dark:group-hover:bg-red-900/10 transition-colors">
-                                                    {React.createElement(ICONS.find(i => i.name === (service.icon || service.iconIdentifier))?.component || Package, { 
-                                                        className: "w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-red-700 transition-colors" 
-                                                    })}
+                                                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:bg-red-50 dark:group-hover:bg-red-900/10 transition-colors rounded-lg">
+                                                    {service.imageUrl ? (
+                                                        <img src={service.imageUrl} alt={title} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        React.createElement(ICONS.find(i => i.name === (service.icon || service.iconIdentifier))?.component || Package, { 
+                                                            className: "w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-red-700 transition-colors" 
+                                                        })
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight line-clamp-1">{title}</p>
@@ -102,10 +104,7 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ services, onDelete }) => {
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{reqCount} Items</p>
-                                        </td>
-                                        <td className="px-8 py-6">
-                                            <p className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-tight">{service.fee || 'None'}</p>
+                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{service.category || 'General Services'}</p>
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <div className="flex items-center justify-end gap-2">

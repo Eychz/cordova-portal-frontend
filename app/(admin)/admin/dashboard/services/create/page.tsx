@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { servicesApi } from '@/lib/servicesApi';
-import { ArrowLeft, Save, Plus, Trash2, FileText, Heart, Shield, Users, Building, Scale, Home, Briefcase, Car, Stethoscope } from 'lucide-react';
+import { ArrowLeft, Save, Image as ImageIcon } from 'lucide-react';
+import { uploadFile } from '@/lib/apiClient';
+import { useQueryClient } from '@tanstack/react-query';
 import DashboardSidebar from '../../components/DashboardSidebar';
 import DashboardHeader from '../../components/DashboardHeader';
 import toast, { Toaster } from 'react-hot-toast';
@@ -17,34 +19,18 @@ const CATEGORIES = [
     'Other'
 ];
 
-const ICONS = [
-    { name: 'FileText', label: 'Document / Form', component: FileText },
-    { name: 'Heart', label: 'Health / Welfare', component: Heart },
-    { name: 'Shield', label: 'Security / Protection', component: Shield },
-    { name: 'Users', label: 'Community / People', component: Users },
-    { name: 'Building', label: 'Business / Infrastructure', component: Building },
-    { name: 'Scale', label: 'Legal / Justice', component: Scale },
-    { name: 'Home', label: 'Housing / Real Estate', component: Home },
-    { name: 'Briefcase', label: 'Employment / Jobs', component: Briefcase },
-    { name: 'Car', label: 'Transport / Vehicle', component: Car },
-    { name: 'Stethoscope', label: 'Medical / Clinic', component: Stethoscope }
-];
 
 export default function CreateServicePage() {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        fee: '',
-        requirementsList: [''],
-        processStepsList: [''],
-        category: 'General Services',
-        icon: 'FileText',
-        hotline: '',
-        email: '',
-        processingTime: ''
+        externalUrl: '',
+        category: 'General Services'
     });
 
     const handleSave = async () => {
@@ -55,23 +41,32 @@ export default function CreateServicePage() {
 
         setLoading(true);
         try {
-            const validSteps = formData.processStepsList.filter(s => s.trim() !== '');
-            const validReqs = formData.requirementsList.filter(r => r.trim() !== '');
-            
+            let finalImageUrl = '';
+
+            if (selectedFile) {
+                toast.loading('Uploading thumbnail...', { id: 'uploadToast' });
+                finalImageUrl = await uploadFile(selectedFile);
+                toast.success('Thumbnail uploaded!', { id: 'uploadToast' });
+            }
+
             const payload = {
                 name: formData.name,
                 description: formData.description,
-                fee: formData.fee,
-                requirements: validReqs,
-                processSteps: validSteps,
+                imageUrl: finalImageUrl,
+                externalUrl: formData.externalUrl,
                 category: formData.category,
-                icon: formData.icon,
-                hotline: formData.hotline,
-                email: formData.email,
-                processingTime: formData.processingTime
+                icon: 'FileText',
+                fee: '',
+                requirements: [],
+                processSteps: [],
+                hotline: '',
+                email: '',
+                processingTime: ''
             };
 
             await servicesApi.create(payload);
+            queryClient.invalidateQueries({ queryKey: ['adminServices'] });
+            queryClient.invalidateQueries({ queryKey: ['publicServices'] });
             toast.success('Service created successfully');
             router.push('/admin/dashboard/services');
         } catch (err) {
@@ -85,10 +80,10 @@ export default function CreateServicePage() {
     return (
         <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a] relative">
             <Toaster position="top-right" />
-            
+
             {/* Mobile Sidebar overlay backdrop */}
             {isSidebarOpen && (
-                <div 
+                <div
                     onClick={() => setIsSidebarOpen(false)}
                     className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity animate-fadeIn"
                 />
@@ -115,7 +110,7 @@ export default function CreateServicePage() {
                                             type="text"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full bg-gray-50 dark:bg-black border-none p-4 font-bold text-sm focus:ring-2 focus:ring-red-700 transition-all"
+                                            className="w-full bg-gray-50 dark:bg-black border-none p-4 font-bold text-sm focus:ring-2 focus:ring-red-700 transition-all rounded-lg"
                                             placeholder="e.g., Business Permit Renewal"
                                         />
                                     </div>
@@ -125,165 +120,53 @@ export default function CreateServicePage() {
                                         <select
                                             value={formData.category}
                                             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                            className="w-full bg-gray-50 dark:bg-black border-none p-4 font-bold text-sm focus:ring-2 focus:ring-red-700 transition-all"
+                                            className="w-full bg-gray-50 dark:bg-black border-none p-4 font-bold text-sm focus:ring-2 focus:ring-red-700 transition-all rounded-lg"
                                         >
                                             {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                         </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Service Redirection URL (Optional)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.externalUrl}
+                                            onChange={(e) => setFormData({ ...formData, externalUrl: e.target.value })}
+                                            className="w-full bg-gray-50 dark:bg-black border-none p-4 font-bold text-sm focus:ring-2 focus:ring-red-700 transition-all rounded-lg"
+                                            placeholder="e.g., https://bpbc.ibpls.com/cordovacebu/"
+                                        />
                                     </div>
                                 </div>
 
                                 <div className="space-y-6">
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Service Icon</label>
-                                        <div className="grid grid-cols-5 gap-2">
-                                            {ICONS.map((icon) => (
-                                                <button
-                                                    key={icon.name}
-                                                    onClick={() => setFormData({ ...formData, icon: icon.name })}
-                                                    className={`p-3 flex items-center justify-center border-2 transition-all ${
-                                                        formData.icon === icon.name 
-                                                        ? 'border-red-700 bg-red-50 dark:bg-red-950/20 text-red-700' 
-                                                        : 'border-transparent bg-gray-50 dark:bg-black text-gray-400'
-                                                    }`}
-                                                    title={icon.label}
-                                                >
-                                                    <icon.component className="w-5 h-5" />
-                                                </button>
-                                            ))}
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Service Thumbnail Image</label>
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex-1 relative">
+                                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                    <ImageIcon className="w-5 h-5 text-gray-400" />
+                                                </div>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                                                    className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 pl-12 focus:outline-none focus:border-red-700 transition-colors text-gray-900 dark:text-white file:mr-4 file:py-1 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-bold file:bg-gray-100 dark:file:bg-gray-800 file:text-gray-700 dark:file:text-gray-300 hover:file:bg-gray-200 dark:hover:file:bg-gray-700 rounded-lg"
+                                                />
+                                                {selectedFile && <p className="text-[10px] text-green-600 font-bold mt-1 absolute -bottom-5 left-0">Selected: {selectedFile.name}</p>}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div>
+                             <div>
                                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Description *</label>
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     className="w-full bg-gray-50 dark:bg-black border-none p-4 font-bold text-sm focus:ring-2 focus:ring-red-700 transition-all min-h-[120px]"
-                                    placeholder="Explain what this service is for and who can apply..."
+                                    placeholder="Explain what this service is for..."
                                 />
-                            </div>
-
-                            <div className="grid md:grid-cols-3 gap-8 pt-6 border-t border-gray-100 dark:border-gray-800">
-                                <div>
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Processing Fee</label>
-                                    <input
-                                        type="text"
-                                        value={formData.fee}
-                                        onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
-                                        className="w-full bg-gray-50 dark:bg-black border-none p-4 font-bold text-sm focus:ring-2 focus:ring-red-700 transition-all"
-                                        placeholder="e.g. ₱150.00 or Free"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Est. Finish Time</label>
-                                    <input
-                                        type="text"
-                                        value={formData.processingTime}
-                                        onChange={(e) => setFormData({ ...formData, processingTime: e.target.value })}
-                                        className="w-full bg-gray-50 dark:bg-black border-none p-4 font-bold text-sm focus:ring-2 focus:ring-red-700 transition-all"
-                                        placeholder="e.g. 3-5 Business Days"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Contact Email</label>
-                                    <input
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full bg-gray-50 dark:bg-black border-none p-4 font-bold text-sm focus:ring-2 focus:ring-red-700 transition-all"
-                                        placeholder="dept@cordova.gov.ph"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Hotline Number</label>
-                                <input
-                                    type="text"
-                                    value={formData.hotline}
-                                    onChange={(e) => setFormData({ ...formData, hotline: e.target.value })}
-                                    className="w-full bg-gray-50 dark:bg-black border-none p-4 font-bold text-sm focus:ring-2 focus:ring-red-700 transition-all"
-                                    placeholder="e.g. (032) 496-0000"
-                                />
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-12 pt-10 border-t border-gray-100 dark:border-gray-800">
-                                <div>
-                                    <div className="flex items-center justify-between mb-4">
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Requirements</label>
-                                        <button 
-                                            onClick={() => setFormData({ ...formData, requirementsList: [...formData.requirementsList, ''] })}
-                                            className="text-[10px] font-black text-red-700 uppercase tracking-widest hover:underline"
-                                        >
-                                            + Add Item
-                                        </button>
-                                    </div>
-                                    <div className="space-y-3">
-                                        {formData.requirementsList.map((req, index) => (
-                                            <div key={index} className="flex gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={req}
-                                                    onChange={(e) => {
-                                                        const newList = [...formData.requirementsList];
-                                                        newList[index] = e.target.value;
-                                                        setFormData({ ...formData, requirementsList: newList });
-                                                    }}
-                                                    className="flex-1 bg-gray-50 dark:bg-black border-none p-3 font-bold text-xs focus:ring-1 focus:ring-red-700"
-                                                    placeholder={`Requirement #${index + 1}`}
-                                                />
-                                                {formData.requirementsList.length > 1 && (
-                                                    <button 
-                                                        onClick={() => setFormData({ ...formData, requirementsList: formData.requirementsList.filter((_, i) => i !== index) })}
-                                                        className="p-3 text-gray-400 hover:text-red-700"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div className="flex items-center justify-between mb-4">
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Process Steps</label>
-                                        <button 
-                                            onClick={() => setFormData({ ...formData, processStepsList: [...formData.processStepsList, ''] })}
-                                            className="text-[10px] font-black text-red-700 uppercase tracking-widest hover:underline"
-                                        >
-                                            + Add Step
-                                        </button>
-                                    </div>
-                                    <div className="space-y-3">
-                                        {formData.processStepsList.map((step, index) => (
-                                            <div key={index} className="flex gap-2 items-center">
-                                                <span className="w-8 text-[10px] font-black text-gray-300"># {index + 1}</span>
-                                                <input
-                                                    type="text"
-                                                    value={step}
-                                                    onChange={(e) => {
-                                                        const newList = [...formData.processStepsList];
-                                                        newList[index] = e.target.value;
-                                                        setFormData({ ...formData, processStepsList: newList });
-                                                    }}
-                                                    className="flex-1 bg-gray-50 dark:bg-black border-none p-3 font-bold text-xs focus:ring-1 focus:ring-red-700"
-                                                    placeholder="Describe the step..."
-                                                />
-                                                {formData.processStepsList.length > 1 && (
-                                                    <button 
-                                                        onClick={() => setFormData({ ...formData, processStepsList: formData.processStepsList.filter((_, i) => i !== index) })}
-                                                        className="p-3 text-gray-400 hover:text-red-700"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
                             </div>
 
                             <div className="pt-12">

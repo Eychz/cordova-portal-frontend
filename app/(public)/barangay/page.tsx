@@ -32,22 +32,16 @@ export default function BarangaysListPage() {
                     </div>
                 </header>
 
-                <main className="flex-grow maximize-width px-4 py-16">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-gray-200 dark:bg-gray-800 p-0 border-none">
+                <main className="flex-grow maximize-width px-4 py-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 p-0 border-none">
                         {barangays.map((b) => (
                             <Link
                                 href={`/barangay/${b.id}`}
                                 key={b.id}
-                                className="group bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex flex-col"
+                                className="group bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex flex-col"
                             >
-                                <div className="h-64 w-full relative overflow-hidden">
-                                    <Image
-                                        src={b.previewImage || "/municipal-logo.jpg"}
-                                        alt={b.name}
-                                        fill
-                                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                                    />
-                                    <div className="absolute top-0 left-0 bg-red-700 text-white px-6 py-2 text-xs font-black uppercase tracking-[0.2em]">
+                                <div className="h-54 w-full relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 bg-red-700 text-white py-0 text-xs font-black uppercase tracking-[0.2em]">
                                         BRGY. {b.name}
                                     </div>
                                 </div>
@@ -63,17 +57,6 @@ export default function BarangaysListPage() {
                                     <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-10 line-clamp-3 font-medium">
                                         {b.info.description}
                                     </p>
-
-                                    <div className="grid grid-cols-2 gap-4 mb-10 border-y border-gray-50 dark:border-gray-800 py-6">
-                                        <div className="flex items-center gap-3">
-                                            <Users className="w-4 h-4 text-gray-300" />
-                                            <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">7,200+ Pop.</div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <MapPin className="w-4 h-4 text-gray-300" />
-                                            <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">2.5 SQ. KM</div>
-                                        </div>
-                                    </div>
 
                                     <div className="mt-auto flex items-center justify-between">
                                         <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-900 dark:text-white flex items-center gap-2 group-hover:gap-4 transition-all">

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Save, User, Camera, MapPin, Building2, UserPlus, Upload } from 'lucide-react';
 import { officialsApi } from '@/lib/officialsApi';
 import { uploadFile } from '@/lib/apiClient';
+import { useQueryClient } from '@tanstack/react-query';
 import DashboardSidebar from '../../components/DashboardSidebar';
 import DashboardHeader from '../../components/DashboardHeader';
 import toast, { Toaster } from 'react-hot-toast';
@@ -24,6 +25,7 @@ const TYPES = [
 function CreateOfficialForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const queryClient = useQueryClient();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -78,6 +80,8 @@ function CreateOfficialForm() {
         setLoading(true);
         try {
             await officialsApi.create(formData);
+            queryClient.invalidateQueries({ queryKey: ['adminOfficials'] });
+            queryClient.invalidateQueries({ queryKey: ['publicOfficials'] });
             toast.success('Official added successfully');
             router.push('/admin/dashboard/officials');
         } catch (err) {

@@ -5,7 +5,9 @@ export interface Service {
   name: string;
   title?: string; // for compatibility
   description: string;
-  icon: string;
+  icon?: string; // made optional
+  imageUrl?: string;
+  externalUrl?: string;
   category: string;
   formFileUrl?: string;
   processSteps?: any;

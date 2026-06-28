@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { notFound } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
@@ -10,42 +10,41 @@ import BarangayOfficials from '@/components/barangay/BarangayOfficials';
 import { barangays } from '@/data/barangays';
 import { officialsApi } from '@/lib/officialsApi';
 import { BarangayOfficialsSkeleton } from '@/components/Skeleton';
+import { useQuery } from '@tanstack/react-query';
 
 export default function BarangaySlugPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = React.use(params);
     const data = barangays.find(b => b.id === slug);
 
-    const [barangayOfficials, setBarangayOfficials] = useState<any[]>([]);
-    const [skOfficials, setSkOfficials] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: barangayOfficials = [], isLoading: loadingBarangay } = useQuery<any[]>({
+        queryKey: ['publicOfficials', 'BARANGAY', data?.name],
+        queryFn: async () => {
+            const list = await officialsApi.getAll('BARANGAY', data?.name);
+            return list.map(o => ({
+                position: o.position || '',
+                name: o.name || '',
+                imageUrl: o.imageUrl || '/municipal-logo.jpg'
+            }));
+        },
+        enabled: !!data?.name,
+        staleTime: 5 * 60 * 1000,
+    });
 
-    useEffect(() => {
-        if (!data) return;
+    const { data: skOfficials = [], isLoading: loadingSk } = useQuery<any[]>({
+        queryKey: ['publicOfficials', 'SK', data?.name],
+        queryFn: async () => {
+            const list = await officialsApi.getAll('SK', data?.name);
+            return list.map(o => ({
+                position: o.position || '',
+                name: o.name || '',
+                imageUrl: o.imageUrl || '/municipal-logo.jpg'
+            }));
+        },
+        enabled: !!data?.name,
+        staleTime: 5 * 60 * 1000,
+    });
 
-        const fetchOfficials = async () => {
-            try {
-                const [bOfficials, sOfficials] = await Promise.all([
-                    officialsApi.getAll('BARANGAY', data.name),
-                    officialsApi.getAll('SK', data.name)
-                ]);
-
-                const formatOfficials = (list: any[]) => list.map(o => ({
-                    position: o.position || '',
-                    name: o.name || '',
-                    imageUrl: o.imageUrl || '/municipal-logo.jpg'
-                }));
-
-                setBarangayOfficials(formatOfficials(bOfficials));
-                setSkOfficials(formatOfficials(sOfficials));
-            } catch (err) {
-                console.error("Failed to load barangay officials:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchOfficials();
-    }, [data]);
+    const loading = loadingBarangay || loadingSk;
 
     if (!data) {
         notFound();

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { initialPosts } from '@/data/adminData';
 import { postsApi } from '@/lib/postsApi';
 import { servicesApi } from '@/lib/servicesApi';
@@ -14,6 +14,7 @@ import { HighPriorityCard } from '@/components/cards';
 import { Bell, ChevronRight, X, Phone, Building2, Landmark, Siren, ShieldAlert, ArrowRight } from 'lucide-react';
 import { slugify } from '@/utils/slugify';
 import { CarouselSkeleton, NewsCardSkeleton } from '@/components/Skeleton';
+import { useQuery } from '@tanstack/react-query';
 
 interface AnnouncementItem {
     id: number;
@@ -27,20 +28,12 @@ interface AnnouncementItem {
 
 const HomeGuestPage: React.FC = () => {
     const router = useRouter();
-    const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
-    const [featuredPosts, setFeaturedPosts] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [loadingFeatured, setLoadingFeatured] = useState(true);
     const [showBanner, setShowBanner] = useState(true);
 
-    // Sample items for the newspaper section
-    const [services, setServices] = useState<any[]>([]);
-    const [hotlines, setHotlines] = useState<any[]>([]);
-    const [barangayList, setBarangayList] = useState<any[]>([]);
-
-    useEffect(() => {
-        // Fetch 3 news, 3 announcements, and 3 events for the carousel (total 9)
-        const fetchCarouselPosts = async () => {
+    // 1. Announcements carousel posts query
+    const { data: announcements = [], isLoading: loading } = useQuery<AnnouncementItem[]>({
+        queryKey: ['publicHomeCarouselPosts'],
+        queryFn: async () => {
             try {
                 const [newsPosts, annPosts, eventPosts] = await Promise.all([
                     postsApi.getAll({ type: 'news', limit: 3 }),
@@ -54,10 +47,9 @@ const HomeGuestPage: React.FC = () => {
                     ...eventPosts.slice(0, 3)
                 ];
 
-                // Sort by date descending
                 combined.sort((a: any, b: any) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime());
 
-                const mapped = combined.map((p: any) => ({
+                return combined.map((p: any) => ({
                     id: p.id,
                     title: p.title,
                     body: p.content.slice(0, 150) + '...',
@@ -66,7 +58,6 @@ const HomeGuestPage: React.FC = () => {
                     date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
                     category: p.category || p.type.toUpperCase()
                 }));
-                setAnnouncements(mapped);
             } catch (err) {
                 console.warn('Failed to fetch high priority posts; using static fallback', err);
                 const fallbackNews = initialPosts.filter(p => p.type === 'news').slice(0, 3);
@@ -76,7 +67,7 @@ const HomeGuestPage: React.FC = () => {
 
                 combined.sort((a: any, b: any) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime());
 
-                const mapped = combined.map((p: any) => ({
+                return combined.map((p: any) => ({
                     id: p.id,
                     title: p.title,
                     body: p.content.slice(0, 150) + '...',
@@ -85,54 +76,49 @@ const HomeGuestPage: React.FC = () => {
                     date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
                     category: p.category || p.type.toUpperCase()
                 }));
-                setAnnouncements(mapped);
-            } finally {
-                setLoading(false);
             }
-        };
+        },
+        staleTime: 5 * 60 * 1000,
+    });
 
-        // Fetch featured posts (latest 6)
-        const fetchFeaturedPosts = async () => {
-            try {
-                const featured = await postsApi.getFeatured(6);
-                setFeaturedPosts(featured);
-            } catch (err) {
-                console.warn('Failed to fetch featured posts', err);
-                setFeaturedPosts([]);
-            } finally {
-                setLoadingFeatured(false);
-            }
-        };
+    // 2. Featured posts query
+    const { data: featuredPosts = [], isLoading: loadingFeatured } = useQuery<any[]>({
+        queryKey: ['publicHomeFeaturedPosts'],
+        queryFn: () => postsApi.getFeatured(6).catch(() => []),
+        staleTime: 5 * 60 * 1000,
+    });
 
-        // Fetch samples for the newspaper grid
-        const fetchNewspaperSamples = async () => {
-            try {
-                const sData = await servicesApi.getAll();
-                setServices(sData.slice(0, 2));
-            } catch (e) {
-                setServices([
-                    { id: 1, name: 'Business Permit', description: 'Application and renewal guidelines for commercial operations.', category: 'Regulatory' },
-                    { id: 2, name: "Mayor's Clearance", description: 'Acquiring general security clearance from the office of the mayor.', category: 'Certifications' }
-                ]);
-            }
+    // 3. Shared services query (slices top 2 for display)
+    const { data: servicesRaw = [] } = useQuery<any[]>({
+        queryKey: ['publicServices'],
+        queryFn: () => servicesApi.getAll().catch(() => []),
+        staleTime: 5 * 60 * 1000,
+    });
+    const services = servicesRaw.slice(0, 2).map((s: any) => ({
+        id: s.id,
+        name: s.name || s.title || '',
+        description: s.description || '',
+        category: s.category || 'General',
+        externalUrl: s.externalUrl || ''
+    }));
 
-            try {
-                const hData = await emergencyApi.getAll();
-                setHotlines(hData.slice(0, 2));
-            } catch (e) {
-                setHotlines([
-                    { id: 1, title: 'Cordova Police Station', description: 'Emergency response line for municipal safety.', contact: '(032) 496-0000' },
-                    { id: 2, title: 'Cordova Fire Station', description: 'Fire protection and emergency services dispatch.', contact: '(032) 496-1111' }
-                ]);
-            }
+    const handleServiceClick = (s: any) => {
+        let url = s.externalUrl || 'https://bpbc.ibpls.com/cordovacebu/';
+        if (url && !/^https?:\/\//i.test(url)) {
+            url = 'https://' + url;
+        }
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
 
-            setBarangayList(barangays.slice(0, 2));
-        };
+    // 4. Shared hotlines query (slices top 2 for display)
+    const { data: hotlinesRaw = [] } = useQuery<any[]>({
+        queryKey: ['rescueHotlines'],
+        queryFn: () => emergencyApi.getAll().catch(() => []),
+        staleTime: 60 * 60 * 1000,
+    });
+    const hotlines = hotlinesRaw.slice(0, 2);
 
-        fetchCarouselPosts();
-        fetchFeaturedPosts();
-        fetchNewspaperSamples();
-    }, []);
+    const barangayList = barangays.slice(0, 2);
 
     return (
         <PageTransition>
@@ -304,11 +290,11 @@ const HomeGuestPage: React.FC = () => {
                                     {services.map((s) => (
                                         <div
                                             key={s.id}
-                                            onClick={() => router.push(`/services/${slugify(s.name || s.title || '')}`)}
+                                            onClick={() => handleServiceClick(s)}
                                             className="p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg hover:border-red-500 transition-colors cursor-pointer group"
                                         >
                                             <span className="text-[10px] font-black text-red-700 uppercase tracking-widest">{s.category || 'Regulatory'}</span>
-                                            <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-red-700 transition-colors uppercase text-sm mt-1">{s.name || s.title}</h4>
+                                            <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-red-700 transition-colors uppercase text-sm mt-1">{s.name}</h4>
                                             <p className="text-xs text-gray-500 mt-1 line-clamp-2">{s.description}</p>
                                         </div>
                                     ))}

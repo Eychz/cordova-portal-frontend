@@ -93,25 +93,27 @@ export const LowPriorityCardSkeleton: React.FC = () => {
 
 export const ServiceCardSkeleton: React.FC = () => {
     return (
-        <div className="bg-transparent p-6 md:p-8 rounded-none border border-red-800 flex flex-col h-full space-y-6 w-full">
-            {/* Icon placeholder */}
-            <Skeleton className="w-16 h-16" />
-            {/* Title & Description */}
-            <div className="flex-grow space-y-3">
-                <Skeleton className="h-7 w-3/4" />
-                <div className="space-y-2 pt-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-5/6" />
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm flex flex-col justify-between h-full w-full">
+            <div className="p-3">
+                {/* Thumbnail image placeholder */}
+                <Skeleton className="h-48 rounded-lg w-full" />
+                <div className="p-5 space-y-4">
+                    {/* Title */}
+                    <Skeleton className="h-6 w-3/4" />
+                    {/* Description lines */}
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-5/6" />
+                    </div>
                 </div>
             </div>
-            {/* Footer */}
-            <div className="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-gray-800">
-                <div className="space-y-1">
+            <div className="p-5 pt-0">
+                {/* Footer border-t line and access actions */}
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
                     <Skeleton className="h-3 w-16" />
-                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-28" />
                 </div>
-                <Skeleton className="h-4 w-20" />
             </div>
         </div>
     );

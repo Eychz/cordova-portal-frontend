@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
     ];
 
     return (
-        <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-crimson-900 text-white pt-16 pb-8 transition-colors">
+        <footer className="bg-gradient-to-br from-slate-950 via-[#071330] to-[#011440] text-white pt-16 pb-8 transition-colors">
             <div className="maximize-width">
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
                     <div>
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-12 h-12 bg-white rounded-none flex items-center justify-center">
-                                <Landmark className="w-6 h-6 text-crimson-600" />
+                                <Landmark className="w-6 h-6 text-[#0036C5]" />
                             </div>
                             <div>
                                 <h3 className="text-xl font-black text-white">Cordova</h3>
@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
                             {quickLinks.map((link, index) => (
                                 <li key={index}>
                                     <Link href={link.href} className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 group">
-                                        <span className="text-crimson-400 group-hover:translate-x-1 transition-transform">›</span>
+                                        <span className="text-blue-500 group-hover:translate-x-1 transition-transform">›</span>
                                         {link.name}
                                     </Link>
                                 </li>
@@ -70,7 +70,7 @@ const Footer: React.FC = () => {
                             {services.map((service, index) => (
                                 <li key={index}>
                                     <Link href={service.href} className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 group">
-                                        <span className="text-crimson-400 group-hover:translate-x-1 transition-transform">›</span>
+                                        <span className="text-blue-500 group-hover:translate-x-1 transition-transform">›</span>
                                         {service.name}
                                     </Link>
                                 </li>
@@ -83,7 +83,7 @@ const Footer: React.FC = () => {
                         <h4 className="text-lg font-black text-white mb-6">Contact Us</h4>
                         <div className="space-y-4 mb-6">
                             <div className="flex items-start gap-3">
-                                <MapPin className="w-5 h-5 text-crimson-400 flex-shrink-0 mt-0.5" />
+                                <MapPin className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
                                 <div className="text-sm text-gray-300">
                                     <p className="font-semibold text-white mb-1">Municipal Hall</p>
                                     <p>Poblacion, Cordova</p>
@@ -91,21 +91,21 @@ const Footer: React.FC = () => {
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <Phone className="w-5 h-5 text-crimson-400 flex-shrink-0 mt-0.5" />
+                                <Phone className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
                                 <div className="text-sm text-gray-300">
                                     <p className="font-semibold text-white mb-1">Phone</p>
                                     <p>(032) 236-8702</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <Mail className="w-5 h-5 text-crimson-400 flex-shrink-0 mt-0.5" />
+                                <Mail className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
                                 <div className="text-sm text-gray-300">
                                     <p className="font-semibold text-white mb-1">Email</p>
                                     <p>info@cordova.gov.ph</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3">
-                                <Clock className="w-5 h-5 text-crimson-400 flex-shrink-0 mt-0.5" />
+                                <Clock className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
                                 <div className="text-sm text-gray-300">
                                     <p className="font-semibold text-white mb-1">Office Hours</p>
                                     <p>Mon-Fri: 8:00 AM - 5:00 PM</p>
@@ -116,10 +116,10 @@ const Footer: React.FC = () => {
                 </div>
 
                 {/* Emergency Hotlines Banner */}
-                <div className="bg-crimson-600/20 border border-crimson-500/30 rounded-none p-6 mb-8">
+                <div className="bg-[#0036C5]/20 border border-[#0036C5]/30 rounded-none p-6 mb-8">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <Siren className="w-10 h-10 text-crimson-400" />
+                            <Siren className="w-10 h-10 text-blue-500" />
                             <div>
                                 <h5 className="text-lg font-bold text-white">Emergency Hotlines</h5>
                                 <p className="text-sm text-gray-300">Available 24/7 for emergencies</p>
@@ -162,7 +162,7 @@ const Footer: React.FC = () => {
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowPrivacyModal(false)}>
                     <div className="bg-white dark:bg-gray-800 rounded-none max-w-3xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between">
-                            <h2 className="text-2xl font-black text-crimson-900 dark:text-white">Privacy Policy</h2>
+                            <h2 className="text-2xl font-black text-blue-900 dark:text-white">Privacy Policy</h2>
                             <button onClick={() => setShowPrivacyModal(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
                                 <X className="w-6 h-6" />
                             </button>
@@ -171,7 +171,7 @@ const Footer: React.FC = () => {
                             <p className="text-sm text-gray-500 dark:text-gray-400">Effective Date: November 26, 2025</p>
                             
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">1. Information We Collect</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">1. Information We Collect</h3>
                                 <p>The Municipality of Cordova collects personal information necessary to provide government services, including:</p>
                                 <ul className="list-disc ml-6 mt-2 space-y-1">
                                     <li>Name, address, and contact information</li>
@@ -182,7 +182,7 @@ const Footer: React.FC = () => {
                             </section>
 
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">2. How We Use Your Information</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">2. How We Use Your Information</h3>
                                 <p>Your information is used to:</p>
                                 <ul className="list-disc ml-6 mt-2 space-y-1">
                                     <li>Process government service requests and applications</li>
@@ -193,12 +193,12 @@ const Footer: React.FC = () => {
                             </section>
 
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">3. Data Protection</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">3. Data Protection</h3>
                                 <p>We implement appropriate security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. All data is stored securely and access is limited to authorized personnel only.</p>
                             </section>
 
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">4. Your Rights</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">4. Your Rights</h3>
                                 <p>Under the Data Privacy Act of 2012, you have the right to:</p>
                                 <ul className="list-disc ml-6 mt-2 space-y-1">
                                     <li>Access your personal information</li>
@@ -209,7 +209,7 @@ const Footer: React.FC = () => {
                             </section>
 
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">5. Contact Us</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">5. Contact Us</h3>
                                 <p>For privacy concerns or data protection inquiries, contact our Data Protection Officer at:</p>
                                 <p className="mt-2">Email: dpo@cordova.gov.ph<br/>Phone: (032) 495-9090</p>
                             </section>
@@ -223,7 +223,7 @@ const Footer: React.FC = () => {
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowTermsModal(false)}>
                     <div className="bg-white dark:bg-gray-800 rounded-none max-w-3xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between">
-                            <h2 className="text-2xl font-black text-crimson-900 dark:text-white">Terms of Service</h2>
+                            <h2 className="text-2xl font-black text-blue-900 dark:text-white">Terms of Service</h2>
                             <button onClick={() => setShowTermsModal(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
                                 <X className="w-6 h-6" />
                             </button>
@@ -232,12 +232,12 @@ const Footer: React.FC = () => {
                             <p className="text-sm text-gray-500 dark:text-gray-400">Last Updated: November 26, 2025</p>
                             
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">1. Acceptance of Terms</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">1. Acceptance of Terms</h3>
                                 <p>By accessing and using the Cordova Municipality Portal, you agree to comply with these Terms of Service. If you do not agree, please discontinue use of this website.</p>
                             </section>
 
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">2. Use of Services</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">2. Use of Services</h3>
                                 <p>This portal provides access to government services and information. You agree to:</p>
                                 <ul className="list-disc ml-6 mt-2 space-y-1">
                                     <li>Provide accurate and truthful information</li>
@@ -248,27 +248,27 @@ const Footer: React.FC = () => {
                             </section>
 
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">3. Account Responsibilities</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">3. Account Responsibilities</h3>
                                 <p>If you create an account, you are responsible for maintaining the confidentiality of your credentials and all activities under your account. Notify us immediately of any unauthorized access.</p>
                             </section>
 
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">4. Service Availability</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">4. Service Availability</h3>
                                 <p>We strive to maintain continuous service availability but do not guarantee uninterrupted access. Services may be temporarily unavailable due to maintenance, updates, or technical issues.</p>
                             </section>
 
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">5. Limitation of Liability</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">5. Limitation of Liability</h3>
                                 <p>The Municipality of Cordova is not liable for any indirect, incidental, or consequential damages arising from the use of this portal. Information provided is for general purposes and should not be considered as legal advice.</p>
                             </section>
 
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">6. Changes to Terms</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">6. Changes to Terms</h3>
                                 <p>We reserve the right to modify these terms at any time. Continued use of the portal after changes constitutes acceptance of the updated terms.</p>
                             </section>
 
                             <section>
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-2">7. Governing Law</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">7. Governing Law</h3>
                                 <p>These terms are governed by the laws of the Republic of the Philippines. Any disputes shall be resolved in the appropriate courts of Cebu.</p>
                             </section>
                         </div>
@@ -281,7 +281,7 @@ const Footer: React.FC = () => {
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowSitemapModal(false)}>
                     <div className="bg-white dark:bg-gray-800 rounded-none max-w-4xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between">
-                            <h2 className="text-2xl font-black text-crimson-900 dark:text-white">Sitemap</h2>
+                            <h2 className="text-2xl font-black text-blue-900 dark:text-white">Sitemap</h2>
                             <button onClick={() => setShowSitemapModal(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
                                 <X className="w-6 h-6" />
                             </button>
@@ -289,7 +289,7 @@ const Footer: React.FC = () => {
                         <div className="p-6">
                             {/* Map Section */}
                             <div className="mb-6">
-                                <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-4">Cordova, Cebu Location</h3>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-4">Cordova, Cebu Location</h3>
                                 <div className="w-full h-96 bg-gray-200 dark:bg-gray-700 rounded-none overflow-hidden">
                                     <iframe
                                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62834.14904857935!2d123.92915347910158!3d10.253564400000007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a999258575e66d%3A0x6a3d33be73271790!2sCordova%2C%20Cebu!5e0!3m2!1sen!2sph!4v1732614000000!5m2!1sen!2sph"
@@ -306,38 +306,38 @@ const Footer: React.FC = () => {
                             {/* Site Navigation Links */}
                             <div className="grid md:grid-cols-3 gap-8">
                                 <div>
-                                    <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-4">Main Pages</h3>
+                                    <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-4">Main Pages</h3>
                                     <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                                        <li><Link href="/home" className="hover:text-crimson-600 dark:hover:text-crimson-400">Home</Link></li>
-                                        <li><Link href="/about" className="hover:text-crimson-600 dark:hover:text-crimson-400">About</Link></li>
-                                        <li><Link href="/services" className="hover:text-crimson-600 dark:hover:text-crimson-400">Services</Link></li>
-                                        <li><Link href="/community" className="hover:text-crimson-600 dark:hover:text-crimson-400">Community</Link></li>
-                                        <li><Link href="/rescue-desk" className="hover:text-crimson-600 dark:hover:text-crimson-400">Rescue Desk</Link></li>
+                                        <li><Link href="/home" className="hover:text-[#0036C5] dark:hover:text-blue-400">Home</Link></li>
+                                        <li><Link href="/about" className="hover:text-[#0036C5] dark:hover:text-blue-400">About</Link></li>
+                                        <li><Link href="/services" className="hover:text-[#0036C5] dark:hover:text-blue-400">Services</Link></li>
+                                        <li><Link href="/community" className="hover:text-[#0036C5] dark:hover:text-blue-400">Community</Link></li>
+                                        <li><Link href="/rescue-desk" className="hover:text-[#0036C5] dark:hover:text-blue-400">Rescue Desk</Link></li>
                                     </ul>
                                 </div>
 
                                 <div>
-                                    <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-4">Barangays</h3>
+                                    <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-4">Barangays</h3>
                                     <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                                        <li><Link href="/barangay/poblacion" className="hover:text-crimson-600 dark:hover:text-crimson-400">Poblacion</Link></li>
-                                        <li><Link href="/barangay/alegria" className="hover:text-crimson-600 dark:hover:text-crimson-400">Alegria</Link></li>
-                                        <li><Link href="/barangay/bangbang" className="hover:text-crimson-600 dark:hover:text-crimson-400">Bangbang</Link></li>
-                                        <li><Link href="/barangay/buagsong" className="hover:text-crimson-600 dark:hover:text-crimson-400">Buagsong</Link></li>
-                                        <li><Link href="/barangay/catarman" className="hover:text-crimson-600 dark:hover:text-crimson-400">Catarman</Link></li>
-                                        <li><Link href="/barangay/cogon" className="hover:text-crimson-600 dark:hover:text-crimson-400">Cogon</Link></li>
-                                        <li><Link href="/barangay/dapitan" className="hover:text-crimson-600 dark:hover:text-crimson-400">Dapitan</Link></li>
+                                        <li><Link href="/barangay/poblacion" className="hover:text-[#0036C5] dark:hover:text-blue-400">Poblacion</Link></li>
+                                        <li><Link href="/barangay/alegria" className="hover:text-[#0036C5] dark:hover:text-blue-400">Alegria</Link></li>
+                                        <li><Link href="/barangay/bangbang" className="hover:text-[#0036C5] dark:hover:text-blue-400">Bangbang</Link></li>
+                                        <li><Link href="/barangay/buagsong" className="hover:text-[#0036C5] dark:hover:text-blue-400">Buagsong</Link></li>
+                                        <li><Link href="/barangay/catarman" className="hover:text-[#0036C5] dark:hover:text-blue-400">Catarman</Link></li>
+                                        <li><Link href="/barangay/cogon" className="hover:text-[#0036C5] dark:hover:text-blue-400">Cogon</Link></li>
+                                        <li><Link href="/barangay/dapitan" className="hover:text-[#0036C5] dark:hover:text-blue-400">Dapitan</Link></li>
                                     </ul>
                                 </div>
 
                                 <div>
-                                    <h3 className="text-lg font-bold text-crimson-900 dark:text-white mb-4">More Barangays</h3>
+                                    <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-4">More Barangays</h3>
                                     <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                                        <li><Link href="/barangay/day-as" className="hover:text-crimson-600 dark:hover:text-crimson-400">Day-as</Link></li>
-                                        <li><Link href="/barangay/gabi" className="hover:text-crimson-600 dark:hover:text-crimson-400">Gabi</Link></li>
-                                        <li><Link href="/barangay/gilutongan" className="hover:text-crimson-600 dark:hover:text-crimson-400">Gilutongan</Link></li>
-                                        <li><Link href="/barangay/ibabao" className="hover:text-crimson-600 dark:hover:text-crimson-400">Ibabao</Link></li>
-                                        <li><Link href="/barangay/pilipog" className="hover:text-crimson-600 dark:hover:text-crimson-400">Pilipog</Link></li>
-                                        <li><Link href="/barangay/san-miguel" className="hover:text-crimson-600 dark:hover:text-crimson-400">San Miguel</Link></li>
+                                        <li><Link href="/barangay/day-as" className="hover:text-[#0036C5] dark:hover:text-blue-400">Day-as</Link></li>
+                                        <li><Link href="/barangay/gabi" className="hover:text-[#0036C5] dark:hover:text-blue-400">Gabi</Link></li>
+                                        <li><Link href="/barangay/gilutongan" className="hover:text-[#0036C5] dark:hover:text-blue-400">Gilutongan</Link></li>
+                                        <li><Link href="/barangay/ibabao" className="hover:text-[#0036C5] dark:hover:text-blue-400">Ibabao</Link></li>
+                                        <li><Link href="/barangay/pilipog" className="hover:text-[#0036C5] dark:hover:text-blue-400">Pilipog</Link></li>
+                                        <li><Link href="/barangay/san-miguel" className="hover:text-[#0036C5] dark:hover:text-blue-400">San Miguel</Link></li>
                                     </ul>
                                 </div>
                             </div>

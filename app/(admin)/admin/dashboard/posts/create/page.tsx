@@ -11,6 +11,7 @@ import * as z from 'zod';
 import toast, { Toaster } from 'react-hot-toast';
 import { postsApi } from 'lib/postsApi';
 import { uploadFile } from 'lib/apiClient';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Schema for form validation
 const postSchema = z.object({
@@ -25,6 +26,7 @@ type PostFormData = z.infer<typeof postSchema>;
 
 const CreatePostPage = () => {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -57,6 +59,8 @@ const CreatePostPage = () => {
                 ...data,
                 imageUrl: finalImageUrl,
             });
+            queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
+            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
             toast.success('Post created successfully!');
             setTimeout(() => {
                 router.push('/admin/dashboard/posts');

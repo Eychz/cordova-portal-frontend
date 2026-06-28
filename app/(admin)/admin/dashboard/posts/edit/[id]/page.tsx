@@ -11,6 +11,7 @@ import * as z from 'zod';
 import toast, { Toaster } from 'react-hot-toast';
 import { postsApi } from 'lib/postsApi';
 import { uploadFile } from 'lib/apiClient';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Schema for form validation
 const postSchema = z.object({
@@ -27,6 +28,7 @@ const EditPostPage = () => {
     const router = useRouter();
     const params = useParams();
     const postId = parseInt(params.id as string);
+    const queryClient = useQueryClient();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -89,6 +91,8 @@ const EditPostPage = () => {
 
             // Actual backend PATCH request
             await postsApi.update(postId, partialData);
+            queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
+            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
             toast.success('Post updated successfully!', { id: 'uploadToast' });
             setTimeout(() => {
                 router.push('/admin/dashboard/posts');
