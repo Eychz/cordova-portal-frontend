@@ -6,6 +6,9 @@ interface UsePostsParams {
   priority?: string;
   page?: number;
   limit?: number;
+  search?: string;
+  category?: string;
+  status?: string;
 }
 
 export function usePosts(params?: UsePostsParams) {

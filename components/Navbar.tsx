@@ -161,6 +161,13 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                             Home
                         </Link>
 
+                        <Link href="/about" className={`transition-all font-medium py-2 whitespace-nowrap ${isActive('/about')
+                            ? 'text-red-600 dark:text-red-400 font-bold border-b-2 border-red-600'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
+                            }`}>
+                            About
+                        </Link>
+
                         {/* Community Dropdown */}
                         <div className="relative group community-dropdown">
                             <button
@@ -460,6 +467,10 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                             ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
                             : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
                             }`}>Home</Link>
+                        <Link href="/about" className={`block py-3 ${isActive('/about')
+                            ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
+                            }`}>About</Link>
                         <Link href="/community/news" className={`block py-3 ${isActive('/community/news')
                             ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
                             : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'

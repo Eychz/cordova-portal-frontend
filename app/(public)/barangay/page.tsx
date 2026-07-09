@@ -16,8 +16,12 @@ export default function BarangaysListPage() {
                 <Navbar activePage="Barangay" />
 
                 {/* Formal Header */}
-                <header className="bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-700">
-                    <div className="maximize-width px-4">
+                <header className="relative overflow-hidden bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-700">
+                    <div 
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+                        style={{ backgroundImage: "url('/bg-cordova.jpg')", opacity: 0.15 }}
+                    />
+                    <div className="relative maximize-width px-4 z-10">
                         <div className="space-y-4">
                             <div className="inline-flex items-center gap-2 bg-white text-red-800 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
                                 Local Government Units

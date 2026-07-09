@@ -34,9 +34,9 @@ const AdminDashboardPage = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const queryClient = useQueryClient();
 
-    const { data: posts = [] } = useQuery<Post[]>({
-        queryKey: ['adminPosts'],
-        queryFn: () => postsApi.getAll().then(res => res || []),
+    const { data: statsData } = useQuery({
+        queryKey: ['adminStats'],
+        queryFn: () => statsApi.getAdminStats(),
         staleTime: 5 * 60 * 1000,
     });
 
@@ -98,10 +98,10 @@ const AdminDashboardPage = () => {
     // Compute stats dynamically
     const totalPop = 7500 + 6200 + 5100 + 4500 + 3800 + 5200 + 4100 + 6500 + 1800 + 4300 + 5800 + 7200 + 4900;
     const stats = {
-        totalUsers: users.length,
-        verificationRequests: users.filter(u => u.frontIdDocumentUrl && !u.isVerified).length,
+        totalUsers: statsData?.totalUsers || 0,
+        verificationRequests: statsData?.verificationRequests || 0,
         totalPopulation: totalPop,
-        publishedPosts: posts.length
+        publishedPosts: statsData?.publishedPosts || 0
     };
 
     // Handlers
@@ -128,20 +128,7 @@ const AdminDashboardPage = () => {
         }
     };
 
-    const handleDeletePost = async (id: number) => {
-        if (!confirm('Are you sure you want to delete this post?')) return;
-        try {
-            await postsApi.delete(id);
-            queryClient.invalidateQueries({ queryKey: ['adminPosts'] });
-            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
-            queryClient.invalidateQueries({ queryKey: ['posts'] });
-            queryClient.invalidateQueries({ queryKey: ['publicHomeCarouselPosts'] });
-            queryClient.invalidateQueries({ queryKey: ['publicHomeFeaturedPosts'] });
-            toast.success('Post deleted successfully');
-        } catch (err) {
-            toast.error('Failed to delete post');
-        }
-    };
+
 
     const handleCreateService = async (data: any) => {
         try {
@@ -210,7 +197,7 @@ const AdminDashboardPage = () => {
             case 'overview':
                 return <OverviewTab stats={stats} adminActivities={adminActivities} />;
             case 'posts':
-                return <PostsTab posts={posts} onEdit={(post) => router.push(`/admin/dashboard/posts/edit/${post.id}`)} onDelete={handleDeletePost} onCreate={() => router.push('/admin/dashboard/posts/create')} />;
+                return <PostsTab />;
             case 'users':
                 return <UsersTab users={users} onUpdateUser={handleUpdateUser} onDelete={handleDeleteUser} />;
             case 'verification':

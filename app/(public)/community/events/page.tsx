@@ -34,7 +34,6 @@ interface EventItem {
 
 const EventsPage: React.FC = () => {
     const router = useRouter();
-    const { data: rawPosts = [], isLoading: loading } = usePosts({ type: 'event' });
     const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('All');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -44,17 +43,23 @@ const EventsPage: React.FC = () => {
     const [currentRow2Page, setCurrentRow2Page] = useState(1);
     const [currentLowPriorityPage, setCurrentLowPriorityPage] = useState(1);
 
+    const isSearching = searchQuery.trim() !== '' || selectedStatusFilter !== 'All';
+
+    // Hook query with backend pagination and search
+    const { data: rawPosts = [], isLoading: loading } = usePosts({
+        type: 'event',
+        page: isSearching ? currentSearchPage : currentLowPriorityPage,
+        limit: isSearching ? 12 : 30,
+        search: searchQuery || undefined,
+        status: selectedStatusFilter !== 'All' ? selectedStatusFilter.toLowerCase() : undefined
+    });
+
     const GRID_LIMIT = 4;
     const SEARCH_LIMIT = 12;
-    const LOW_PRIORITY_LIMIT = 6;
+    const LOW_PRIORITY_LIMIT = 10; // Capped to 10 in UI
 
     const events = useMemo(() => {
-        // Sort by createdAt descending (most recent first)
-        const sortedPosts = [...rawPosts].sort((a: Post, b: Post) =>
-            new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-        );
-
-        return sortedPosts.map((post: Post) => ({
+        return rawPosts.map((post: Post) => ({
             id: post.id!,
             uuid: post.uuid,
             title: post.title,
@@ -82,31 +87,56 @@ const EventsPage: React.FC = () => {
         }));
     }, [rawPosts]);
 
-    // Filter Logic
-    const isSearching = searchQuery.trim() !== '' || selectedStatusFilter !== 'All';
+    const searchResults = events;
 
-    const searchResults = useMemo(() => {
-        return events.filter(a => {
-            const matchesSearch = a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                a.description.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesStatus = selectedStatusFilter === 'All' || a.status === selectedStatusFilter.toLowerCase();
-            return matchesSearch && matchesStatus;
-        });
-    }, [events, searchQuery, selectedStatusFilter]);
+    // Check if there are any posts explicitly configured with layout priority tags
+    const hasExplicitPriorities = useMemo(() => {
+        return events.some(a => a.priority && ['row1_carousel', 'row1_grid', 'row2_carousel', 'row2_grid'].includes(a.priority));
+    }, [events]);
 
     // Data distribution for complex layout
-    const topCarouselPosts = events.slice(0, 10);
-    const row1CarouselPosts = events.filter(a => a.priority === 'row1_carousel').slice(0, 5);
-    const row1GridPosts = events.filter(a => a.priority === 'row1_grid');
-    const row2CarouselPosts = events.filter(a => a.priority === 'row2_carousel').slice(0, 5);
-    const row2GridPosts = events.filter(a => a.priority === 'row2_grid');
-    const lowPriorityPosts = events.filter(a => a.priority === 'low_priority');
+    const topCarouselPosts = useMemo(() => events.slice(0, 10), [events]);
+
+    const row1CarouselPosts = useMemo(() => {
+        if (hasExplicitPriorities) {
+            return events.filter(a => a.priority === 'row1_carousel').slice(0, 5);
+        }
+        return events.slice(0, 5);
+    }, [events, hasExplicitPriorities]);
+
+    const row1GridPosts = useMemo(() => {
+        if (hasExplicitPriorities) {
+            return events.filter(a => a.priority === 'row1_grid');
+        }
+        return events.slice(5, 10);
+    }, [events, hasExplicitPriorities]);
+
+    const row2CarouselPosts = useMemo(() => {
+        if (hasExplicitPriorities) {
+            return events.filter(a => a.priority === 'row2_carousel').slice(0, 5);
+        }
+        return events.slice(10, 15);
+    }, [events, hasExplicitPriorities]);
+
+    const row2GridPosts = useMemo(() => {
+        if (hasExplicitPriorities) {
+            return events.filter(a => a.priority === 'row2_grid');
+        }
+        return events.slice(15, 20);
+    }, [events, hasExplicitPriorities]);
+
+    const lowPriorityPosts = useMemo(() => {
+        if (hasExplicitPriorities) {
+            return events.filter(a => a.priority === 'low_priority');
+        }
+        return events.slice(20);
+    }, [events, hasExplicitPriorities]);
 
     // Pagination calculations
-    const paginatedSearch = searchResults.slice((currentSearchPage - 1) * SEARCH_LIMIT, currentSearchPage * SEARCH_LIMIT);
+    const paginatedSearch = searchResults; // Backend handled pagination
     const paginatedRow1Grid = row1GridPosts.slice((currentRow1Page - 1) * GRID_LIMIT, currentRow1Page * GRID_LIMIT);
     const paginatedRow2Grid = row2GridPosts.slice((currentRow2Page - 1) * GRID_LIMIT, currentRow2Page * GRID_LIMIT);
-    const paginatedLowPriority = lowPriorityPosts.slice((currentLowPriorityPage - 1) * LOW_PRIORITY_LIMIT, currentLowPriorityPage * LOW_PRIORITY_LIMIT);
+    const paginatedLowPriority = lowPriorityPosts.slice(0, 10);
 
     const handleEventClick = (a: EventItem) => {
         router.push(`/community/${a.type}/${slugify(a.title)}`);
@@ -146,8 +176,12 @@ const EventsPage: React.FC = () => {
                 <Navbar activePage="Community" />
 
                 {/* Formal Government Header */}
-                <header className="bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-700">
-                    <div className="maximize-width px-4">
+                <header className="relative overflow-hidden bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-700">
+                    <div
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+                        style={{ backgroundImage: "url('/bg-cordova.jpg')", opacity: 0.25 }}
+                    />
+                    <div className="relative maximize-width px-4 z-10">
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                             <div className="space-y-4">
                                 <div className="inline-flex items-center gap-2 bg-white text-red-800 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
@@ -200,7 +234,7 @@ const EventsPage: React.FC = () => {
                                     </div>
                                     <PaginationControls
                                         currentPage={currentSearchPage}
-                                        totalItems={searchResults.length}
+                                        totalItems={(rawPosts as any).pagination?.total || rawPosts.length}
                                         limit={SEARCH_LIMIT}
                                         onPageChange={setCurrentSearchPage}
                                     />
@@ -418,8 +452,8 @@ const EventsPage: React.FC = () => {
                                             </div>
                                             <PaginationControls
                                                 currentPage={currentLowPriorityPage}
-                                                totalItems={lowPriorityPosts.length}
-                                                limit={LOW_PRIORITY_LIMIT}
+                                                totalItems={(rawPosts as any).pagination?.total || rawPosts.length}
+                                                limit={30}
                                                 onPageChange={setCurrentLowPriorityPage}
                                             />
                                         </>

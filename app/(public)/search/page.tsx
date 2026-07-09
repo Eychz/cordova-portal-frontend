@@ -41,7 +41,7 @@ const SearchLoadingState = () => (
 const SearchContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    
+
     const queryQ = searchParams.get('q') || '';
     const queryDate = searchParams.get('date') || '';
 
@@ -64,7 +64,7 @@ const SearchContent = () => {
         const fetchAllData = async () => {
             try {
                 setLoading(true);
-                
+
                 // Fetch posts and services concurrently
                 const [posts, services] = await Promise.all([
                     postsApi.getAll(),
@@ -121,7 +121,7 @@ const SearchContent = () => {
     const filteredResults = useMemo(() => {
         return results.filter(item => {
             // Text search matches title, description, category
-            const matchesText = !q.trim() || 
+            const matchesText = !q.trim() ||
                 item.title.toLowerCase().includes(q.toLowerCase()) ||
                 item.description.toLowerCase().includes(q.toLowerCase()) ||
                 item.category.toLowerCase().includes(q.toLowerCase());
@@ -131,7 +131,7 @@ const SearchContent = () => {
             if (date) {
                 const itemDateObj = new Date(item.rawDate);
                 const queryDateObj = new Date(date);
-                matchesDate = 
+                matchesDate =
                     itemDateObj.getFullYear() === queryDateObj.getFullYear() &&
                     itemDateObj.getMonth() === queryDateObj.getMonth() &&
                     itemDateObj.getDate() === queryDateObj.getDate();
@@ -214,7 +214,11 @@ const SearchContent = () => {
                 <Navbar activePage="Search" />
 
                 {/* Search Banner */}
-                <header className="bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-700">
+                <header className="relative overflow-hidden bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-700">
+                    <div
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+                        style={{ backgroundImage: "url('/bg-cordova.jpg')", opacity: 0.25 }}
+                    />
                     <div className="maximize-width px-4">
                         <div className="space-y-6">
                             <div className="inline-flex items-center gap-2 bg-white text-red-800 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
@@ -223,7 +227,7 @@ const SearchContent = () => {
                             <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none">
                                 Central Portal Search
                             </h1>
-                            
+
                             {/* Inline Form to Search */}
                             <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-2 bg-white/10 p-3 rounded-lg border border-white/20 max-w-4xl backdrop-blur-sm">
                                 <div className="flex-grow flex items-center bg-white dark:bg-gray-800 rounded-md px-3 py-2 border border-transparent focus-within:ring-2 focus-within:ring-white">
@@ -263,7 +267,7 @@ const SearchContent = () => {
                                     Search
                                 </button>
                             </form>
-                            
+
                             {(queryQ || queryDate) && (
                                 <div className="flex flex-wrap items-center gap-2 text-xs">
                                     <span className="text-red-200">Active filters:</span>
@@ -299,18 +303,16 @@ const SearchContent = () => {
                                 <button
                                     key={tab}
                                     onClick={() => setSelectedTab(tab)}
-                                    className={`px-4 py-3 text-sm font-bold uppercase tracking-wider border-b-2 whitespace-nowrap transition-all flex items-center gap-2 ${
-                                        selectedTab === tab
+                                    className={`px-4 py-3 text-sm font-bold uppercase tracking-wider border-b-2 whitespace-nowrap transition-all flex items-center gap-2 ${selectedTab === tab
                                             ? 'border-red-600 text-red-600 font-black'
                                             : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-                                    }`}
+                                        }`}
                                 >
                                     {tab === 'all' ? 'All Results' : tab + 's'}
-                                    <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                        selectedTab === tab 
-                                            ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' 
+                                    <span className={`text-xs px-2 py-0.5 rounded-full ${selectedTab === tab
+                                            ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                                             : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
-                                    }`}>
+                                        }`}>
                                         {counts[tab]}
                                     </span>
                                 </button>
@@ -329,7 +331,7 @@ const SearchContent = () => {
                                 {paginatedResults.length > 0 ? (
                                     paginatedResults.map(item => {
                                         const ServiceIconComponent = item.type === 'service' && item.icon ? getIconByName(item.icon) : null;
-                                        
+
                                         return (
                                             <div
                                                 key={`${item.type}-${item.id}`}
@@ -368,7 +370,7 @@ const SearchContent = () => {
                                                             {item.description.replace(/<[^>]*>/g, '') /* Strip html tags */}
                                                         </p>
                                                     </div>
-                                                    
+
                                                     <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800/60 mt-4">
                                                         <span className="text-xs text-gray-400 dark:text-gray-500">
                                                             {item.authorName ? `Published by ${item.authorName}` : ' Cordova Government'}

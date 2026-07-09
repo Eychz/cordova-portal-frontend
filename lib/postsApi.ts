@@ -22,13 +22,26 @@ export interface Post {
 
 export const postsApi = {
   // Get all posts with optional pagination and filtering
-  getAll: async (params?: { type?: string; priority?: string; page?: number; limit?: number }): Promise<Post[]> => {
+  getAll: async (params?: { type?: string; priority?: string; page?: number; limit?: number; search?: string; category?: string; status?: string }): Promise<Post[]> => {
     const result = await httpClient.get<any>('/posts', params as any);
     
     // Support both raw array responses and paginated responses
     if (Array.isArray(result)) return result;
-    if (result && result.posts) return result.posts;
+    if (result && result.posts) {
+      const postsArray = result.posts;
+      (postsArray as any).pagination = result.pagination;
+      return postsArray;
+    }
     return [];
+  },
+
+  // Get paginated posts with details
+  getPaginated: async (params?: { type?: string; priority?: string; page?: number; limit?: number; search?: string; date?: string }): Promise<{ posts: Post[]; pagination: { total: number; page: number; limit: number; totalPages: number; hasNextPage: boolean; hasPrevPage: boolean } }> => {
+    const result = await httpClient.get<any>('/posts', params as any);
+    return {
+      posts: result?.posts || [],
+      pagination: result?.pagination || { total: 0, page: 1, limit: 20, totalPages: 1, hasNextPage: false, hasPrevPage: false }
+    };
   },
 
   // Get single post by ID

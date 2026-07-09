@@ -30,7 +30,9 @@ class HttpClient {
         if (options.params) {
             const queryParams = new URLSearchParams();
             Object.entries(options.params).forEach(([key, val]) => {
-                queryParams.append(key, String(val));
+                if (val !== undefined && val !== null) {
+                    queryParams.append(key, String(val));
+                }
             });
             url += `?${queryParams.toString()}`;
         }

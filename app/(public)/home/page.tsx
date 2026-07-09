@@ -123,34 +123,15 @@ const HomeGuestPage: React.FC = () => {
     return (
         <PageTransition>
 
-            {/* Discover Cordova - Premium About CTA Banner (Item 6: High Visibility About Page) */}
-            <section className="py-10 px-4 bg-gradient-to-r from-red-950 via-red-900 to-red-950 text-white border-y border-red-900">
-                <div className="maximize-width flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="space-y-3 max-w-3xl">
-                        <span className="inline-block bg-red-700 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] rounded">
-                            Institutional Profile
-                        </span>
-                        <h2 className="text-4xl md:text-5xl font-black uppercase">
-                            Discover Our Municipal Profile & History
-                        </h2>
-                        <p className="text-red-200 text-lg leading-relaxed font-medium">
-                            Meet the Municipality's officials, check executive department heads, review the vision and mission, and read the historical timeline of the Municipality of Cordova.
-                        </p>
-                    </div>
-                    <Link
-                        href="/about"
-                        className="bg-white text-red-950 px-10 py-5 font-black hover:bg-gray-100 transition-colors uppercase tracking-widest text-sm rounded-lg whitespace-nowrap shadow-lg flex items-center gap-2 group"
-                    >
-                        Visit About Page
-                        <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                    </Link>
-                </div>
 
-            </section>
             <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors flex flex-col">
-                {/* Hero Section - Flat & Wide */}
-                <section className="relative py-24 px-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                    <div className="maximize-width text-center">
+                {/* Hero Section - Flat & Wide with Transparent Background Image */}
+                <section className="relative overflow-hidden py-24 px-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <div
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+                        style={{ backgroundImage: "url('/bg-cordova.jpg')", opacity: 0.25 }}
+                    />
+                    <div className="relative maximize-width text-center z-10">
                         <h1 className="text-5xl md:text-8xl font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tighter">
                             Welcome to Cordova!
                         </h1>
@@ -171,6 +152,30 @@ const HomeGuestPage: React.FC = () => {
                                 Emergency Services
                             </Link>
                         </div>
+                    </div>
+                </section>
+
+                {/* Discover Cordova - Premium About CTA Banner (Item 6: High Visibility About Page) */}
+                <section className="py-10 px-4 bg-gradient-to-r from-red-950 via-red-900 to-red-950 text-white border-y border-red-900">
+                    <div className="maximize-width flex flex-col md:flex-row items-center justify-between gap-8">
+                        <div className="space-y-3 max-w-3xl">
+                            <span className="inline-block bg-red-700 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] rounded">
+                                Institutional Profile
+                            </span>
+                            <h2 className="text-4xl md:text-5xl font-black uppercase">
+                                Discover Our Municipal Profile & History
+                            </h2>
+                            <p className="text-red-200 text-lg leading-relaxed font-medium">
+                                Meet the Municipality's officials, check executive department heads, review the vision and mission, and read the historical timeline of the Municipality of Cordova.
+                            </p>
+                        </div>
+                        <Link
+                            href="/about"
+                            className="bg-white text-red-950 px-10 py-5 font-black hover:bg-gray-100 transition-colors uppercase tracking-widest text-sm rounded-lg whitespace-nowrap shadow-lg flex items-center gap-2 group"
+                        >
+                            Visit About Page
+                            <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                        </Link>
                     </div>
                 </section>
 
@@ -334,6 +339,7 @@ const HomeGuestPage: React.FC = () => {
                         </div>
                     </div>
                 </section>
+
 
 
             </div>
