@@ -187,6 +187,12 @@ textarea,
   border-radius: 9999px !important;
 }
 
+/* Prevent active underline curvature on nav dropdown buttons by forcing flat border radius */
+.about-dropdown > button,
+.community-dropdown > button {
+  border-radius: 0 !important;
+}
+
 .grecaptcha-badge {
   visibility: hidden;
 }

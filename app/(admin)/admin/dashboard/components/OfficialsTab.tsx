@@ -6,6 +6,7 @@ import { Plus, Search, MapPin, Building2, User, ChevronDown, Trash2, Edit } from
 import { officialsApi, Official } from '@/lib/officialsApi';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { DEPARTMENTS, getDepartmentCategory } from '@/data/departments';
 
 const BARANGAYS = [
     'Alegria', 'Bangbang', 'Buagsong', 'Catarman', 'Cogon', 'Dapitan',
@@ -118,59 +119,131 @@ const OfficialsTab = () => {
                     <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">No officials found in this category</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredOfficials.map((official) => (
-                        <div 
-                            key={official.id}
-                            className="group relative bg-white dark:bg-gray-900 border-l-8 border-red-700 p-6 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1"
-                        >
-                            <div className="flex flex-col items-center text-center space-y-4">
-                                <div className="relative w-24 h-24 bg-gray-100 dark:bg-black overflow-hidden shadow-inner">
-                                    {official.imageUrl ? (
-                                        <img 
-                                            src={official.imageUrl} 
-                                            alt={official.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <User className="w-10 h-10 text-gray-300" />
+                <>
+                    {selectedType === 'DEPARTMENT' ? (
+                        <div className="space-y-12">
+                            {DEPARTMENTS.map(dept => {
+                                const deptOfficials = filteredOfficials.filter(o => getDepartmentCategory(o.position) === dept.key);
+                                if (deptOfficials.length === 0) return null;
+                                
+                                return (
+                                    <div key={dept.key} className="space-y-4">
+                                        <h3 className="text-xs font-black uppercase tracking-widest text-red-700 dark:text-red-400 border-b border-gray-200 dark:border-gray-800 pb-2">
+                                            {dept.label}
+                                        </h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                            {deptOfficials.map((official) => (
+                                                <div 
+                                                    key={official.id}
+                                                    className="group relative bg-white dark:bg-gray-900 border-l-8 border-red-700 p-6 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1"
+                                                >
+                                                    <div className="flex flex-col items-center text-center space-y-4">
+                                                        <div className="relative w-24 h-24 bg-gray-100 dark:bg-black overflow-hidden shadow-inner">
+                                                            {official.imageUrl ? (
+                                                                <img 
+                                                                    src={official.imageUrl} 
+                                                                    alt={official.name}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center">
+                                                                    <User className="w-10 h-10 text-gray-300" />
+                                                                </div>
+                                                            )}
+                                                            <div className="absolute top-0 right-0 p-1 bg-red-700 text-white text-[8px] font-black uppercase">
+                                                                {official.hierarchyOrder === 0 ? 'Leader' : `Rank ${official.hierarchyOrder}`}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="space-y-1">
+                                                            <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight line-clamp-1">
+                                                                {official.name}
+                                                            </h4>
+                                                            <p className="text-[10px] font-bold text-red-700 uppercase tracking-widest line-clamp-2">
+                                                                {official.position}
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="w-full pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-center gap-4">
+                                                            <button 
+                                                                onClick={() => router.push(`/admin/dashboard/officials/edit/${official.id}`)}
+                                                                className="p-2 text-gray-400 hover:text-red-700 transition-colors"
+                                                                title="Edit Profile"
+                                                            >
+                                                                <Edit className="w-4 h-4" />
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => handleDelete(official.id)}
+                                                                className="p-2 text-gray-400 hover:text-red-700 transition-colors"
+                                                                title="Delete"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
-                                    )}
-                                    <div className="absolute top-0 right-0 p-1 bg-red-700 text-white text-[8px] font-black uppercase">
-                                        {official.hierarchyOrder === 0 ? 'Leader' : `Rank ${official.hierarchyOrder}`}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {filteredOfficials.map((official) => (
+                                <div 
+                                    key={official.id}
+                                    className="group relative bg-white dark:bg-gray-900 border-l-8 border-red-700 p-6 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1"
+                                >
+                                    <div className="flex flex-col items-center text-center space-y-4">
+                                        <div className="relative w-24 h-24 bg-gray-100 dark:bg-black overflow-hidden shadow-inner">
+                                            {official.imageUrl ? (
+                                                <img 
+                                                    src={official.imageUrl} 
+                                                    alt={official.name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <User className="w-10 h-10 text-gray-300" />
+                                                </div>
+                                            )}
+                                            <div className="absolute top-0 right-0 p-1 bg-red-700 text-white text-[8px] font-black uppercase">
+                                                {official.hierarchyOrder === 0 ? 'Leader' : `Rank ${official.hierarchyOrder}`}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight line-clamp-1">
+                                                {official.name}
+                                            </h4>
+                                            <p className="text-[10px] font-bold text-red-700 uppercase tracking-widest">
+                                                {official.position}
+                                            </p>
+                                        </div>
+
+                                        <div className="w-full pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-center gap-4">
+                                            <button 
+                                                onClick={() => router.push(`/admin/dashboard/officials/edit/${official.id}`)}
+                                                className="p-2 text-gray-400 hover:text-red-700 transition-colors"
+                                                title="Edit Profile"
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDelete(official.id)}
+                                                className="p-2 text-gray-400 hover:text-red-700 transition-colors"
+                                                title="Delete"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div className="space-y-1">
-                                    <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight line-clamp-1">
-                                        {official.name}
-                                    </h4>
-                                    <p className="text-[10px] font-bold text-red-700 uppercase tracking-widest">
-                                        {official.position}
-                                    </p>
-                                </div>
-
-                                <div className="w-full pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-center gap-4">
-                                    <button 
-                                        onClick={() => router.push(`/admin/dashboard/officials/edit/${official.id}`)}
-                                        className="p-2 text-gray-400 hover:text-red-700 transition-colors"
-                                        title="Edit Profile"
-                                    >
-                                        <Edit className="w-4 h-4" />
-                                    </button>
-                                    <button 
-                                        onClick={() => handleDelete(official.id)}
-                                        className="p-2 text-gray-400 hover:text-red-700 transition-colors"
-                                        title="Delete"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    )}
+                </>
             )}
         </div>
     );

@@ -17,7 +17,7 @@ export default function BarangaysListPage() {
 
                 {/* Formal Header */}
                 <header className="relative overflow-hidden bg-red-800 text-white pt-24 pb-16 border-b-8 border-red-700">
-                    <div 
+                    <div
                         className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none"
                         style={{ backgroundImage: "url('/bg-cordova.jpg')", opacity: 0.15 }}
                     />
@@ -44,8 +44,13 @@ export default function BarangaysListPage() {
                                 key={b.id}
                                 className="group bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex flex-col"
                             >
-                                <div className="h-54 w-full relative overflow-hidden">
-                                    <div className="absolute top-0 left-0 bg-red-700 text-white py-0 text-xs font-black uppercase tracking-[0.2em]">
+                                <div className="h-40 w-full relative overflow-hidden bg-gray-50 dark:bg-gray-850 flex items-center justify-center p-6 border-b border-gray-100 dark:border-gray-800">
+                                    <img
+                                        src={b.previewImage}
+                                        alt={`Logo of Barangay ${b.name}`}
+                                        className="h-36 w-36 object-contain transform group-hover:scale-110 transition-transform duration-300"
+                                    />
+                                    <div className="absolute top-4 left-4 bg-red-700 text-white px-3 py-1 text-[9px] font-black uppercase tracking-[0.2em] shadow-sm">
                                         BRGY. {b.name}
                                     </div>
                                 </div>

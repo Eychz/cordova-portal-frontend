@@ -55,7 +55,7 @@ export default function BarangaySlugPage({ params }: { params: Promise<{ slug: s
             <Navbar activePage="" barangay={data.name} />
             <PageTransition>
                 <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">
-                    <BarangayHeader name={data.name} tagline={data.tagline} />
+                    <BarangayHeader name={data.name} tagline={data.tagline} logoUrl={data.previewImage} />
 
                     <div className="maximize-width py-12">
                         <BarangayAbout info={data.info} />

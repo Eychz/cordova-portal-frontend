@@ -9,16 +9,17 @@ export interface BarangayInfo {
     established?: string;
     population: string;
     area?: string;
+    density?: string;
     zipCode?: string;
     coordinates?: { lat: number; lng: number };
     mapIframe?: string;
     keyFeatures?: { title: string; description: string }[];
 }
-
+ 
 interface BarangayAboutProps {
     info: BarangayInfo;
 }
-
+ 
 const BarangayAbout: React.FC<BarangayAboutProps> = ({ info }) => {
     return (
         <section className="mb-24">
@@ -37,9 +38,9 @@ const BarangayAbout: React.FC<BarangayAboutProps> = ({ info }) => {
                                 {info.description}
                             </p>
                         </div>
-
+ 
                         {/* Stats Grid - Sharp */}
-                        <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-5">
+                        <div className="w-full grid grid-cols-2 md:grid-cols-5 gap-5">
                             {info.established && (
                                 <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 transition-all duration-200">
                                     <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Established</div>
@@ -54,6 +55,12 @@ const BarangayAbout: React.FC<BarangayAboutProps> = ({ info }) => {
                                 <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 transition-all duration-200">
                                     <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Land Area</div>
                                     <div className="text-xl font-black text-gray-900 dark:text-white uppercase">{info.area}</div>
+                                </div>
+                            )}
+                            {info.density && (
+                                <div className="bg-white dark:bg-gray-900 p-6 border border-gray-200 dark:border-gray-700 hover:border-red-700 transition-all duration-200">
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Pop. Density</div>
+                                    <div className="text-xl font-black text-gray-900 dark:text-white uppercase">{info.density}</div>
                                 </div>
                             )}
                             {info.zipCode && (

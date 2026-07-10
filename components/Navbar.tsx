@@ -27,6 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
         router.push(`/search?${params.toString()}`);
     };
     const [showCommunity, setShowCommunity] = useState(false);
+    const [showAbout, setShowAbout] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState<string>('');
     const [showBarangay, setShowBarangay] = useState(false);
@@ -78,6 +79,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
 
     const closeAllDropdowns = () => {
         setShowCommunity(false);
+        setShowAbout(false);
         setShowBarangay(false);
         setShowProfileDropdown(false);
         setShowAdminDropdown(false);
@@ -100,6 +102,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
 
             // Check if click is outside all dropdowns
             if (!target.closest('.community-dropdown') &&
+                !target.closest('.about-dropdown') &&
                 !target.closest('.barangay-dropdown') &&
                 !target.closest('.profile-dropdown') &&
                 !target.closest('.admin-dropdown')) {
@@ -108,14 +111,14 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
         };
 
         // Only add listener if any dropdown is open
-        if (showCommunity || showBarangay || showProfileDropdown || showAdminDropdown) {
+        if (showCommunity || showAbout || showBarangay || showProfileDropdown || showAdminDropdown) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showCommunity, showBarangay, showProfileDropdown]);
+    }, [showCommunity, showAbout, showBarangay, showProfileDropdown]);
 
 
     const scrollToTop = () => {
@@ -161,13 +164,44 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                             Home
                         </Link>
 
-                        <Link href="/about" className={`transition-all font-medium py-2 whitespace-nowrap ${isActive('/about')
-                            ? 'text-red-600 dark:text-red-400 font-bold border-b-2 border-red-600'
-                            : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
-                            }`}>
-                            About
-                        </Link>
-
+                        {/* About Dropdown */}
+                        <div className="relative group about-dropdown">
+                            <button
+                                onClick={() => {
+                                    closeAllDropdowns();
+                                    setShowAbout(!showAbout);
+                                }}
+                                className={`flex items-center gap-1 transition-all font-medium py-2 ${isActive('/about')
+                                    ? 'text-red-600 dark:text-red-400 font-bold border-b-2 border-red-600'
+                                    : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
+                                    }`}
+                            >
+                                About
+                                <svg
+                                    className={`w-4 h-4 transition-transform duration-200 ${showAbout ? 'rotate-180' : 'rotate-0'
+                                        }`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            {showAbout && (
+                                <div className="absolute left-0 bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 rounded-lg mt-1 py-2 w-56 z-50 animate-fadeIn">
+                                    <Link href="/about/general" onClick={closeAllDropdowns} className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${isActive('/about/general') ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
+                                        <span className="font-medium">General Information</span>
+                                    </Link>
+                                    <Link href="/about/leaders" onClick={closeAllDropdowns} className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${isActive('/about/leaders') ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
+                                        <span className="font-medium">Municipal Leadership</span>
+                                    </Link>
+                                    <Link href="/about/history-culture" onClick={closeAllDropdowns} className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${isActive('/about/history-culture') ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
+                                        <span className="font-medium">History & Culture</span>
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+ 
                         {/* Community Dropdown */}
                         <div className="relative group community-dropdown">
                             <button
@@ -193,13 +227,13 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                             </button>
                             {showCommunity && (
                                 <div className="absolute left-0 bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 rounded-lg mt-1 py-2 w-56 z-50 animate-fadeIn">
-                                    <Link href="/community/news" className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${activePage === 'news' ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
+                                    <Link href="/community/news" onClick={closeAllDropdowns} className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${isActive('/community/news') ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
                                         <span className="font-medium">News</span>
                                     </Link>
-                                    <Link href="/community/events" className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${activePage === 'events' ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
+                                    <Link href="/community/events" onClick={closeAllDropdowns} className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${isActive('/community/events') ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
                                         <span className="font-medium">Events</span>
                                     </Link>
-                                    <Link href="/community/announcements" className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${activePage === 'announcements' ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
+                                    <Link href="/community/announcements" onClick={closeAllDropdowns} className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${isActive('/community/announcements') ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
                                         <span className="font-medium">Announcements</span>
                                     </Link>
                                 </div>
@@ -467,10 +501,12 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                             ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
                             : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
                             }`}>Home</Link>
-                        <Link href="/about" className={`block py-3 ${isActive('/about')
-                            ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
-                            : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
-                            }`}>About</Link>
+                        <div className="py-2 bg-gray-50 dark:bg-gray-800/40 rounded-lg">
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-red-700 pl-4 block mb-1">About Cordova</span>
+                            <Link href="/about/general" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/general' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>General Information</Link>
+                            <Link href="/about/leaders" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/leaders' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>Municipal Leadership</Link>
+                            <Link href="/about/history-culture" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/history-culture' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>History & Culture</Link>
+                        </div>
                         <Link href="/community/news" className={`block py-3 ${isActive('/community/news')
                             ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
                             : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'

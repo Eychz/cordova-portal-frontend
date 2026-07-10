@@ -72,12 +72,26 @@ export default function LeaderProfilePage() {
                                     <h1 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-none">
                                         {official.name}
                                     </h1>
-                                    <p className="text-red-700 dark:text-red-400 font-black text-xs uppercase tracking-[0.2em]">
-                                        {official.position}
-                                    </p>
+                                    {(() => {
+                                        const parts = official.position.split(' | ');
+                                        const designation = parts[0];
+                                        const office = parts[1] || '';
+                                        return (
+                                            <div className="space-y-1">
+                                                <p className="text-blue-900 dark:text-blue-450 font-black text-xs uppercase tracking-[0.2em]">
+                                                    {designation}
+                                                </p>
+                                                {office && (
+                                                    <p className="text-gray-500 dark:text-gray-400 font-bold text-[10px] uppercase tracking-[0.25em]">
+                                                        {office}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                             </div>
-
+ 
                             {/* Content Area */}
                             <div className="flex-1 space-y-8">
                                 <section>
@@ -85,7 +99,7 @@ export default function LeaderProfilePage() {
                                         <div className="w-1.5 h-6 bg-red-700"></div>
                                         <h2 className="text-xl font-black uppercase tracking-tight text-gray-900 dark:text-white">Official Information</h2>
                                     </div>
-
+ 
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="bg-gray-50 dark:bg-gray-800 p-4 md:p-6 border border-gray-100 dark:border-gray-700 space-y-4 rounded-xl">
                                             <div className="space-y-1">
@@ -94,7 +108,7 @@ export default function LeaderProfilePage() {
                                                     <Building2 className="w-3.5 h-3.5 text-red-700" />
                                                     <p className="font-bold text-gray-900 dark:text-white uppercase text-xs tracking-tight">
                                                         {official.type === 'MUNICIPAL' ? 'Municipal' :
-                                                            official.type === 'DEPARTMENT' ? 'Executive Department' :
+                                                            official.type === 'DEPARTMENT' ? `Executive Department ${official.position.split(' | ')[1] ? `- ${official.position.split(' | ')[1]}` : ''}` :
                                                                 official.type === 'BARANGAY' ? `Barangay ${official.barangayName}` :
                                                                     `SK ${official.barangayName}`}
                                                     </p>
