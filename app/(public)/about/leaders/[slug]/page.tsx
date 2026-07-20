@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import CachedImage from '@/components/CachedImage';
 import { useParams, useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
@@ -54,12 +55,13 @@ export default function LeaderProfilePage() {
                         <div className="flex flex-col lg:flex-row gap-10">
                             {/* Profile Sidebar */}
                             <div className="lg:w-1/4 space-y-6">
-                                <div className="aspect-[4/5] bg-gray-50 dark:bg-black border-4 border-red-800 shadow-lg overflow-hidden rounded-xl">
+                                <div className="aspect-[4/5] relative bg-gray-50 dark:bg-black border-4 border-red-800 shadow-lg overflow-hidden rounded-xl">
                                     {official.imageUrl ? (
-                                        <img
+                                        <CachedImage
                                             src={official.imageUrl}
                                             alt={official.name}
-                                            className="w-full h-full object-cover"
+                                            fill
+                                            className="object-cover"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center">

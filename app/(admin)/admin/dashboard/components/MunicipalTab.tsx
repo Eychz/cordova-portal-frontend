@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import toast from 'react-hot-toast';
+import CachedImage from '@/components/CachedImage';
 import { type MunicipalOfficial } from 'data/adminData';
 
 interface MunicipalTabProps {
@@ -64,7 +65,7 @@ const MunicipalTab: React.FC<MunicipalTabProps> = ({ officials, onEdit, onDelete
                         <div className="h-64 bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
                             <div className="absolute inset-0 bg-red-900/10 group-hover:bg-transparent transition-colors z-10" />
                             {official.imageUrl ? (
-                                <img src={official.imageUrl} alt={official.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                <CachedImage src={official.imageUrl} alt={official.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-300">
                                     <Users className="w-20 h-20" />

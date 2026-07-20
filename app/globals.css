@@ -113,23 +113,43 @@ a {
   transition: opacity 300ms ease-out;
 }
 
-/* Layout width maximization */
+/* Layout width maximization across breakpoints */
 .maximize-width {
-  width: 98% !important;
-  max-width: none !important;
+  width: 96% !important;
+  max-width: 1536px !important;
   margin-left: auto;
   margin-right: auto;
 }
 
+@media (min-width: 640px) {
+  .maximize-width {
+    width: 95% !important;
+  }
+}
+
 @media (min-width: 768px) {
   .maximize-width {
-    width: 90% !important;
+    width: 94% !important;
   }
 }
 
 @media (min-width: 1024px) {
   .maximize-width {
-    width: 80% !important;
+    width: 92% !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .maximize-width {
+    width: 88% !important;
+    max-width: 1400px !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .maximize-width {
+    width: 85% !important;
+    max-width: 1536px !important;
   }
 }
 

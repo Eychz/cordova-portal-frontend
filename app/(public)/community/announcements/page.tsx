@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import CachedImage from '@/components/CachedImage';
 import { useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
@@ -312,7 +313,7 @@ const AnnouncementsPage: React.FC = () => {
                                                     {row1CarouselPosts.map((a, index) => (
                                                         <div key={a.id} className="h-full cursor-pointer group" onClick={() => handleAnnouncementClick(a)}>
                                                             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
-                                                            <img src={a.imageUrl} alt={a.title} className="w-full h-full object-cover" />
+                                                            <CachedImage src={a.imageUrl} alt={a.title} fill className="object-cover" />
                                                             <div className="absolute bottom-0 left-0 p-8 z-20 w-full bg-gradient-to-t from-black/90 via-black/50 to-transparent">
                                                                 <span className="inline-block px-3 py-1 bg-red-700 text-white text-[10px] font-black uppercase tracking-widest mb-4">
                                                                     {a.category}
@@ -351,7 +352,7 @@ const AnnouncementsPage: React.FC = () => {
                                                     {row2CarouselPosts.map((a, index) => (
                                                         <div key={a.id} className="h-full cursor-pointer group" onClick={() => handleAnnouncementClick(a)}>
                                                             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
-                                                            <img src={a.imageUrl} alt={a.title} className="w-full h-full object-cover" />
+                                                            <CachedImage src={a.imageUrl} alt={a.title} fill className="object-cover" />
                                                             <div className="absolute bottom-0 left-0 p-8 z-20 w-full bg-gradient-to-t from-black/90 via-black/50 to-transparent">
                                                                 <span className="inline-block px-3 py-1 bg-red-700 text-white text-[10px] font-black uppercase tracking-widest mb-4">
                                                                     {a.category}

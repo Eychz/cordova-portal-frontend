@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import CachedImage from '@/components/CachedImage';
 import { useRouter, useParams } from 'next/navigation';
 import { servicesApi, Service } from '@/lib/servicesApi';
 import { ArrowLeft, Save, Image as ImageIcon } from 'lucide-react';
@@ -180,7 +181,7 @@ export default function EditServicePage() {
                                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Service Thumbnail Image</label>
                                         {formData.imageUrl && (
                                             <div className="mb-3 w-32 h-20 relative overflow-hidden bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-750 rounded-lg">
-                                                <img src={formData.imageUrl} alt="Current thumbnail" className="w-full h-full object-cover" />
+                                                <CachedImage src={formData.imageUrl} alt="Current thumbnail" fill className="object-cover" />
                                             </div>
                                         )}
                                         <div className="flex items-center gap-4">

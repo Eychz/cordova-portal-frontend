@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import CachedImage from '@/components/CachedImage';
 import { useRouter } from 'next/navigation';
 import { Plus, Search, MapPin, Building2, User, ChevronDown, Trash2, Edit } from 'lucide-react';
 import { officialsApi, Official } from '@/lib/officialsApi';
@@ -140,10 +141,11 @@ const OfficialsTab = () => {
                                                     <div className="flex flex-col items-center text-center space-y-4">
                                                         <div className="relative w-24 h-24 bg-gray-100 dark:bg-black overflow-hidden shadow-inner">
                                                             {official.imageUrl ? (
-                                                                <img 
+                                                                <CachedImage 
                                                                     src={official.imageUrl} 
                                                                     alt={official.name}
-                                                                    className="w-full h-full object-cover"
+                                                                    fill
+                                                                    className="object-cover"
                                                                 />
                                                             ) : (
                                                                 <div className="w-full h-full flex items-center justify-center">
@@ -198,10 +200,11 @@ const OfficialsTab = () => {
                                     <div className="flex flex-col items-center text-center space-y-4">
                                         <div className="relative w-24 h-24 bg-gray-100 dark:bg-black overflow-hidden shadow-inner">
                                             {official.imageUrl ? (
-                                                <img 
+                                                <CachedImage 
                                                     src={official.imageUrl} 
                                                     alt={official.name}
-                                                    className="w-full h-full object-cover"
+                                                    fill
+                                                    className="object-cover"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">

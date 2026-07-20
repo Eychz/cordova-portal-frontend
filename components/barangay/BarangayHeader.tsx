@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import CachedImage from '@/components/CachedImage';
 
 interface BarangayHeaderProps {
     name: string;
@@ -32,9 +33,11 @@ const BarangayHeader: React.FC<BarangayHeaderProps> = ({ name, tagline, backgrou
                     </div>
                     {logoUrl && (
                         <div className="flex-shrink-0 bg-white/10 backdrop-blur-sm p-4 rounded-full border border-white/20 shadow-xl animate-fadeIn">
-                            <img
+                            <CachedImage
                                 src={logoUrl}
                                 alt={`Logo of Barangay ${name}`}
+                                width={144}
+                                height={144}
                                 className="w-28 h-28 md:w-36 md:h-36 object-contain"
                             />
                         </div>

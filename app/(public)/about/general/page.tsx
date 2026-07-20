@@ -32,7 +32,9 @@ import {
     Compass,
     Navigation,
     Info,
-    ArrowUpRight
+    ArrowUpRight,
+    Eye,
+    Target
 } from 'lucide-react';
 
 import {
@@ -79,6 +81,50 @@ export default function GeneralInfoPage() {
 
                         {/* LEFT COLUMN: Main Sections */}
                         <div className="lg:col-span-8 space-y-20">
+
+                            {/* Section 0: Vision & Mission */}
+                            <section id="vision-mission" className="space-y-8">
+                                <div className="flex items-center gap-4 border-b-2 border-gray-100 dark:border-gray-800 pb-6">
+                                    <div className="w-2 h-10 bg-red-700"></div>
+                                    <h2 className="text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
+                                        Vision & Mission
+                                    </h2>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Vision Card */}
+                                    <div className="bg-gradient-to-br from-red-50/50 via-white to-gray-50 dark:from-red-950/20 dark:via-gray-800/40 dark:to-gray-800/20 p-8 border border-red-100 dark:border-red-900/30 rounded-xl space-y-4 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-center gap-3 text-red-700 dark:text-red-400">
+                                            <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/40 flex items-center justify-center">
+                                                <Eye className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400 block">LGU Cordova</span>
+                                                <h3 className="text-xl font-black uppercase tracking-wider text-gray-900 dark:text-white">Vision</h3>
+                                            </div>
+                                        </div>
+                                        <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed font-medium pt-2 border-t border-gray-100 dark:border-gray-700/60">
+                                            Cordova - a competitive and sustainable <strong className="text-red-700 dark:text-red-400 font-bold uppercase">ECO-TOURISM GATEWAY AND GETAWAY IN THE VISAYAS</strong>, industrially and commercially attuned through a pro-active and responsive governance constituted by an empowered, culturally-rich, and God-centered citizenry by 2032.
+                                        </p>
+                                    </div>
+
+                                    {/* Mission Card */}
+                                    <div className="bg-gradient-to-br from-blue-50/50 via-white to-gray-50 dark:from-blue-950/20 dark:via-gray-800/40 dark:to-gray-800/20 p-8 border border-blue-100 dark:border-blue-900/30 rounded-xl space-y-4 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="flex items-center gap-3 text-blue-700 dark:text-blue-400">
+                                            <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+                                                <Target className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 block">LGU Cordova</span>
+                                                <h3 className="text-xl font-black uppercase tracking-wider text-gray-900 dark:text-white">Mission</h3>
+                                            </div>
+                                        </div>
+                                        <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed font-medium pt-2 border-t border-gray-100 dark:border-gray-700/60">
+                                            Paving the way to a world-class eco-tourism hub through economically-viable and socially acceptable investments and pursuits.
+                                        </p>
+                                    </div>
+                                </div>
+                            </section>
 
                             {/* Section 1: General Info & Demographics */}
                             <section id="general-demographics" className="space-y-10">
@@ -487,6 +533,10 @@ export default function GeneralInfoPage() {
                             <div className="bg-gray-50 dark:bg-gray-800/40 p-8 border border-gray-100 dark:border-gray-800/80 rounded-xl space-y-6">
                                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-red-700 dark:text-red-400">On this page</h3>
                                 <div className="flex flex-col space-y-3 font-bold text-xs uppercase tracking-wider">
+                                    <a href="#vision-mission" className="text-gray-700 dark:text-gray-300 hover:text-red-700 flex items-center justify-between group">
+                                        Vision & Mission
+                                        <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </a>
                                     <a href="#general-demographics" className="text-gray-700 dark:text-gray-300 hover:text-red-700 flex items-center justify-between group">
                                         General & Demographics
                                         <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />

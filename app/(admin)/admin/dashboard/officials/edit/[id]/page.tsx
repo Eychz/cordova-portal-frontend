@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import CachedImage from '@/components/CachedImage';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Save, User, Camera, MapPin, Building2, UserPlus, Upload, Trash2 } from 'lucide-react';
 import { officialsApi } from '@/lib/officialsApi';
@@ -146,7 +147,7 @@ export default function EditOfficialPage() {
                                     <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Official Portrait</label>
                                     <div className="w-48 h-56 bg-gray-50 dark:bg-black border border-gray-100 dark:border-gray-800 flex items-center justify-center relative group overflow-hidden">
                                         {formData.imageUrl ? (
-                                            <img src={formData.imageUrl} className="w-full h-full object-cover" alt="Preview" />
+                                            <CachedImage src={formData.imageUrl} fill className="object-cover" alt="Preview" />
                                         ) : (
                                             <div className="text-center p-6">
                                                 <User className="w-12 h-12 text-gray-200 mx-auto mb-2" />

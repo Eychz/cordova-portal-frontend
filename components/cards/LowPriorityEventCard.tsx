@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import CachedImage from '@/components/CachedImage';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 
 interface LowPriorityEventCardProps {
@@ -35,10 +36,11 @@ const LowPriorityEventCard: React.FC<LowPriorityEventCardProps> = ({
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-transparent pointer-events-none rounded-xl"></div>
 
             <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden">
-                <img
+                <CachedImage
                     src={imageUrl}
                     alt={name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                 />
             </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import CachedImage from '@/components/CachedImage';
 
 interface HighPriorityCardProps {
     id: number;
@@ -39,12 +40,13 @@ const HighPriorityCard: React.FC<HighPriorityCardProps> = ({
             className="w-full h-full cursor-pointer group/card"
         >
             <div 
-                className="h-full bg-cover bg-center"
+                className="h-full bg-cover bg-center relative"
                 style={{ backgroundImage: `url(${imageSrc})`, backgroundColor: '#f3f4f6' }}
             >
-                <img 
+                <CachedImage 
                     src={imageSrc} 
                     alt={title}
+                    fill
                     onError={handleImageError}
                     className="hidden"
                 />

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
+import CachedImage from '@/components/CachedImage';
 import Link from 'next/link';
 
 export default function AuthLayout({
@@ -32,7 +32,7 @@ export default function AuthLayout({
                             href="/home"
                             className="group transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] transform hover:scale-110 hover:rotate-3 active:scale-95"
                         >
-                            <Image
+                            <CachedImage
                                 src="/municipal-logo.jpg"
                                 alt="Municipality of Cordova Logo"
                                 width={180}
@@ -62,7 +62,7 @@ export default function AuthLayout({
                         {/* Mobile Logo - Only visible on small screens */}
                         <div className="md:hidden flex justify-center mb-8">
                             <Link href="/home" className="transition-transform active:scale-90">
-                                <Image
+                                <CachedImage
                                     src="/municipal-logo.jpg"
                                     alt="Municipality of Cordova Logo"
                                     width={80}

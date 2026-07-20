@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import CachedImage from '@/components/CachedImage';
 import { useRouter, useSearchParams } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
@@ -341,7 +342,7 @@ const SearchContent = () => {
                                                 {/* Left Side: Thumbnail or Icon */}
                                                 <div className="w-full h-48 sm:w-48 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700 relative">
                                                     {item.imageUrl ? (
-                                                        <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                        <CachedImage src={item.imageUrl} alt={item.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                                     ) : ServiceIconComponent ? (
                                                         <ServiceIconComponent className="w-12 h-12 text-red-600 dark:text-red-400" />
                                                     ) : (

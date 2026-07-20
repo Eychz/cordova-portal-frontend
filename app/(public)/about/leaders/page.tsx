@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import CachedImage from '@/components/CachedImage';
 import { useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
@@ -96,9 +97,9 @@ export default function LeadershipPage() {
                                             onClick={() => router.push(`/about/leaders/${mayor.slug}`)}
                                             className="mt-20 relative z-10 bg-white dark:bg-gray-900 border-2 border-red-700 hover:border-red-600 rounded-xl p-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 w-96 cursor-pointer flex flex-col items-center group mb-4"
                                         >
-                                            <div className="w-60 h-60 rounded-full overflow-hidden mb-3 -mt-20 bg-white shadow-md">
+                                            <div className="w-60 h-60 rounded-full relative overflow-hidden mb-3 -mt-20 bg-white shadow-md">
                                                 {mayor.imageUrl ? (
-                                                    <img src={mayor.imageUrl} alt={mayor.name} className="w-full h-full object-cover object-top" />
+                                                    <CachedImage src={mayor.imageUrl} alt={mayor.name} fill className="object-cover object-top" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center text-gray-300"><User className="w-16 h-16" /></div>
                                                 )}
@@ -121,9 +122,9 @@ export default function LeadershipPage() {
                                             onClick={() => router.push(`/about/leaders/${viceMayor.slug}`)}
                                             className="relative z-10 bg-white dark:bg-gray-900 border-2 border-blue-900 hover:border-blue-800 rounded-xl p-5 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 w-80 cursor-pointer flex flex-col items-center group mb-4"
                                         >
-                                            <div className="w-48 h-48 rounded-full overflow-hidden mb-3 -mt-16 bg-white shadow-md">
+                                            <div className="w-48 h-48 rounded-full relative overflow-hidden mb-3 -mt-16 bg-white shadow-md">
                                                 {viceMayor.imageUrl ? (
-                                                    <img src={viceMayor.imageUrl} alt={viceMayor.name} className="w-full h-full object-cover object-top" />
+                                                    <CachedImage src={viceMayor.imageUrl} alt={viceMayor.name} fill className="object-cover object-top" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center text-gray-300"><User className="w-12 h-12" /></div>
                                                 )}
@@ -159,9 +160,9 @@ export default function LeadershipPage() {
                                                 {/* Top vertical connector hook */}
                                                 <div className="absolute -top-6 left-1/2 w-0.5 h-6 bg-red-700/50 -translate-x-1/2"></div>
 
-                                                <div className="w-40 h-40 rounded-full overflow-hidden mb-3 bg-white shadow-md">
+                                                <div className="w-40 h-40 rounded-full relative overflow-hidden mb-3 bg-white shadow-md">
                                                     {c.imageUrl ? (
-                                                        <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover object-top" />
+                                                        <CachedImage src={c.imageUrl} alt={c.name} fill className="object-cover object-top" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-gray-300"><User className="w-10 h-10" /></div>
                                                     )}
@@ -184,9 +185,9 @@ export default function LeadershipPage() {
                                                 {/* Top vertical connector hook */}
                                                 <div className="absolute -top-8 left-1/2 w-0.5 h-8 bg-red-700/50 -translate-x-1/2"></div>
 
-                                                <div className="w-40 h-40 rounded-full overflow-hidden mb-3 bg-white shadow-md">
+                                                <div className="w-40 h-40 rounded-full relative overflow-hidden mb-3 bg-white shadow-md">
                                                     {secretary.imageUrl ? (
-                                                        <img src={secretary.imageUrl} alt={secretary.name} className="w-full h-full object-cover object-top" />
+                                                        <CachedImage src={secretary.imageUrl} alt={secretary.name} fill className="object-cover object-top" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-gray-300"><User className="w-10 h-10" /></div>
                                                     )}
@@ -229,12 +230,13 @@ export default function LeadershipPage() {
                                             onClick={() => router.push(`/about/leaders/${official.slug}`)}
                                             className="bg-white dark:bg-gray-900 p-8 border border-gray-100 dark:border-gray-800 flex items-center gap-6 cursor-pointer group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded-xl shadow-sm hover:shadow"
                                         >
-                                            <div className="w-32 h-32 rounded-full flex-shrink-0 overflow-hidden bg-white dark:bg-gray-800 shadow-md">
+                                            <div className="w-32 h-32 rounded-full flex-shrink-0 relative overflow-hidden bg-white dark:bg-gray-800 shadow-md">
                                                 {official.imageUrl ? (
-                                                    <img
+                                                    <CachedImage
                                                         src={official.imageUrl}
                                                         alt={official.name}
-                                                        className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                                                        fill
+                                                        className="object-cover transition-transform group-hover:scale-110"
                                                     />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-850">

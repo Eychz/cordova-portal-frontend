@@ -10,7 +10,6 @@ import DashboardHeader from '../components/DashboardHeader';
 import OverviewTab from '../components/OverviewTab';
 import PostsTab from '../components/PostsTab';
 import UsersTab from '../components/UsersTab';
-import VerificationTab from '../components/VerificationTab';
 import ServicesTab from '../components/ServicesTab';
 import OfficialsTab from '../components/OfficialsTab';
 import EmergenciesTab from '../components/EmergenciesTab';
@@ -198,10 +197,9 @@ const AdminDashboardPage = () => {
                 return <OverviewTab stats={stats} adminActivities={adminActivities} />;
             case 'posts':
                 return <PostsTab />;
+            case 'verification':
             case 'users':
                 return <UsersTab users={users} onUpdateUser={handleUpdateUser} onDelete={handleDeleteUser} />;
-            case 'verification':
-                return <VerificationTab users={users} onApprove={handleApproveVerification} onReject={handleRejectVerification} />;
             case 'services':
                 return <ServicesTab services={services} onEdit={handleUpdateService} onDelete={handleDeleteService} onCreate={handleCreateService} />;
             case 'officials':

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import CachedImage from '@/components/CachedImage';
 
 export interface Official {
     position: string;
@@ -61,10 +62,11 @@ const BarangayOfficials: React.FC<BarangayOfficialsProps> = ({
             <div className="mb-12 dark:border-gray-100">
                 <div className="grid md:grid-cols-12">
                     <div className="md:col-span-4 aspect-square md:aspect-auto h-full relative">
-                        <img
+                        <CachedImage
                             src={officials[0]?.imageUrl || "/municipal-logo.jpg"}
                             alt={officials[0]?.name || "Official"}
-                            className="w-full h-full object-cover transition-all"
+                            fill
+                            className="object-cover transition-all"
                         />
                     </div>
                     <div className="md:col-span-8 p-12 bg-white dark:bg-gray-900 flex flex-col justify-center">
@@ -85,11 +87,12 @@ const BarangayOfficials: React.FC<BarangayOfficialsProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
                 {officials.slice(1).map((official, index) => (
                     <div key={index} className="bg-white dark:bg-gray-900 group">
-                        <div className="aspect-[3/4] overflow-hidden transition-all duration-500 border-b border-gray-100 dark:border-gray-800">
-                            <img
+                        <div className="aspect-[3/4] relative overflow-hidden transition-all duration-500 border-b border-gray-100 dark:border-gray-800">
+                            <CachedImage
                                 src={official.imageUrl}
                                 alt={official.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform"
                             />
                         </div>
                         <div className="p-8">

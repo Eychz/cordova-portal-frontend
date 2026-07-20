@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import CachedImage from '@/components/CachedImage';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -45,9 +45,11 @@ export default function BarangaysListPage() {
                                 className="group bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex flex-col"
                             >
                                 <div className="h-40 w-full relative overflow-hidden bg-gray-50 dark:bg-gray-850 flex items-center justify-center p-6 border-b border-gray-100 dark:border-gray-800">
-                                    <img
+                                    <CachedImage
                                         src={b.previewImage}
                                         alt={`Logo of Barangay ${b.name}`}
+                                        width={144}
+                                        height={144}
                                         className="h-36 w-36 object-contain transform group-hover:scale-110 transition-transform duration-300"
                                     />
                                     <div className="absolute top-4 left-4 bg-red-700 text-white px-3 py-1 text-[9px] font-black uppercase tracking-[0.2em] shadow-sm">

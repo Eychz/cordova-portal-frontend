@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import CachedImage from '@/components/CachedImage';
 
 interface LowPriorityCardProps {
     id: number;
@@ -38,9 +39,10 @@ const LowPriorityCard: React.FC<LowPriorityCardProps> = ({
                 className="w-24 h-24 flex-shrink-0 bg-cover bg-center rounded-none relative z-10"
                 style={{ backgroundImage: `url(${imageSrc})`, backgroundColor: '#f3f4f6' }}
             >
-                <img 
+                <CachedImage 
                     src={imageSrc} 
                     alt={title}
+                    fill
                     onError={handleImageError}
                     className="hidden"
                 /></div>

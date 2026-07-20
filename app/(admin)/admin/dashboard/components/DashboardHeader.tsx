@@ -1,3 +1,5 @@
+import React from 'react';
+import CachedImage from '@/components/CachedImage';
 import { Bell, Menu } from 'lucide-react';
 
 interface DashboardHeaderProps {
@@ -26,7 +28,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ title, onMenuClick })
                     <div className="text-right">
                         <p className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-tighter">Administrator</p>
                     </div>
-                    <div className="w-10 h-10 bg-red-700 flex items-center justify-center font-black text-white"><img src="/municipal-logo.jpg" alt="Cordova Logo" width={50} height={50} /></div>
+                    <div className="w-10 h-10 bg-red-700 flex items-center justify-center font-black text-white relative overflow-hidden">
+                        <CachedImage src="/municipal-logo.jpg" alt="Cordova Logo" width={50} height={50} className="w-full h-full object-cover" />
+                    </div>
                 </div>
             </div>
         </header>

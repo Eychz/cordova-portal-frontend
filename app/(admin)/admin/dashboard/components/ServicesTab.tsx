@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import CachedImage from '@/components/CachedImage';
 import { Package, Search, Edit, Trash2, Plus, FileText, Heart, Shield, Users, Building, Scale, Home, Briefcase, Car, Stethoscope } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Pagination from './Pagination';
@@ -88,9 +89,9 @@ const ServicesTab: React.FC<ServicesTabProps> = ({ services, onDelete }) => {
                                     <tr key={service.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors group">
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 overflow-hidden group-hover:bg-red-50 dark:group-hover:bg-red-900/10 transition-colors rounded-lg">
+                                                <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 relative overflow-hidden group-hover:bg-red-50 dark:group-hover:bg-red-900/10 transition-colors rounded-lg">
                                                     {service.imageUrl ? (
-                                                        <img src={service.imageUrl} alt={title} className="w-full h-full object-cover" />
+                                                        <CachedImage src={service.imageUrl} alt={title} fill className="object-cover" />
                                                     ) : (
                                                         React.createElement(ICONS.find(i => i.name === (service.icon || service.iconIdentifier))?.component || Package, { 
                                                             className: "w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-red-700 transition-colors" 

@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import CachedImage from './CachedImage';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, LogOut, ChevronDown, Search, Calendar } from 'lucide-react';
+import { LayoutDashboard, LogOut, ChevronDown, Search, Settings } from 'lucide-react';
 import DarkModeToggle from './DarkModeToggle';
 
 interface NavbarProps {
@@ -17,57 +17,41 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchDate, setSearchDate] = useState('');
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const params = new URLSearchParams();
         if (searchQuery.trim()) params.append('q', searchQuery.trim());
-        if (searchDate) params.append('date', searchDate);
         router.push(`/search?${params.toString()}`);
     };
+
     const [showCommunity, setShowCommunity] = useState(false);
     const [showAbout, setShowAbout] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userName, setUserName] = useState<string>('');
     const [showBarangay, setShowBarangay] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [showBackToTop, setShowBackToTop] = useState(false);
-    const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-    const [showAdminDropdown, setShowAdminDropdown] = useState(false);
-    const [userProfileImage, setUserProfileImage] = useState<string | null>(null);
-    const [profileImageError, setProfileImageError] = useState(false);
-    const [userInitials, setUserInitials] = useState<string>('');
-    const [userRole, setUserRole] = useState<string>('');
 
-    // Check authentication status on mount and fetch profile data
+    // Authentication & Admin state
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userName, setUserName] = useState<string>('');
+    const [showAdminDropdown, setShowAdminDropdown] = useState(false);
+
+    // Guest Settings dropdown state
+    const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
+
+    // Check authentication status on mount
     useEffect(() => {
         const token = localStorage.getItem('token');
         const userStr = localStorage.getItem('user');
 
         if (token && userStr) {
-            setIsLoggedIn(true);
             try {
                 const user = JSON.parse(userStr);
+                setIsLoggedIn(true);
                 const fullName = user.firstName && user.lastName
                     ? `${user.firstName} ${user.lastName}`
-                    : user.email;
+                    : user.email || 'Administrator';
                 setUserName(fullName);
-
-                // Set user initials
-                const initials = user.firstName && user.lastName
-                    ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-                    : user.email?.charAt(0).toUpperCase() || 'U';
-                setUserInitials(initials);
-
-                if (user.role) {
-                    setUserRole(user.role);
-                }
-
-                // Set profile image if available
-                if (user.profileImageUrl) {
-                    setUserProfileImage(user.profileImageUrl);
-                }
             } catch (e) {
                 console.error('Error parsing user data:', e);
             }
@@ -81,10 +65,9 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
         setShowCommunity(false);
         setShowAbout(false);
         setShowBarangay(false);
-        setShowProfileDropdown(false);
         setShowAdminDropdown(false);
+        setShowSettingsDropdown(false);
     };
-
 
     useEffect(() => {
         const handleScroll = () => {
@@ -100,31 +83,35 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as HTMLElement;
 
-            // Check if click is outside all dropdowns
             if (!target.closest('.community-dropdown') &&
                 !target.closest('.about-dropdown') &&
                 !target.closest('.barangay-dropdown') &&
-                !target.closest('.profile-dropdown') &&
-                !target.closest('.admin-dropdown')) {
+                !target.closest('.admin-dropdown') &&
+                !target.closest('.settings-dropdown')) {
                 closeAllDropdowns();
             }
         };
 
-        // Only add listener if any dropdown is open
-        if (showCommunity || showAbout || showBarangay || showProfileDropdown || showAdminDropdown) {
+        if (showCommunity || showAbout || showBarangay || showAdminDropdown || showSettingsDropdown) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showCommunity, showAbout, showBarangay, showProfileDropdown]);
+    }, [showCommunity, showAbout, showBarangay, showAdminDropdown, showSettingsDropdown]);
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setIsLoggedIn(false);
+        closeAllDropdowns();
+        window.location.href = '/home';
+    };
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-
 
     return (
         <nav className={`bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'py-2' : 'py-0'
@@ -132,9 +119,9 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
             <div className="maximize-width">
                 <div className={`flex justify-between items-center gap-4 transition-all duration-300 ${isScrolled ? 'h-16' : 'h-20'
                     }`}>
-                    {/* Logo - Left aligned with max width */}
-                    <Link href="/home" className="flex items-center space-x-3 hover:opacity-80 transition-opacity flex-shrink-0 max-w-md lg:max-w-lg">
-                        <Image
+                    {/* Logo - Left aligned */}
+                    <Link href="/home" className="flex items-center space-x-3 hover:opacity-80 transition-opacity flex-shrink-0">
+                        <CachedImage
                             src="/municipal-logo.jpg"
                             alt="Municipality of Cordova"
                             width={isScrolled ? 35 : 45}
@@ -198,10 +185,13 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                     <Link href="/about/history-culture" onClick={closeAllDropdowns} className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${isActive('/about/history-culture') ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
                                         <span className="font-medium">History & Culture</span>
                                     </Link>
+                                    <Link href="/about/tourism" onClick={closeAllDropdowns} className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${isActive('/about/tourism') ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
+                                        <span className="font-medium">Tourism in Cordova</span>
+                                    </Link>
                                 </div>
                             )}
                         </div>
- 
+
                         {/* Community Dropdown */}
                         <div className="relative group community-dropdown">
                             <button
@@ -261,50 +251,28 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                         </Link>
                     </div>
 
-                    {/* Right Side - Search, Notification, Dark Mode Toggle and Profile Icon */}
-                    <div className="hidden lg:flex items-center space-x-4">
-                        <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-3 py-1.5 border border-gray-200 dark:border-gray-700 shadow-sm focus-within:ring-2 focus-within:ring-red-500 focus-within:border-transparent transition-all max-w-xs lg:max-w-sm">
-                            <div className="flex items-center gap-1.5 border-r border-gray-300 dark:border-gray-700 pr-2">
-                                <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-                                <input
-                                    type="text"
-                                    placeholder="Search..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="bg-transparent border-none outline-none text-xs text-gray-800 dark:text-gray-200 w-20 lg:w-32 focus:ring-0 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500"
-                                />
-                            </div>
-                            <div className="flex items-center gap-1.5 pl-2 relative">
-                                <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-                                <input
-                                    type="date"
-                                    value={searchDate}
-                                    onChange={(e) => setSearchDate(e.target.value)}
-                                    className="bg-transparent border-none outline-none text-xs text-gray-750 dark:text-gray-350 focus:ring-0 focus:outline-none w-24 dark:[color-scheme:dark]"
-                                />
-                                {searchDate && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setSearchDate('')}
-                                        className="absolute right-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-bold"
-                                    >
-                                        ×
-                                    </button>
-                                )}
-                            </div>
+                    {/* Right Side - Search & Conditional Controls */}
+                    <div className="hidden lg:flex items-center space-x-3">
+                        <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-3 py-1.5 border border-gray-200 dark:border-gray-700 shadow-sm focus-within:ring-2 focus-within:ring-red-500 transition-all">
+                            <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0 mr-2" />
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="bg-transparent border-none outline-none text-xs text-gray-800 dark:text-gray-200 w-24 xl:w-36 focus:ring-0 placeholder-gray-400 dark:placeholder-gray-500"
+                            />
                             <button
                                 type="submit"
-                                className="ml-2 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full transition-colors flex items-center justify-center"
+                                className="ml-1 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full transition-colors flex items-center justify-center flex-shrink-0"
                                 aria-label="Submit Search"
                             >
                                 <Search className="w-3 h-3" />
                             </button>
                         </form>
 
-                        <DarkModeToggle />
-
-                        {/* Profile Dropdown or Admin Dashboard Link */}
-                        {isLoggedIn && userRole === 'admin' ? (
+                        {/* IF LOGGED IN: Admin Portal Icon & Dropdown with Embedded Theme Toggle */}
+                        {isLoggedIn ? (
                             <div className="relative admin-dropdown">
                                 <button
                                     onClick={() => {
@@ -312,7 +280,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                         setShowAdminDropdown(!showAdminDropdown);
                                     }}
                                     className="flex items-center gap-2 p-2 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-all border border-red-100 dark:border-red-800/30 shadow-sm"
-                                    aria-label="Admin Dashboard Options"
+                                    aria-label="Admin Options"
                                 >
                                     <div className="w-8 h-8 rounded-full bg-red-600 dark:bg-red-700 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
                                         <LayoutDashboard className="w-4 h-4" />
@@ -321,10 +289,16 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                 </button>
 
                                 {showAdminDropdown && (
-                                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 rounded-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 rounded-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                                         <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700 mb-1">
                                             <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Admin Portal</p>
                                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{userName || 'Administrator'}</p>
+                                        </div>
+
+                                        {/* Embedded Theme Toggle */}
+                                        <div className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700/60">
+                                            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Theme / Mode</span>
+                                            <DarkModeToggle />
                                         </div>
 
                                         <Link
@@ -339,12 +313,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                         <div className="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
 
                                         <button
-                                            onClick={() => {
-                                                localStorage.removeItem('token');
-                                                localStorage.removeItem('user');
-                                                setIsLoggedIn(false);
-                                                window.location.href = '/home';
-                                            }}
+                                            onClick={handleLogout}
                                             className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 transition-colors"
                                         >
                                             <LogOut className="w-4 h-4" />
@@ -354,87 +323,46 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                 )}
                             </div>
                         ) : (
-                            <div className="relative profile-dropdown">
+                            /* IF NOT LOGGED IN: Settings Icon Dropdown containing Theme Toggle, Login, Register */
+                            <div className="relative settings-dropdown">
                                 <button
                                     onClick={() => {
                                         closeAllDropdowns();
-                                        setShowProfileDropdown(!showProfileDropdown);
+                                        setShowSettingsDropdown(!showSettingsDropdown);
                                     }}
-                                    className="flex items-center gap-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                    aria-label="User Profile"
+                                    className="p-2.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-all border border-gray-200 dark:border-gray-700 shadow-sm"
+                                    aria-label="Settings Options"
                                 >
-                                    {userProfileImage && !profileImageError ? (
-                                        <img
-                                            src={userProfileImage}
-                                            alt="Profile"
-                                            className="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-600"
-                                            onError={() => setProfileImageError(true)}
-                                        />
-                                    ) : (
-                                        <div className="w-9 h-9 rounded-full bg-red-600 dark:bg-red-700 flex items-center justify-center text-white font-semibold">
-                                            {isLoggedIn && userInitials ? (
-                                                <span className="text-sm font-bold">{userInitials}</span>
-                                            ) : (
-                                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                                                </svg>
-                                            )}
-                                        </div>
-                                    )}
+                                    <Settings className="w-5 h-5 transition-transform duration-200 hover:rotate-45" />
                                 </button>
 
-                                {/* Profile Dropdown Menu */}
-                                {showProfileDropdown && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 rounded-lg py-2 z-50 animate-fadeIn">
-                                        {isLoggedIn ? (
-                                            <>
-                                                {userName && (
-                                                    <div className="px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                                                        {userName}
-                                                    </div>
-                                                )}
-                                                <Link href="/dashboard" className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-600 dark:hover:text-red-400 transition-colors">
-                                                    <div className="flex items-center gap-2">
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                                        </svg>
-                                                        My Dashboard
-                                                    </div>
-                                                </Link>
-                                                <button onClick={() => {
-                                                    localStorage.removeItem('token');
-                                                    localStorage.removeItem('user');
-                                                    setIsLoggedIn(false);
-                                                    window.location.href = '/home';
-                                                }} className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-600 dark:hover:text-red-400 transition-colors">
-                                                    <div className="flex items-center gap-2">
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                                        </svg>
-                                                        Logout
-                                                    </div>
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Link href="/auth/login" className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-600 dark:hover:text-red-400 transition-colors">
-                                                    <div className="flex items-center gap-2">
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                                                        </svg>
-                                                        Login
-                                                    </div>
-                                                </Link>
-                                                <Link href="/auth/register" className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-600 dark:hover:text-red-400 transition-colors">
-                                                    <div className="flex items-center gap-2">
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                                                        </svg>
-                                                        Register
-                                                    </div>
-                                                </Link>
-                                            </>
-                                        )}
+                                {showSettingsDropdown && (
+                                    <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 shadow-2xl border border-gray-200 dark:border-gray-700 rounded-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="px-4 py-2.5 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 mb-1">
+                                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Appearance</span>
+                                            <DarkModeToggle />
+                                        </div>
+
+                                        <div className="py-1">
+                                            <a
+                                                href="https://bpbc.ibpls.com/cordovacebu/login"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={() => setShowSettingsDropdown(false)}
+                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                            >
+                                                <span className="font-medium">Login to eCordova</span>
+                                            </a>
+                                            <a
+                                                href="https://bpbc.ibpls.com/cordovacebu/register/account"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={() => setShowSettingsDropdown(false)}
+                                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 font-semibold transition-colors"
+                                            >
+                                                <span className="font-medium">Register Account</span>
+                                            </a>
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -461,41 +389,33 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
             {/* Mobile Menu - Full Width Dropdown */}
             <div
                 className={`lg:hidden absolute left-0 right-0 top-full bg-white dark:bg-gray-900 shadow-2xl z-40 origin-top transition-all duration-300 ease-in-out border-b dark:border-gray-700 overflow-hidden rounded-none ${isOpen
-                    ? 'max-h-[50vh] opacity-100 border-gray-200'
+                    ? 'max-h-[60vh] opacity-100 border-gray-200'
                     : 'max-h-0 opacity-0 border-transparent pointer-events-none'
                     }`}
             >
-                <div className="maximize-width py-6 overflow-y-auto max-h-[50vh]">
-                    <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-800 p-2 border-gray-200 dark:border-gray-700 mb-6">
-                        <div className="flex items-center gap-1.5 flex-1 pr-2 border-gray-300 dark:border-gray-700">
-                            <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-                            <input
-                                type="text"
-                                placeholder="Search community, services..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="bg-transparent border-none outline-none text-xs text-gray-800 dark:text-gray-200 w-full focus:ring-0 focus:outline-none"
-                            />
-                        </div>
-                        <div className="flex items-center gap-1 pl-2 relative">
-                            <input
-                                type="date"
-                                value={searchDate}
-                                onChange={(e) => setSearchDate(e.target.value)}
-                                className="bg-transparent border-none outline-none text-xs text-gray-750 dark:text-gray-350 focus:ring-0 focus:outline-none w-24 dark:[color-scheme:dark]"
-                            />
-                        </div>
+                <div className="maximize-width py-6 overflow-y-auto max-h-[60vh]">
+                    <form onSubmit={handleSearchSubmit} className="flex items-center bg-gray-100 dark:bg-gray-800 p-2 border border-gray-200 dark:border-gray-700 mb-6 rounded-lg">
+                        <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0 mr-2" />
+                        <input
+                            type="text"
+                            placeholder="Search community, services..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="bg-transparent border-none outline-none text-xs text-gray-800 dark:text-gray-200 w-full focus:ring-0"
+                        />
                         <button
                             type="submit"
-                            className="ml-2 bg-red-700 hover:bg-red-800 text-white p-1.5 transition-colors"
+                            className="ml-2 bg-red-700 hover:bg-red-800 text-white p-1.5 transition-colors rounded-md flex-shrink-0"
                         >
                             <Search className="w-3.5 h-3.5" />
                         </button>
                     </form>
+
                     <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700 mb-2">
-                        <span className="text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-xs">Theme</span>
+                        <span className="text-gray-700 dark:text-gray-300 font-bold uppercase tracking-widest text-xs">Theme / Mode</span>
                         <DarkModeToggle />
                     </div>
+
                     <div className="flex flex-col space-y-1 mt-4">
                         <Link href="/home" className={`block py-3 ${isActive('/home')
                             ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
@@ -506,6 +426,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                             <Link href="/about/general" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/general' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>General Information</Link>
                             <Link href="/about/leaders" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/leaders' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>Municipal Leadership</Link>
                             <Link href="/about/history-culture" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/history-culture' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>History & Culture</Link>
+                            <Link href="/about/tourism" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/tourism' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>Tourism in Cordova</Link>
                         </div>
                         <Link href="/community/news" className={`block py-3 ${isActive('/community/news')
                             ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
@@ -538,6 +459,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                             Barangay
                         </Link>
                     </div>
+
                     <div className="border-t border-gray-200 dark:border-gray-700 mt-6 pt-6 flex flex-col gap-3">
                         {isLoggedIn ? (
                             <>
@@ -546,19 +468,27 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                         {userName}
                                     </div>
                                 )}
-                                <Link href="/dashboard" className="block w-full py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-none border border-gray-200 dark:border-gray-700 font-bold tracking-widest uppercase text-xs" onClick={() => setIsOpen(false)}>My Dashboard</Link>
-                                <button onClick={() => {
-                                    localStorage.removeItem('token');
-                                    localStorage.removeItem('user');
-                                    setIsLoggedIn(false);
-                                    setIsOpen(false);
-                                    window.location.href = '/home';
-                                }} className="w-full py-3 text-center bg-red-700 hover:bg-red-800 text-white font-bold tracking-widest uppercase text-xs">Logout</button>
+                                <Link
+                                    href="/admin/dashboard"
+                                    className="block w-full py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-none border border-gray-200 dark:border-gray-700 font-bold tracking-widest uppercase text-xs"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    Admin Dashboard
+                                </Link>
+                                <button
+                                    onClick={() => {
+                                        setIsOpen(false);
+                                        handleLogout();
+                                    }}
+                                    className="w-full py-3 text-center bg-red-700 hover:bg-red-800 text-white font-bold tracking-widest uppercase text-xs"
+                                >
+                                    Logout
+                                </button>
                             </>
                         ) : (
                             <>
-                                <Link href="/auth/login" className="block w-full py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-none border border-gray-200 dark:border-gray-700 font-bold tracking-widest uppercase text-xs" onClick={() => setIsOpen(false)}>Login</Link>
-                                <Link href="/auth/register" className="block w-full py-3 text-center bg-red-700 text-white rounded-none font-bold tracking-widest uppercase text-xs hover:bg-red-800" onClick={() => setIsOpen(false)}>Register</Link>
+                                <a href="https://bpbc.ibpls.com/cordovacebu/login" target="_blank" rel="noopener noreferrer" className="block w-full py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-none border border-gray-200 dark:border-gray-700 font-bold tracking-widest uppercase text-xs" onClick={() => setIsOpen(false)}>Login to eCordova</a>
+                                <a href="https://bpbc.ibpls.com/cordovacebu/register/account" target="_blank" rel="noopener noreferrer" className="block w-full py-3 text-center bg-red-700 text-white rounded-none font-bold tracking-widest uppercase text-xs hover:bg-red-800" onClick={() => setIsOpen(false)}>Register Account</a>
                             </>
                         )}
                     </div>

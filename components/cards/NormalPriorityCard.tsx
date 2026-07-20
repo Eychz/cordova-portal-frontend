@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import CachedImage from '@/components/CachedImage';
 
 interface NormalPriorityCardProps {
     id: number;
@@ -40,9 +41,10 @@ const NormalPriorityCard: React.FC<NormalPriorityCardProps> = ({
                         className="h-48 bg-cover bg-top relative overflow-hidden"
                         style={{ backgroundImage: `url(${imageSrc})` }}
                     >
-                        <img
+                        <CachedImage
                             src={imageSrc}
                             alt={title}
+                            fill
                             onError={handleImageError}
                             className="hidden"
                         />

@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import CachedImage from '@/components/CachedImage';
 import { useParams, useRouter } from 'next/navigation';
 import PageTransition from '@/components/PageTransition';
 import Navbar from '@/components/Navbar';
@@ -140,14 +141,11 @@ export default function UnifiedPostDetailPage() {
                   {/* Featured Image */}
                   {post.imageUrl && (
                     <div className="w-full aspect-[4/3] relative border border-[#e5dec9] dark:border-[#2a2622] p-1 bg-white dark:bg-gray-900 shadow-sm mb-6">
-                      <img
+                      <CachedImage
                         src={post.imageUrl}
                         alt={post.title}
-                        className="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-300"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = 'https://via.placeholder.com/800x600?text=Cordova+Portal+Image';
-                        }}
+                        fill
+                        className="object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-300"
                       />
                     </div>
                   )}
