@@ -68,7 +68,7 @@ const SearchContent = () => {
 
                 // Fetch posts and services concurrently
                 const [posts, services] = await Promise.all([
-                    postsApi.getAll(),
+                    postsApi.getAll({ limit: 100 }),
                     servicesApi.getAll()
                 ]);
 
