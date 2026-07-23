@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Landmark, MapPin, Phone, Mail, Clock, Siren, X } from 'lucide-react';
 
+import { useQuery } from '@tanstack/react-query';
+import { servicesApi, Service } from '@/lib/servicesApi';
+
 const Footer: React.FC = () => {
     const currentYear = new Date().getFullYear();
     const [showPrivacyModal, setShowPrivacyModal] = useState(false);
@@ -19,13 +22,21 @@ const Footer: React.FC = () => {
         { name: 'Rescue Desk', href: '/rescue-desk' }
     ];
 
-    const services = [
-        { name: 'Business Permit', href: '/services' },
-        { name: 'Building Permit', href: '/services' },
-        { name: 'Birth Certificate', href: '/services' },
-        { name: 'Marriage Certificate', href: '/services' },
-        { name: 'Barangay Clearance', href: '/services' }
-    ];
+    const { data: dbServices = [] } = useQuery<Service[]>({
+        queryKey: ['footer-services'],
+        queryFn: () => servicesApi.getAll().catch(() => []),
+        staleTime: 1000 * 60 * 10,
+    });
+
+    const displayServices = dbServices.length > 0
+        ? dbServices.slice(0, 6)
+        : [
+            { id: 1, name: 'Business Permit', externalUrl: '' },
+            { id: 2, name: 'Building Permit', externalUrl: '' },
+            { id: 3, name: 'Birth Certificate', externalUrl: '' },
+            { id: 4, name: 'Marriage Certificate', externalUrl: '' },
+            { id: 5, name: 'Barangay Clearance', externalUrl: '' }
+        ];
 
     return (
         <footer className="bg-gradient-to-br from-slate-950 via-[#071330] to-[#011440] text-white pt-16 pb-8 transition-colors">
@@ -67,14 +78,38 @@ const Footer: React.FC = () => {
                     <div>
                         <h4 className="text-lg font-black text-white mb-6">Services</h4>
                         <ul className="space-y-3">
-                            {services.map((service, index) => (
-                                <li key={index}>
-                                    <Link href={service.href} className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 group">
-                                        <span className="text-blue-500 group-hover:translate-x-1 transition-transform">›</span>
-                                        {service.name}
-                                    </Link>
-                                </li>
-                            ))}
+                            {displayServices.map((service) => {
+                                const hasExternal = !!service.externalUrl;
+                                const targetUrl = hasExternal
+                                    ? /^https?:\/\//i.test(service.externalUrl!)
+                                        ? service.externalUrl!
+                                        : `https://${service.externalUrl}`
+                                    : '/services';
+
+                                return (
+                                    <li key={service.id || service.name}>
+                                        {hasExternal ? (
+                                            <a
+                                                href={targetUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 group text-sm"
+                                            >
+                                                <span className="text-blue-500 group-hover:translate-x-1 transition-transform">›</span>
+                                                {service.name}
+                                            </a>
+                                        ) : (
+                                            <Link
+                                                href={targetUrl}
+                                                className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 group text-sm"
+                                            >
+                                                <span className="text-blue-500 group-hover:translate-x-1 transition-transform">›</span>
+                                                {service.name}
+                                            </Link>
+                                        )}
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
 
