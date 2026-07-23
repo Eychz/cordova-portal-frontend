@@ -1,9 +1,20 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 import ScrollToTop from '../components/ScrollToTop';
 import Providers from '../components/Providers';
+
+export const metadata: Metadata = {
+    title: 'eCordova Portal',
+    description: 'Official Portal of the Municipality of Cordova, Cebu',
+    icons: {
+        icon: '/municipal-logo.jpg',
+        shortcut: '/municipal-logo.jpg',
+        apple: '/municipal-logo.jpg',
+    },
+};
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,6 +24,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
+                <title>eCordova Portal</title>
+                <link rel="icon" href="/municipal-logo.jpg" type="image/jpeg" />
+                <link rel="shortcut icon" href="/municipal-logo.jpg" type="image/jpeg" />
+                <link rel="apple-touch-icon" href="/municipal-logo.jpg" />
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `

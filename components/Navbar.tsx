@@ -143,8 +143,8 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                     </Link>
 
                     {/* Desktop Menu - Center */}
-                    <div className="hidden lg:flex items-center justify-center space-x-6 lg:space-x-8 flex-1">
-                        <Link href="/home" className={`transition-all font-medium py-2 ${isActive('/home')
+                    <div className="hidden lg:flex items-center justify-center space-x-3 xl:space-x-6 flex-1 text-xs xl:text-sm">
+                        <Link href="/home" className={`transition-all font-medium py-2 whitespace-nowrap ${isActive('/home')
                             ? 'text-red-600 dark:text-red-400 font-bold border-b-2 border-red-600'
                             : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
                             }`}>
@@ -158,14 +158,14 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                     closeAllDropdowns();
                                     setShowAbout(!showAbout);
                                 }}
-                                className={`flex items-center gap-1 transition-all font-medium py-2 ${isActive('/about')
+                                className={`flex items-center gap-1 transition-all font-medium py-2 whitespace-nowrap ${isActive('/about') && !isActive('/about/tourism')
                                     ? 'text-red-600 dark:text-red-400 font-bold border-b-2 border-red-600'
                                     : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
                                     }`}
                             >
                                 About
                                 <svg
-                                    className={`w-4 h-4 transition-transform duration-200 ${showAbout ? 'rotate-180' : 'rotate-0'
+                                    className={`w-3.5 h-3.5 transition-transform duration-200 ${showAbout ? 'rotate-180' : 'rotate-0'
                                         }`}
                                     fill="none"
                                     stroke="currentColor"
@@ -185,12 +185,17 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                     <Link href="/about/history-culture" onClick={closeAllDropdowns} className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${isActive('/about/history-culture') ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
                                         <span className="font-medium">History & Culture</span>
                                     </Link>
-                                    <Link href="/about/tourism" onClick={closeAllDropdowns} className={`block px-4 py-2.5 hover:bg-red-50 dark:hover:bg-gray-700 dark:text-white text-sm transition-colors ${isActive('/about/tourism') ? 'bg-red-50 dark:bg-gray-700 text-red-600 dark:text-red-400 border-l-4 border-red-600' : 'text-gray-700 hover:text-red-600'}`}>
-                                        <span className="font-medium">Tourism in Cordova</span>
-                                    </Link>
                                 </div>
                             )}
                         </div>
+
+                        {/* Standalone Tourism Button */}
+                        <Link href="/about/tourism" className={`transition-all font-medium py-2 whitespace-nowrap ${isActive('/about/tourism')
+                            ? 'text-red-600 dark:text-red-400 font-bold border-b-2 border-red-600'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
+                            }`}>
+                            Tourism
+                        </Link>
 
                         {/* Community Dropdown */}
                         <div className="relative group community-dropdown">
@@ -199,14 +204,14 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                                     closeAllDropdowns();
                                     setShowCommunity(!showCommunity);
                                 }}
-                                className={`flex items-center gap-1 transition-all font-medium py-2 ${isActive('/community')
+                                className={`flex items-center gap-1 transition-all font-medium py-2 whitespace-nowrap ${isActive('/community')
                                     ? 'text-red-600 dark:text-red-400 font-bold border-b-2 border-red-600'
                                     : 'text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400'
                                     }`}
                             >
                                 Community
                                 <svg
-                                    className={`w-4 h-4 transition-transform duration-200 ${showCommunity ? 'rotate-180' : 'rotate-0'
+                                    className={`w-3.5 h-3.5 transition-transform duration-200 ${showCommunity ? 'rotate-180' : 'rotate-0'
                                         }`}
                                     fill="none"
                                     stroke="currentColor"
@@ -426,8 +431,11 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, barangay }) => {
                             <Link href="/about/general" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/general' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>General Information</Link>
                             <Link href="/about/leaders" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/leaders' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>Municipal Leadership</Link>
                             <Link href="/about/history-culture" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/history-culture' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>History & Culture</Link>
-                            <Link href="/about/tourism" onClick={() => setIsOpen(false)} className={`block py-2.5 pl-8 text-xs font-bold uppercase tracking-wider transition-colors ${pathname === '/about/tourism' ? 'text-red-700 font-black' : 'text-gray-500 hover:text-red-700'}`}>Tourism in Cordova</Link>
                         </div>
+                        <Link href="/about/tourism" onClick={() => setIsOpen(false)} className={`block py-3 ${isActive('/about/tourism')
+                            ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
+                            }`}>Tourism</Link>
                         <Link href="/community/news" className={`block py-3 ${isActive('/community/news')
                             ? 'text-red-700 font-black border-l-4 border-red-700 pl-4 bg-red-50 dark:bg-gray-800'
                             : 'text-gray-700 dark:text-gray-300 hover:text-red-700 font-bold pl-4 hover:bg-gray-50 dark:hover:bg-gray-800'
