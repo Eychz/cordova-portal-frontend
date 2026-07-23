@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Landmark, MapPin, Phone, Mail, Clock, Siren, X } from 'lucide-react';
+import CachedImage from './CachedImage';
 
 import { useQuery } from '@tanstack/react-query';
 import { servicesApi, Service } from '@/lib/servicesApi';
@@ -17,8 +18,8 @@ const Footer: React.FC = () => {
         { name: 'Home', href: '/home' },
         { name: 'About', href: '/about' },
         { name: 'Services', href: '/services' },
-        { name: 'Community', href: '/community' },
-        { name: 'Barangays', href: '/barangay' },
+        { name: 'News & Updates', href: '/updates' },
+        { name: 'Tourism', href: '/tourism' },
         { name: 'Rescue Desk', href: '/rescue-desk' }
     ];
 
@@ -45,18 +46,21 @@ const Footer: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                     {/* About Section */}
                     <div>
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 bg-white rounded-none flex items-center justify-center">
-                                <Landmark className="w-6 h-6 text-[#0036C5]" />
+                        <div className="flex flex-col justify-center items-center gap-2 md:mr-32 lg:mr-24">
+                            <div className="w-40 h-40 relative flex-shrink-0 mb-2">
+                                <CachedImage
+                                    src="/municipal-logo.png"
+                                    alt="Municipality of Cordova Logo"
+                                    width={550}
+                                    height={550}
+                                    className="w-40 h-40 object-cover flex-shrink-0"
+                                />
                             </div>
-                            <div>
-                                <h3 className="text-xl font-black text-white">Cordova</h3>
+                            <div className="flex flex-col justify-center items-center">
+                                <h3 className="text-xl font-black text-white leading-tight">Cordova</h3>
                                 <p className="text-xs text-gray-300">Municipality Portal</p>
                             </div>
                         </div>
-                        <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                            Your gateway to government services, community updates, and local information for the Municipality of Cordova, Cebu.
-                        </p>
                     </div>
 
                     {/* Quick Links */}
@@ -65,7 +69,7 @@ const Footer: React.FC = () => {
                         <ul className="space-y-3">
                             {quickLinks.map((link, index) => (
                                 <li key={index}>
-                                    <Link href={link.href} className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 group">
+                                    <Link href={link.href} className="inline-flex items-center gap-2 group text-gray-300 hover:text-white transition-colors">
                                         <span className="text-blue-500 group-hover:translate-x-1 transition-transform">›</span>
                                         {link.name}
                                     </Link>
@@ -93,7 +97,7 @@ const Footer: React.FC = () => {
                                                 href={targetUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 group text-sm"
+                                                className="inline-flex items-center gap-2 group text-sm text-gray-300 hover:text-white transition-colors"
                                             >
                                                 <span className="text-blue-500 group-hover:translate-x-1 transition-transform">›</span>
                                                 {service.name}
@@ -101,7 +105,7 @@ const Footer: React.FC = () => {
                                         ) : (
                                             <Link
                                                 href={targetUrl}
-                                                className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 group text-sm"
+                                                className="inline-flex items-center gap-2 group text-sm text-gray-300 hover:text-white transition-colors"
                                             >
                                                 <span className="text-blue-500 group-hover:translate-x-1 transition-transform">›</span>
                                                 {service.name}
@@ -204,7 +208,7 @@ const Footer: React.FC = () => {
                         </div>
                         <div className="p-6 space-y-4 text-gray-700 dark:text-gray-300">
                             <p className="text-sm text-gray-500 dark:text-gray-400">Effective Date: November 26, 2025</p>
-                            
+
                             <section>
                                 <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">1. Information We Collect</h3>
                                 <p>The Municipality of Cordova collects personal information necessary to provide government services, including:</p>
@@ -246,7 +250,7 @@ const Footer: React.FC = () => {
                             <section>
                                 <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">5. Contact Us</h3>
                                 <p>For privacy concerns or data protection inquiries, contact our Data Protection Officer at:</p>
-                                <p className="mt-2">Email: dpo@cordova.gov.ph<br/>Phone: (032) 495-9090</p>
+                                <p className="mt-2">Email: dpo@cordova.gov.ph<br />Phone: (032) 495-9090</p>
                             </section>
                         </div>
                     </div>
@@ -265,7 +269,7 @@ const Footer: React.FC = () => {
                         </div>
                         <div className="p-6 space-y-4 text-gray-700 dark:text-gray-300">
                             <p className="text-sm text-gray-500 dark:text-gray-400">Last Updated: November 26, 2025</p>
-                            
+
                             <section>
                                 <h3 className="text-lg font-bold text-blue-900 dark:text-white mb-2">1. Acceptance of Terms</h3>
                                 <p>By accessing and using the Cordova Municipality Portal, you agree to comply with these Terms of Service. If you do not agree, please discontinue use of this website.</p>

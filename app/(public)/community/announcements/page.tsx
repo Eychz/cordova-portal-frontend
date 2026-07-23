@@ -176,7 +176,7 @@ const AnnouncementsPage: React.FC = () => {
                                 <div className="inline-flex items-center gap-2 bg-white text-red-800 px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
                                     Public Information
                                 </div>
-                                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+                                <h1 className="text-5xl sm:text-3xl md:text-5xl lg:text-8xl font-black uppercase tracking-tighter leading-none">
                                     Announcements
                                 </h1>
                                 <p className="text-xl text-red-100 font-medium max-w-2xl">

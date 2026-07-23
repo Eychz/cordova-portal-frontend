@@ -10,14 +10,14 @@ export const metadata: Metadata = {
     title: 'eCordova Portal',
     description: 'Official Portal of the Municipality of Cordova, Cebu',
     icons: {
-        icon: '/municipal-logo.jpg',
-        shortcut: '/municipal-logo.jpg',
-        apple: '/municipal-logo.jpg',
+        icon: '/municipal-logo.png',
+        shortcut: '/municipal-logo.png',
+        apple: '/municipal-logo.png',
     },
 };
 
 interface LayoutProps {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
@@ -25,9 +25,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <html lang="en" suppressHydrationWarning>
             <head>
                 <title>eCordova Portal</title>
-                <link rel="icon" href="/municipal-logo.jpg" type="image/jpeg" />
-                <link rel="shortcut icon" href="/municipal-logo.jpg" type="image/jpeg" />
-                <link rel="apple-touch-icon" href="/municipal-logo.jpg" />
+                <link rel="icon" href="/municipal-logo.png" type="image/png" />
+                <link rel="shortcut icon" href="/municipal-logo.png" type="image/png" />
+                <link rel="apple-touch-icon" href="/municipal-logo.png" />
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `
@@ -38,7 +38,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                                 } else {
                                     document.documentElement.classList.remove('dark');
                                 }
-                            } catch (e) {}
+                            } catch (e) { }
                         `,
                     }}
                 />
@@ -48,7 +48,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <ThemeProvider>
                         <ScrollToTop />
                         {children}
-                        <Toaster 
+                        <Toaster
                             position="top-right"
                             toastOptions={{
                                 duration: 4000,
