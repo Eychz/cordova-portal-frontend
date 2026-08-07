@@ -162,32 +162,28 @@ export const FiestaCalendarSection: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState<FiestaDay | null>(null);
 
     return (
-        <section className="py-20 px-4 bg-gradient-to-b from-gray-950 via-slate-900 to-gray-950 text-white relative overflow-hidden border-t-4 border-red-700">
-            {/* Ambient Background Accents */}
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="maximize-width relative z-10 space-y-12">
-                {/* Section Banner Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+        <section className="py-20 px-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors">
+            <div className="maximize-width space-y-12">
+                {/* Section Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-2 border-gray-100 dark:border-gray-800 pb-6">
                     <div className="space-y-3">
-                        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-700 to-amber-600 text-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[0.2em] shadow-lg border border-red-400/30">
-                            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+                        <div className="inline-flex items-center gap-2 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-widest border border-red-200 dark:border-red-900/40">
+                            <Sparkles className="w-3.5 h-3.5" />
                             Official Municipal Celebration
                         </div>
-                        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white drop-shadow-md">
+                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-gray-900 dark:text-white">
                             Cordova Fiesta Calendar 2026
                         </h2>
-                        <p className="text-sm md:text-base text-red-200/90 max-w-3xl font-medium leading-relaxed">
-                            <span className="text-amber-400 font-bold">Theme:</span> "Thankful to the Almighty for His Grace and Prosperity, guided by San Roque toward Sustainable Progress and Unity."
+                        <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-3xl font-medium leading-relaxed">
+                            <span className="text-red-700 dark:text-red-400 font-bold uppercase tracking-wider">Theme:</span> "Thankful to the Almighty for His Grace and Prosperity, guided by San Roque toward Sustainable Progress and Unity."
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-5 py-3 rounded-2xl backdrop-blur-md self-start md:self-end">
-                        <Calendar className="w-5 h-5 text-red-400" />
+                    <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 px-5 py-3 rounded-2xl self-start md:self-end">
+                        <Calendar className="w-5 h-5 text-red-700 dark:text-red-400" />
                         <div>
-                            <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Celebration Period</p>
-                            <p className="text-sm font-black text-white">August 7 – 17, 2026</p>
+                            <p className="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">Celebration Period</p>
+                            <p className="text-sm font-black text-gray-900 dark:text-white">August 7 – 17, 2026</p>
                         </div>
                     </div>
                 </div>
@@ -198,13 +194,13 @@ export const FiestaCalendarSection: React.FC = () => {
                         <div
                             key={day.id}
                             onClick={() => setSelectedDay(day)}
-                            className={`relative group overflow-hidden rounded-2xl aspect-square cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500 border ${
+                            className={`relative group overflow-hidden rounded-2xl aspect-square cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 border ${
                                 day.isFeastDay
-                                    ? 'border-amber-500/80 ring-2 ring-amber-500/40'
-                                    : 'border-white/15 hover:border-red-500/50'
+                                    ? 'border-amber-500 ring-2 ring-amber-400/50'
+                                    : 'border-blue-900/30'
                             }`}
                         >
-                            {/* Background Overlay Image / Gradient (Scales & Reveals on Hover - Tourism Effect) */}
+                            {/* Background Image (Reveals & Scales on Hover - Tourism Effect) */}
                             <div
                                 className="absolute inset-0 bg-cover bg-center transition-all duration-700 transform group-hover:scale-110 opacity-0 group-hover:opacity-100"
                                 style={{
@@ -217,38 +213,38 @@ export const FiestaCalendarSection: React.FC = () => {
                             {/* Dark Gradient Overlay on Hover */}
                             <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-slate-950/90 to-red-950/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
 
-                            {/* Default Background Layer: Dark Red / Slate at 90% Opacity */}
-                            <div className={`absolute inset-0 transition-opacity duration-500 backdrop-blur-md ${
+                            {/* Default Background Layer: Dark Red / Blue (Tourism Square Card Default Style) */}
+                            <div className={`absolute inset-0 transition-opacity duration-500 backdrop-blur-sm ${
                                 day.isFeastDay
-                                    ? 'bg-gradient-to-br from-red-900 via-amber-950 to-slate-950 group-hover:opacity-0'
-                                    : 'bg-gradient-to-br from-slate-900 via-red-950/80 to-slate-950 group-hover:opacity-0'
+                                    ? 'bg-gradient-to-br from-red-800 via-amber-900 to-red-950 group-hover:opacity-0'
+                                    : 'bg-red-700 dark:bg-blue-950/85 group-hover:opacity-0'
                             }`} />
 
                             {/* Card Content Layer */}
                             <div className="relative z-20 p-6 h-full flex flex-col justify-between text-white">
-                                {/* Top Badge Header */}
+                                {/* Top Header Category Badge */}
                                 <div className="flex items-center justify-between">
                                     <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${
                                         day.isFeastDay
-                                            ? 'bg-amber-500/30 text-amber-200 border-amber-400/50'
-                                            : 'bg-white/10 text-white/90 border-white/20'
+                                            ? 'bg-amber-500/30 text-amber-200 border-amber-300/50'
+                                            : 'bg-white/20 backdrop-blur-md text-white border-white/30'
                                     }`}>
                                         {day.dayOfWeek}
                                     </span>
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-red-300 bg-red-950/60 px-2.5 py-1 rounded-md border border-red-800/40">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-black/30 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20">
                                         {day.events.length} {day.events.length === 1 ? 'EVENT' : 'EVENTS'}
                                     </span>
                                 </div>
 
-                                {/* DEFAULT CENTER VIEW: Big Calendar Date Number & Teaser */}
+                                {/* DEFAULT CENTER VIEW: Calendar Date Number & Teaser */}
                                 <div className="flex flex-col items-center justify-center text-center my-auto transition-all duration-500 group-hover:opacity-0 group-hover:translate-y-4">
-                                    <span className="text-xs font-black tracking-widest uppercase text-red-400 mb-1">
+                                    <span className="text-xs font-black tracking-widest uppercase text-white/80 mb-1">
                                         {day.monthStr} 2026
                                     </span>
                                     <h3 className="text-6xl font-black uppercase tracking-tighter text-white drop-shadow-md">
                                         {day.dayNum}
                                     </h3>
-                                    <p className="text-xs font-bold text-gray-300 uppercase tracking-wider mt-2 line-clamp-2 px-2">
+                                    <p className="text-xs font-bold text-white/90 uppercase tracking-wider mt-2 line-clamp-2 px-2">
                                         {day.highlightTitle}
                                     </p>
                                 </div>
@@ -290,10 +286,10 @@ export const FiestaCalendarSection: React.FC = () => {
                                 </div>
 
                                 {/* Bottom Tap Action Label */}
-                                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-amber-400 transition-colors pt-2 border-t border-white/10">
+                                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-white/80 group-hover:text-amber-400 transition-colors pt-2 border-t border-white/10">
                                     <span>{day.isFeastDay ? '🌟 FEAST DAY' : 'FIESTA 2026'}</span>
                                     <span className="flex items-center gap-1">
-                                        View All <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                                        View Details <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                                     </span>
                                 </div>
                             </div>
