@@ -300,62 +300,62 @@ export const FiestaCalendarSection: React.FC = () => {
 
             {/* Event Day Detail Modal */}
             {selectedDay && (
-                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
-                    <div className="bg-slate-900 border border-white/20 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto text-white shadow-2xl">
+                <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
+                    <div className="bg-gradient-to-r from-red-950 via-red-900 to-red-950 text-white border border-red-800/80 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
                         <button
                             onClick={() => setSelectedDay(null)}
-                            className="absolute top-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-colors"
+                            className="absolute top-6 right-6 p-2 rounded-full bg-red-950/80 hover:bg-red-800/80 border border-red-700 text-red-200 hover:text-white transition-colors"
                         >
                             <X className="w-5 h-5" />
                         </button>
 
-                        <div className="space-y-2 border-b border-white/10 pb-4">
-                            <span className="inline-block bg-red-700 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                        <div className="space-y-2 border-b border-red-800/60 pb-4">
+                            <span className="inline-block bg-red-700 text-white px-4 py-1 text-[10px] font-black uppercase tracking-[0.2em] rounded">
                                 {selectedDay.dateStr}
                             </span>
                             <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
                                 {selectedDay.highlightTitle}
                             </h3>
-                            <p className="text-xs text-gray-400 font-medium">
+                            <p className="text-xs text-red-200 font-medium">
                                 Cordova Fiesta 2026 Official Timetable & Event Roster
                             </p>
                         </div>
 
                         <div className="space-y-4">
                             {selectedDay.events.map((evt, index) => (
-                                <div key={index} className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3 hover:border-red-500/50 transition-colors">
+                                <div key={index} className="bg-red-950/60 border border-red-800/60 rounded-2xl p-5 space-y-3 hover:border-amber-500/60 transition-colors">
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                         <h4 className="text-base font-black uppercase text-amber-300 tracking-tight">
                                             {evt.title}
                                         </h4>
-                                        <span className="text-[10px] font-bold uppercase tracking-widest bg-red-950 text-red-300 px-2.5 py-1 rounded-md border border-red-800">
+                                        <span className="text-[10px] font-bold uppercase tracking-widest bg-red-900/90 text-amber-200 px-2.5 py-1 rounded-md border border-red-700">
                                             {evt.category || 'Event'}
                                         </span>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-300 pt-2 border-t border-white/5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-red-100 pt-2 border-t border-red-900/40">
                                         <div className="flex items-center gap-2">
                                             <Clock className="w-4 h-4 text-amber-400 flex-shrink-0" />
                                             <div>
-                                                <p className="text-[9px] uppercase font-bold text-gray-500">Schedule Time</p>
+                                                <p className="text-[9px] uppercase font-bold text-red-300/80">Schedule Time</p>
                                                 <p className="font-semibold text-white">{evt.time}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <MapPin className="w-4 h-4 text-red-400 flex-shrink-0" />
+                                            <MapPin className="w-4 h-4 text-amber-300 flex-shrink-0" />
                                             <div>
-                                                <p className="text-[9px] uppercase font-bold text-gray-500">Location / Venue</p>
+                                                <p className="text-[9px] uppercase font-bold text-red-300/80">Location / Venue</p>
                                                 <p className="font-semibold text-white">{evt.venue}</p>
                                             </div>
                                         </div>
                                     </div>
 
                                     {evt.coordinators && (
-                                        <div className="flex items-start gap-2 text-xs text-gray-400 pt-2 border-t border-white/5">
-                                            <Users className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                                        <div className="flex items-start gap-2 text-xs text-red-200 pt-2 border-t border-red-900/40">
+                                            <Users className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
                                             <div>
-                                                <p className="text-[9px] uppercase font-bold text-gray-500">Event Coordinators & Committee</p>
-                                                <p className="font-medium text-gray-200">{evt.coordinators}</p>
+                                                <p className="text-[9px] uppercase font-bold text-red-300/80">Event Coordinators & Committee</p>
+                                                <p className="font-medium text-red-100">{evt.coordinators}</p>
                                             </div>
                                         </div>
                                     )}
@@ -363,10 +363,10 @@ export const FiestaCalendarSection: React.FC = () => {
                             ))}
                         </div>
 
-                        <div className="pt-4 border-t border-white/10 flex justify-end">
+                        <div className="pt-4 border-t border-red-800/60 flex justify-end">
                             <button
                                 onClick={() => setSelectedDay(null)}
-                                className="bg-red-700 hover:bg-red-800 text-white font-black px-6 py-2.5 rounded-xl text-xs uppercase tracking-widest transition-colors"
+                                className="bg-white text-red-950 hover:bg-gray-100 font-black px-8 py-3 rounded-xl text-xs uppercase tracking-widest transition-colors shadow-lg"
                             >
                                 Close Details
                             </button>
