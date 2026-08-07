@@ -16,6 +16,7 @@ import { highlightsData } from '@/data/tourismData';
 import { slugify } from '@/utils/slugify';
 import { CarouselSkeleton, NewsCardSkeleton } from '@/components/Skeleton';
 import { useQuery } from '@tanstack/react-query';
+import FiestaCalendarSection from '@/components/FiestaCalendarSection';
 
 interface AnnouncementItem {
     id: number;
@@ -294,6 +295,10 @@ const HomeGuestPage: React.FC = () => {
                         </div>
                     </div>
                 </section>
+
+                {/* Fiesta Calendar 2026 Section (Standalone Component) */}
+                <FiestaCalendarSection />
+
                 {/* Restructured Newspaper Frontpage Section */}
                 <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800/50 border-t border-b border-gray-200 dark:border-gray-800">
                     <div className="maximize-width">
