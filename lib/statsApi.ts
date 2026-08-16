@@ -1,10 +1,33 @@
 import { httpClient } from './apiClient';
 
+export interface SystemMetrics {
+  launchDate: string;
+  serverUptimeSeconds: number;
+  nodeVersion: string;
+  platform: string;
+  arch: string;
+  cpuCount: number;
+  memory: {
+    heapUsedMB: number;
+    heapTotalMB: number;
+    rssMB: number;
+    ramPercent: number;
+    storagePercent: number;
+  };
+}
+
 export interface AdminStats {
   totalUsers: number;
-  verificationRequests: number;
+  totalServices: number;
   publishedPosts: number;
-  serviceRequests: number;
+  totalAnnouncements: number;
+  totalNews: number;
+  totalEvents: number;
+  totalHotlines: number;
+  totalOfficials: number;
+  totalChangeLogs: number;
+  serviceRequests?: number;
+  systemMetrics?: SystemMetrics;
 }
 
 export interface User {
@@ -16,11 +39,7 @@ export interface User {
   barangay: string | null;
   contactNumber: string | null;
   role: string;
-  isVerified: boolean;
   profileImageUrl?: string | null;
-  frontIdDocumentUrl?: string | null;
-  backIdDocumentUrl?: string | null;
-  faceVerificationUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }

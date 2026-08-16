@@ -133,11 +133,7 @@ export const deleteServiceRequest = async (id: number) => {
   return httpClient.delete<any>(`/service-requests/${id}`);
 };
 
-export const verifyUser = async (id: number, data: { isVerified: boolean; barangay?: string }) => {
-  return httpClient.put<any>(`/users/${id}/verify`, data);
-};
-
-export const getAdminActivities = async (limit: number = 50) => {
+export const getAdminActivities = async (limit: number = 100) => {
   return httpClient.get<any[]>('/admin-activities', { limit });
 };
 

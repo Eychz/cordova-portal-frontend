@@ -59,8 +59,13 @@ const LoginPage: React.FC = () => {
             setSuccess('Login successful! Redirecting...');
 
             setTimeout(() => {
-                if (result.user.role === 'admin') {
-                    router.push('/admin/dashboard');
+                const roleStr = (result.user?.role || '').toUpperCase();
+                if (['PIO', 'ADMIN', 'SUPERADMIN', 'OFFICIAL'].includes(roleStr)) {
+                    if (roleStr === 'PIO') {
+                        router.push('/admin/dashboard/posts');
+                    } else {
+                        router.push('/admin/dashboard/overview');
+                    }
                 } else {
                     router.push('/home');
                 }

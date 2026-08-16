@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { verifySession } from '@/lib/apiClient';
+import { normalizeRole } from '@/lib/rbac';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -28,16 +29,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             try {
                 // Real-time verification with the backend
                 const user = await verifySession();
-                
-                // Verify admin role from the server-returned data
-                if (user.role !== 'admin') {
-                    toast.error('Access denied. Admin privileges required.');
+                const role = normalizeRole(user.role);
+
+                // Allow authorized roles
+                if (!['PIO', 'ADMIN', 'SUPERADMIN'].includes(role)) {
+                    toast.error('Access denied. Administrator privileges required.');
                     router.push('/');
                     setLoading(false);
                     return;
                 }
 
-                // If everything is fine
                 setIsAuthorized(true);
             } catch (err) {
                 console.error('Session verification failed:', err);
@@ -67,7 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     if (!isAuthorized) {
-        return null; // Prevents flashing of content
+        return null;
     }
 
     return <>{children}</>;

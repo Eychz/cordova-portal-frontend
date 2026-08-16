@@ -27,19 +27,13 @@ export interface User {
   middleName?: string | null;
   lastName?: string | null;
   email: string;
-  role: 'admin' | 'user' | 'visitor';
+  role: string;
   avatar?: string;
   barangay?: string;
-  verified?: boolean;
-  isVerified?: boolean;
   points?: number;
   registeredAt?: string;
-  verifiedBarangay?: string;
   contactNumber?: string;
   profileImageUrl?: string | null;
-  frontIdDocumentUrl?: string | null;
-  backIdDocumentUrl?: string | null;
-  faceVerificationUrl?: string | null;
 }
 
 export interface Service {

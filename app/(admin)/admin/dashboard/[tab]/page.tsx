@@ -18,27 +18,28 @@ import ChangeLogsTab from '../components/ChangeLogsTab';
 import {
     type Post,
     type User,
-    initialServices,
-    loadDataAsync,
-    STORAGE_KEYS
 } from 'data/adminData';
 import * as apiClient from 'lib/apiClient';
-import { postsApi } from 'lib/postsApi';
 import { statsApi } from 'lib/statsApi';
+import { hasTabAccess, getDefaultTabForRole, normalizeRole, type AdminRole } from '@/lib/rbac';
 
 const AdminDashboardPage = () => {
     const router = useRouter();
     const params = useParams();
     const activeTab = (params.tab as string) || 'overview';
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [userRole, setUserRole] = useState<AdminRole>('ADMIN');
     const queryClient = useQueryClient();
 
-    const { data: statsData } = useQuery({
+    // Query stats and system metrics
+    const { data: statsData, isLoading: isStatsLoading } = useQuery({
         queryKey: ['adminStats'],
         queryFn: () => statsApi.getAdminStats(),
-        staleTime: 5 * 60 * 1000,
+        staleTime: 60 * 1000,
+        refetchInterval: 30 * 1000, // Refresh metrics every 30s for live uptime/memory
     });
 
+    // Query citizen registry
     const { data: users = [] } = useQuery<User[]>({
         queryKey: ['adminUsers'],
         queryFn: async () => {
@@ -51,34 +52,32 @@ const AdminDashboardPage = () => {
                 lastName: u.lastName,
                 email: u.email,
                 barangay: u.barangay || 'Not specified',
-                role: u.role as any,
-                verified: u.isVerified,
-                isVerified: u.isVerified,
+                role: u.role,
                 points: 0,
                 registeredAt: new Date(u.createdAt).toLocaleDateString(),
                 contactNumber: u.contactNumber || 'Not provided',
                 profileImageUrl: u.profileImageUrl,
-                frontIdDocumentUrl: u.frontIdDocumentUrl,
-                backIdDocumentUrl: u.backIdDocumentUrl,
-                faceVerificationUrl: u.faceVerificationUrl
             }));
         },
         staleTime: 5 * 60 * 1000,
     });
 
+    // Query services
     const { data: services = [] } = useQuery<Service[]>({
         queryKey: ['adminServices'],
         queryFn: () => servicesApi.getAll().catch(() => []),
         staleTime: 5 * 60 * 1000,
     });
 
+    // Query admin activities with roles and action types
     const { data: adminActivities = [] } = useQuery<any[]>({
         queryKey: ['adminActivities'],
         queryFn: () => apiClient.getAdminActivities(100),
-        staleTime: 5 * 60 * 1000,
+        staleTime: 30 * 1000,
+        refetchInterval: 30 * 1000,
     });
 
-    // Admin role protection
+    // RBAC and Route Guard Protection
     useEffect(() => {
         const userStr = localStorage.getItem('user');
         if (!userStr) {
@@ -87,21 +86,21 @@ const AdminDashboardPage = () => {
             return;
         }
 
-        const user = JSON.parse(userStr);
-        if (user.role !== 'admin') {
-            toast.error('Access denied. Admin privileges required.');
-            router.push('/');
-        }
-    }, [router]);
+        try {
+            const user = JSON.parse(userStr);
+            const role = normalizeRole(user.role);
+            setUserRole(role);
 
-    // Compute stats dynamically
-    const totalPop = 7500 + 6200 + 5100 + 4500 + 3800 + 5200 + 4100 + 6500 + 1800 + 4300 + 5800 + 7200 + 4900;
-    const stats = {
-        totalUsers: statsData?.totalUsers || 0,
-        verificationRequests: statsData?.verificationRequests || 0,
-        totalPopulation: totalPop,
-        publishedPosts: statsData?.publishedPosts || 0
-    };
+            // Guard active tab based on RBAC permissions
+            if (!hasTabAccess(role, activeTab)) {
+                const fallbackTab = getDefaultTabForRole(role);
+                toast.error(`Access restricted for role '${role}'. Redirecting to ${fallbackTab}.`);
+                router.replace(`/admin/dashboard/${fallbackTab}`);
+            }
+        } catch (e) {
+            router.push('/auth/login');
+        }
+    }, [router, activeTab]);
 
     // Handlers
     const handleUpdateUser = async (userId: number, updatedData: any) => {
@@ -109,14 +108,14 @@ const AdminDashboardPage = () => {
             await apiClient.updateUser(userId, updatedData);
             queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
             queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
-            toast.success('User updated successfully');
+            toast.success('Citizen profile updated successfully');
         } catch (err) {
-            toast.error('Failed to update user');
+            toast.error('Failed to update citizen profile');
         }
     };
 
     const handleDeleteUser = async (id: number) => {
-        if (!confirm('Are you sure you want to delete this user?')) return;
+        if (!confirm('Are you sure you want to delete this user from the registry?')) return;
         try {
             await apiClient.deleteUser(id);
             queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
@@ -126,8 +125,6 @@ const AdminDashboardPage = () => {
             toast.error('Failed to delete user');
         }
     };
-
-
 
     const handleCreateService = async (data: any) => {
         try {
@@ -166,38 +163,12 @@ const AdminDashboardPage = () => {
         }
     };
 
-    const handleApproveVerification = async (id: number, updatedData?: any) => {
-        try {
-            if (updatedData) {
-                await apiClient.updateUser(id, updatedData);
-            }
-            await apiClient.verifyUser(id, { isVerified: true });
-            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
-            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
-            toast.success('Verification approved');
-        } catch (err) {
-            toast.error('Failed to approve verification');
-        }
-    };
-
-    const handleRejectVerification = async (id: number) => {
-        try {
-            await apiClient.updateUser(id, { isVerified: false, frontIdDocumentUrl: null });
-            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
-            queryClient.invalidateQueries({ queryKey: ['adminActivities'] });
-            toast.success('Verification rejected');
-        } catch (err) {
-            toast.error('Failed to reject verification');
-        }
-    };
-
     const renderTabContent = () => {
         switch (activeTab) {
             case 'overview':
-                return <OverviewTab stats={stats} adminActivities={adminActivities} />;
+                return <OverviewTab stats={statsData} adminActivities={adminActivities} />;
             case 'posts':
                 return <PostsTab />;
-            case 'verification':
             case 'users':
                 return <UsersTab users={users} onUpdateUser={handleUpdateUser} onDelete={handleDeleteUser} />;
             case 'services':
@@ -209,19 +180,17 @@ const AdminDashboardPage = () => {
             case 'changelog':
                 return <ChangeLogsTab />;
             default:
-                return <OverviewTab stats={stats} adminActivities={adminActivities} />;
+                return <OverviewTab stats={statsData} adminActivities={adminActivities} />;
         }
     };
 
     const getTabTitle = () => {
         const titles: Record<string, string> = {
-            overview: 'System Overview',
+            overview: 'System Overview & Metrics',
             posts: 'Content Management',
             users: 'Citizen Registry',
-            verification: 'Verifications',
             services: 'LGU Services',
-            barangay: 'Barangay Units',
-            municipal: 'Municipal Leaders',
+            officials: 'LGU Officials',
             emergencies: 'Emergency Hotlines',
             changelog: 'Change Log Tracking'
         };
@@ -229,7 +198,7 @@ const AdminDashboardPage = () => {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden relative">
+        <div className="flex h-screen overflow-hidden relative bg-gray-50 dark:bg-[#0a0a0a]">
             <Toaster position="top-right" />
             
             {/* Mobile Sidebar overlay backdrop */}
@@ -242,9 +211,9 @@ const AdminDashboardPage = () => {
 
             <DashboardSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
             
-            <main className="flex-1 flex flex-col overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]">
+            <main className="flex-1 flex flex-col overflow-hidden">
                 <DashboardHeader title={getTabTitle()} onMenuClick={() => setIsSidebarOpen(true)} />
-                <div className="flex-1 overflow-y-auto p-4 md:p-12">
+                <div className="flex-1 overflow-y-auto p-4 md:p-10">
                     <div className="max-w-7xl mx-auto">
                         {renderTabContent()}
                     </div>
