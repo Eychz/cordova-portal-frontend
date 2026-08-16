@@ -15,7 +15,8 @@ import {
     Search,
     CheckCircle2,
     RefreshCw,
-    TrendingUp
+    TrendingUp,
+    Filter
 } from 'lucide-react';
 import { type AdminStats } from '@/lib/statsApi';
 import Pagination from './Pagination';
@@ -29,6 +30,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, adminActivities = [] }
     const [currentPage, setCurrentPage] = useState(1);
     const [searchLog, setSearchLog] = useState('');
     const [actionFilter, setActionFilter] = useState('all');
+    const [entityFilter, setEntityFilter] = useState('all');
     const itemsPerPage = 10;
 
     // Launch date & age calculation
@@ -72,15 +74,20 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, adminActivities = [] }
             const matchesSearch = 
                 (act.adminName || '').toLowerCase().includes(searchLog.toLowerCase()) ||
                 (act.description || '').toLowerCase().includes(searchLog.toLowerCase()) ||
-                (act.action || '').toLowerCase().includes(searchLog.toLowerCase());
+                (act.action || '').toLowerCase().includes(searchLog.toLowerCase()) ||
+                (act.targetType || '').toLowerCase().includes(searchLog.toLowerCase());
 
             const matchesAction = 
                 actionFilter === 'all' || 
                 (act.action || '').toUpperCase() === actionFilter.toUpperCase();
 
-            return matchesSearch && matchesAction;
+            const matchesEntity = 
+                entityFilter === 'all' || 
+                (act.targetType || '').toLowerCase() === entityFilter.toLowerCase();
+
+            return matchesSearch && matchesAction && matchesEntity;
         });
-    }, [adminActivities, searchLog, actionFilter]);
+    }, [adminActivities, searchLog, actionFilter, entityFilter]);
 
     const paginatedActivities = useMemo(() => {
         return filteredActivities.slice(
@@ -117,6 +124,25 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, adminActivities = [] }
             return <span className="px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest bg-cyan-500/15 text-cyan-400 border border-cyan-500/40 rounded">PIO</span>;
         }
         return <span className="px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest bg-purple-500/15 text-purple-400 border border-purple-500/40 rounded">ADMIN</span>;
+    };
+
+    // Format target type pill
+    const getTargetTypePill = (type?: string) => {
+        if (!type) return null;
+        const t = type.toLowerCase();
+        const config: Record<string, { label: string; bg: string }> = {
+            post: { label: 'Content', bg: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+            service: { label: 'LGU Service', bg: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+            official: { label: 'Official', bg: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+            emergency: { label: 'Emergency Hotline', bg: 'bg-rose-500/10 text-rose-400 border-rose-500/20' },
+            user: { label: 'Citizen Profile', bg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' }
+        };
+        const item = config[t] || { label: t.toUpperCase(), bg: 'bg-gray-500/10 text-gray-400 border-gray-500/20' };
+        return (
+            <span className={`px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded border mr-2 ${item.bg}`}>
+                {item.label}
+            </span>
+        );
     };
 
     const formatTimestamp = (dateStr?: string) => {
@@ -295,7 +321,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, adminActivities = [] }
             <div className="bg-white dark:bg-[#111111] border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm">
                 
                 {/* Table Header & Controls */}
-                <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/50 dark:bg-gray-900/50">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gray-50/50 dark:bg-gray-900/50">
                     <div>
                         <div className="flex items-center gap-2.5 mb-1">
                             <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">
@@ -311,7 +337,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, adminActivities = [] }
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                         <div className="relative">
                             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                             <input 
@@ -324,29 +350,41 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, adminActivities = [] }
                         </div>
 
                         <select
+                            value={entityFilter}
+                            onChange={(e) => { setEntityFilter(e.target.value); setCurrentPage(1); }}
+                            className="px-3 py-2 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-lg text-xs font-bold text-gray-900 dark:text-white focus:outline-none focus:border-red-600"
+                        >
+                            <option value="all">All Modules</option>
+                            <option value="post">Content / Posts</option>
+                            <option value="service">LGU Services</option>
+                            <option value="official">Officials</option>
+                            <option value="emergency">Hotlines</option>
+                            <option value="user">Citizens</option>
+                        </select>
+
+                        <select
                             value={actionFilter}
                             onChange={(e) => { setActionFilter(e.target.value); setCurrentPage(1); }}
                             className="px-3 py-2 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-lg text-xs font-bold text-gray-900 dark:text-white focus:outline-none focus:border-red-600"
                         >
                             <option value="all">All Actions</option>
-                            <option value="POST">CREATE / POST</option>
-                            <option value="EDIT">EDIT / UPDATE</option>
+                            <option value="CREATE">CREATE</option>
+                            <option value="EDIT">EDIT</option>
                             <option value="DELETE">DELETE</option>
-                            <option value="LOGIN">LOGIN</option>
                         </select>
                     </div>
                 </div>
 
                 {/* Table Body */}
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left min-w-[700px]">
+                    <table className="w-full text-left min-w-[750px]">
                         <thead>
                             <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 text-[10px] font-black text-gray-500 uppercase tracking-wider">
                                 <th className="px-6 py-3.5">Timestamp</th>
-                                <th className="px-6 py-3.5">User Full Name</th>
+                                <th className="px-6 py-3.5">Administrator</th>
                                 <th className="px-6 py-3.5">Role</th>
-                                <th className="px-6 py-3.5">Action Type</th>
-                                <th className="px-6 py-3.5">Description</th>
+                                <th className="px-6 py-3.5">Action</th>
+                                <th className="px-6 py-3.5">Description & Target Details</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-gray-800/80 text-xs">
@@ -376,8 +414,11 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, adminActivities = [] }
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {getActionBadge(act.action || act.actionType || 'POST')}
                                         </td>
-                                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300 font-medium">
-                                            {act.description || 'Performed administrative transaction'}
+                                        <td className="px-6 py-4 text-gray-700 dark:text-gray-300 font-medium">
+                                            <div className="flex items-center flex-wrap">
+                                                {getTargetTypePill(act.targetType)}
+                                                <span>{act.description || 'Performed administrative transaction'}</span>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

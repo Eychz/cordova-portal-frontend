@@ -14,7 +14,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen, onClose }) 
     const router = useRouter();
     const pathname = usePathname() || '';
     const [userRole, setUserRole] = useState<AdminRole>('ADMIN');
-    const [userEmail, setUserEmail] = useState<string>('');
+    const [userName, setUserName] = useState<string>('');
 
     useEffect(() => {
         try {
@@ -22,17 +22,17 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen, onClose }) 
             if (userStr) {
                 const user = JSON.parse(userStr);
                 setUserRole(normalizeRole(user.role));
-                setUserEmail(user.email || '');
+                setUserName(user.lastName || '');
             }
-        } catch {}
+        } catch { }
     }, []);
 
     const activeTab = pathname.includes('/posts') ? 'posts' :
-                      pathname.includes('/services') ? 'services' :
-                      pathname.includes('/users') ? 'users' :
-                      pathname.includes('/officials') ? 'officials' :
-                      pathname.includes('/emergencies') ? 'emergencies' :
-                      pathname.includes('/changelog') ? 'changelog' : 'overview';
+        pathname.includes('/services') ? 'services' :
+            pathname.includes('/users') ? 'users' :
+                pathname.includes('/officials') ? 'officials' :
+                    pathname.includes('/emergencies') ? 'emergencies' :
+                        pathname.includes('/changelog') ? 'changelog' : 'overview';
 
     const allMenuItems = [
         { id: 'overview', label: 'Dashboard Overview', icon: Shield },
@@ -49,10 +49,9 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen, onClose }) 
     const roleConfig = ROLE_DEFINITIONS[userRole];
 
     return (
-        <aside className={`w-72 bg-red-950 text-white flex-shrink-0 flex flex-col z-50 border-r border-red-900 fixed lg:static inset-y-0 left-0 transform ${
-            isOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none`}>
-            
+        <aside className={`w-72 bg-red-950 text-white flex-shrink-0 flex flex-col z-50 border-r border-red-900 fixed lg:static inset-y-0 left-0 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'
+            } lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none`}>
+
             {/* Header / Brand */}
             <div className="p-6 border-b border-red-900/50 flex items-center justify-between">
                 <div>
@@ -73,7 +72,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen, onClose }) 
                 </div>
 
                 {/* Mobile close button */}
-                <button 
+                <button
                     onClick={onClose}
                     className="p-2 lg:hidden text-red-200 hover:text-white"
                     aria-label="Close Sidebar"
@@ -96,11 +95,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen, onClose }) 
                             router.push(`/admin/dashboard/${tab.id}`);
                             onClose();
                         }}
-                        className={`w-full flex items-center gap-3.5 px-4 py-3 font-bold text-xs uppercase tracking-wider transition-all duration-200 rounded-lg border ${
-                            activeTab === tab.id
-                                ? 'bg-red-800 border-red-600 text-white shadow-inner font-black'
-                                : 'border-transparent text-red-200/90 hover:text-white hover:bg-red-900/60 hover:border-red-800/50'
-                        }`}
+                        className={`w-full flex items-center gap-3.5 px-4 py-3 font-bold text-xs uppercase tracking-wider transition-all duration-200 rounded-lg border ${activeTab === tab.id
+                            ? 'bg-red-800 border-red-600 text-white shadow-inner font-black'
+                            : 'border-transparent text-red-200/90 hover:text-white hover:bg-red-900/60 hover:border-red-800/50'
+                            }`}
                     >
                         <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-white' : 'text-red-300'}`} />
                         {tab.label}
@@ -112,12 +110,12 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ isOpen, onClose }) 
             <div className="p-4 border-t border-red-900/50 space-y-3 bg-red-950/80">
                 <div className="px-2 py-1.5 rounded bg-red-900/40 border border-red-800/40">
                     <p className="text-[9px] uppercase tracking-wider text-red-300/70 font-semibold">Active Session</p>
-                    <p className="text-xs font-bold text-white truncate" title={userEmail}>
-                        {userEmail || 'admin@cordova.gov.ph'}
+                    <p className="text-xs font-bold text-white truncate" title={userName}>
+                        {userName || 'Cordova Admin'}
                     </p>
                 </div>
 
-                <button 
+                <button
                     onClick={() => {
                         router.push('/home');
                         onClose();
